@@ -6,20 +6,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
+    repoURL: https://github.com/your-user/your-repo.git
     targetRevision: HEAD
     path: manifests/airflow
-    helm:
-      chart: airflow
-      repoURL: https://airflow.apache.org
-      valueFiles:
-        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
   syncPolicy:
     automated:
-      selfHeal: true
       prune: true
-    syncOptions:
-      - CreateNamespace=true
+      selfHeal: true
