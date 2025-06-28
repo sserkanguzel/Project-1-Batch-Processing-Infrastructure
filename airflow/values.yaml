@@ -1,0 +1,21 @@
+executor: CeleryExecutor
+
+airflow:
+  fernetKey: "aHnmZvJEV_3AGCK75H-lhBdcdhJCtRXC61tr9KyP6HM="
+  secretKey: "369cc880bf0de298e9457c0bc3bc712d1ff297ff9de29b9eb02d30eccbfcdce9"
+  image:
+    tag: "2.10.3"
+
+postgresql:
+  enabled: true
+
+redis:
+  enabled: true
+
+dags:
+  gitSync:
+    enabled: true
+    repo: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
+    branch: main
+    root: "dags"
+    syncInterval: 60
