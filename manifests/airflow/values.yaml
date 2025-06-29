@@ -128,34 +128,38 @@ config:
 
 scheduler:
   enabled: true
-  replicas: 1
+  hostAliases: []
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: []
+    command: ~
   startupProbe:
     initialDelaySeconds: 0
     failureThreshold: 6
     periodSeconds: 10
     timeoutSeconds: 20
-    command: []
-  command: []
+    command: ~
+  replicas: 1
+  revisionHistoryLimit: ~
+  command: ~
   args: ["bash", "-c", "exec airflow scheduler"]
+  updateStrategy: ~
+  strategy: ~
   securityContexts:
     pod: {}
     container: {}
+  containerLifecycleHooks: {}
   terminationGracePeriodSeconds: 10
   serviceAccount:
     create: true
-    automountServiceAccountToken: true
-    name: null
     annotations: {}
   podDisruptionBudget:
     enabled: false
     config:
       maxUnavailable: 1
+  resources: {}
   safeToEvict: true
   extraContainers: []
   extraInitContainers: []
@@ -165,12 +169,13 @@ scheduler:
   affinity: {}
   tolerations: []
   topologySpreadConstraints: []
+  priorityClassName: ~
   annotations: {}
   podAnnotations: {}
   labels: {}
   logGroomerSidecar:
     enabled: false
-    command: []
+    command: ~
     args: ["bash", "/clean-logs"]
     retentionDays: 15
     frequencyMinutes: 15
@@ -180,7 +185,7 @@ scheduler:
     containerLifecycleHooks: {}
     env: []
   waitForMigrations:
-    enabled: true
+    enabled: false
     env: []
     securityContexts:
       container: {}
