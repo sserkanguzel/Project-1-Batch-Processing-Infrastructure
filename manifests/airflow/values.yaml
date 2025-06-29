@@ -26,12 +26,15 @@ workers:
 
   keda:
     enabled: true
-    minReplicaCount: 1       # Minimum number of worker pods
-    maxReplicaCount: 10      # Maximum number of worker pods
-    pollingInterval: 30      # How often KEDA checks the metrics (in seconds)
-    cooldownPeriod: 300      # How long KEDA waits before scaling down (in seconds)
+    minReplicaCount: 1
+    maxReplicaCount: 10
+    pollingInterval: 30
+    cooldownPeriod: 300
 
-    persistence:
+  persistence:
+    enabled: false
+
+  hpa:
     enabled: false
     
 dags:
