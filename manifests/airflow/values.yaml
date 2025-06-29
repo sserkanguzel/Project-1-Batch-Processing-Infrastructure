@@ -79,6 +79,8 @@ triggerer:
       container: {}
   waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date. 
     enabled: false
+    securityContexts:
+      container: {}
   serviceAccount:
     create: true
   securityContexts:
