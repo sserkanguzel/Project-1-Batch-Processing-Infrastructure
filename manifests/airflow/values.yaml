@@ -182,7 +182,6 @@ scheduler:
   labels: {}
   logGroomerSidecar:
     enabled: false
-    containerLifecycleHooks: {}
     securityContexts:
       container: {}
     containerLifecycleHooks: {}
