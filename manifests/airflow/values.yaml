@@ -186,7 +186,9 @@ data:
     query: "sslmode=disable"
 
 redis:
-  enabled: true
+  enabled: true  
+  serviceAccount:
+    create: true
 
 flower:
   enabled: false
