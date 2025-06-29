@@ -1,5 +1,7 @@
+# Airflow executor type
 executor: KubernetesExecutor
 
+# Airflow image and basic config
 airflow:
   image:
     repository: apache/airflow
@@ -15,43 +17,72 @@ airflow:
     username: admin
     password: admin
 
+# Webserver service config
+webserver:
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 32080   # You can change to your preferred port
+
+  replicas: 1
+
+# Scheduler config
+scheduler:
+  replicas: 1
+
+# Enable autoscaling for workers with Horizontal Pod Autoscaler
+workers:
+  replicas: 1    # minimum number of workers
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+# PostgreSQL settings, using embedded Bitnami chart with PVC on local-path
+postgresql:
+  enabled: true
+  auth:
+    username: airflow
+    password: airflow_password
+    database: airflow
+  persistence:
+    enabled: true
+    storageClass: local-path
+    size: 8Gi
+
+# DAGs GitSync config — sync DAGs automatically from your GitHub repo
 dags:
   gitSync:
     enabled: true
     repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
     branch: main
     subPath: dags
-    interval: 60
+    interval: 60       # seconds between syncs
     depth: 1
     wait: 5
-    credentialsSecret: ""  # Leave blank for public repo
+    credentialsSecret: ""  # Leave blank if public repo
+
   persistence:
-    enabled: true
-    storageClass: local-path
-    size: 1Gi
+    enabled: false
 
-webserver:
-  service:
-    type: NodePort
-    port: 8080
-
-postgresql:
-  enabled: true
-  persistence:
-    enabled: true
-    storageClass: local-path
-    size: 8Gi
-
+# Logs persistence config
 logs:
   persistence:
     enabled: true
     storageClass: local-path
     size: 1Gi
 
+# Jobs for initial setup - needed when deploying with GitOps tools like ArgoCD
 createUserJob:
   useHelmHooks: false
   applyCustomEnv: false
-  
+
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
+
+# Optional extra Airflow config overrides (example)
+extraEnv:
+  - name: AIRFLOW__LOGGING__LOGGING_LEVEL
+    value: INFO
