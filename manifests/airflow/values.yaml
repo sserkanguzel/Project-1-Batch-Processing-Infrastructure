@@ -23,7 +23,7 @@ webserver:
       container: {} 
   podDisruptionBudget:
     enabled: false
- livenessProbe: # Kubernetes mechanism to check if a pod is healthy
+  livenessProbe: # Kubernetes mechanism to check if a pod is healthy
     enabled: true
     initialDelaySeconds: 60
     periodSeconds: 10
