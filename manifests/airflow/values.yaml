@@ -20,9 +20,6 @@ scheduler:
 triggerer:
   enabled: true
 
-workers:
-  enabled: false
-
 dags:
   gitSync:
     enabled: true
