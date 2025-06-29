@@ -164,7 +164,7 @@ dags:
       pod: {}
       container: {}
       
-dagProcessor:
+dagProcessor: ## responsible for parsing, processing, and managing DAG files 
   enabled: true
   replicas: 1
   args: ["bash", "-c", "exec airflow dag-processor"]
@@ -306,6 +306,8 @@ apiServer: # This setting controls whether the Airflow API server allows pods’
   allowPodLogReading: true
 cleanup: # Clean up old pods
   enabled: false
+  serviceAccount:
+    create: true
   
 images:
   airflow:
