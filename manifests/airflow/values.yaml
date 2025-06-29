@@ -9,7 +9,7 @@ airflow:
       role: Admin
       email: admin@example.com
 
-web:
+webserver:
   enabled: true
   port: 8080
   service:
