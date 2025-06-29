@@ -246,24 +246,27 @@ dags:
       container: {}
 
 dagProcessor:
-  enabled: true
+  enabled: ~
   replicas: 1
-  args:
-    - bash
-    - -c
-    - exec airflow dag-processor
+  revisionHistoryLimit: ~
+  args: ["bash", "-c", "exec airflow dag-processor"]
+  strategy:
+    rollingUpdate:
+      maxSurge: "100%"
+      maxUnavailable: "50%"
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: []
+    command: ~
   serviceAccount:
     create: true
-    automountServiceAccountToken: true
   securityContexts:
     pod: {}
     container: {}
+  containerLifecycleHooks: {}
+  resources: {}
   terminationGracePeriodSeconds: 60
   safeToEvict: true
   extraContainers: []
@@ -274,21 +277,23 @@ dagProcessor:
   affinity: {}
   tolerations: []
   topologySpreadConstraints: []
+  priorityClassName: ~
   logGroomerSidecar:
     enabled: false
-    securityContexts:
-      container: {}
+    command: ~
     args: ["bash", "/clean-logs"]
     retentionDays: 15
     frequencyMinutes: 15
+    resources: {}
+    securityContexts:
+      container: {}
     env: []
-  waitForMigrations:
+ waitForMigrations:
     enabled: false
     env: []
     securityContexts:
       container: {}
   env: []
-
 
 logs:
   persistence:
