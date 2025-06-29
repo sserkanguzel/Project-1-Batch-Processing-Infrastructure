@@ -21,7 +21,7 @@ triggerer:
   enabled: true
 
 workers:
-  enabled: true
+  enabled: false
 
 dags:
   gitSync:
