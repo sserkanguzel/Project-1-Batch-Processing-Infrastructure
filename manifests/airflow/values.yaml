@@ -169,7 +169,7 @@ scheduler:
   podAnnotations: {}
   labels: {}
   logGroomerSidecar:
-    enabled: true
+    enabled: false
     command: []
     args: ["bash", "/clean-logs"]
     retentionDays: 15
