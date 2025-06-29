@@ -244,6 +244,8 @@ opensearch:
   enabled: false
 statsd: # StatsD collects metrics about Airflow components (like task durations, number of running tasks, scheduler performance).
   enabled: false
+rbac: #  Role-Based Access Control
+  create: true
 
 images:
   airflow:
