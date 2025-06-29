@@ -72,6 +72,7 @@ config:
   core:
     dags_folder: "/opt/airflow/dags"
     load_examples: "False"
+    executor: "KubernetesExecutor"
   logging:
     remote_logging: "false"
     
