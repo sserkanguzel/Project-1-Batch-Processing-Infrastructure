@@ -246,7 +246,9 @@ statsd: # StatsD collects metrics about Airflow components (like task durations,
   enabled: false
 rbac: #  Role-Based Access Control
   create: true
-
+apiServer: # This setting controls whether the Airflow API server allows pods’ logs to be read via the API
+  allowPodLogReading: true
+  
 images:
   airflow:
     repository: apache/airflow
