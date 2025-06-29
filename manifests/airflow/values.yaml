@@ -20,6 +20,10 @@ scheduler:
 triggerer:
   enabled: true
 
+workers:
+  serviceAccount:
+    create: true
+    
 dags:
   gitSync:
     enabled: true
