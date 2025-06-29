@@ -68,64 +68,74 @@ webserver:
 
 config:
   core:
-    dags_folder: "{{ include \"airflow_dags\" . }}"
-    load_examples: "False"
-    executor: "{{ .Values.executor }}"
-    colored_console_log: "False"
-    remote_logging: "{{- ternary \"True\" \"False\" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}"
+    dags_folder: '{{ include "airflow_dags" . }}'
+    # This is ignored when used with the official Docker image
+    load_examples: 'False'
+    executor: '{{ .Values.executor }}'
+    # For Airflow 1.10, backward compatibility; moved to [logging] in 2.0
+    colored_console_log: 'False'
+    remote_logging: '{{- ternary "True" "False" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}'
     auth_manager: "airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager"
   logging:
-    remote_logging: "{{- ternary \"True\" \"False\" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}"
-    colored_console_log: "False"
+    remote_logging: '{{- ternary "True" "False" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}'
+    colored_console_log: 'False'
   metrics:
-    statsd_on: "{{ ternary \"True\" \"False\" .Values.statsd.enabled }}"
+    statsd_on: '{{ ternary "True" "False" .Values.statsd.enabled }}'
     statsd_port: 9125
     statsd_prefix: airflow
-    statsd_host: "{{ printf \"%s-statsd\" (include \"airflow.fullname\" .) }}"
+    statsd_host: '{{ printf "%s-statsd" (include "airflow.fullname" .) }}'
   fab:
-    enable_proxy_fix: "True"
+    enable_proxy_fix: 'True'
   webserver:
-    enable_proxy_fix: "True"
-    rbac: "True"
+    # For Airflow 2.X
+    enable_proxy_fix: 'True'
+    # For Airflow 1.10
+    rbac: 'True'
   celery:
-    flower_url_prefix: "{{ ternary \"\" .Values.ingress.flower.path (eq .Values.ingress.flower.path \"/\") }}"
+    flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
     worker_concurrency: 16
   scheduler:
-    standalone_dag_processor: "{{ ternary \"True\" \"False\" (or (semverCompare \">=3.0.0\" .Values.airflowVersion) (.Values.dagProcessor.enabled | default false)) }}"
-    statsd_on: "{{ ternary \"True\" \"False\" .Values.statsd.enabled }}"
+    standalone_dag_processor: '{{ ternary "True" "False" (or (semverCompare ">=3.0.0" .Values.airflowVersion) (.Values.dagProcessor.enabled | default false)) }}'
+    # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
+    statsd_on: '{{ ternary "True" "False" .Values.statsd.enabled }}'
     statsd_port: 9125
     statsd_prefix: airflow
-    statsd_host: "{{ printf \"%s-statsd\" (include \"airflow.fullname\" .) }}"
+    statsd_host: '{{ printf "%s-statsd" (include "airflow.fullname" .) }}'
+    # `run_duration` included for Airflow 1.10 backward compatibility; removed in 2.0.
     run_duration: 41460
   elasticsearch:
-    json_format: "True"
+    json_format: 'True'
     log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
   elasticsearch_configs:
     max_retries: 3
     timeout: 30
-    retry_timeout: "True"
+    retry_timeout: 'True'
   kerberos:
-    keytab: "{{ .Values.kerberos.keytabPath }}"
-    reinit_frequency: "{{ .Values.kerberos.reinitFrequency }}"
-    principal: "{{ .Values.kerberos.principal }}"
-    ccache: "{{ .Values.kerberos.ccacheMountPath }}/{{ .Values.kerberos.ccacheFileName }}"
+    keytab: '{{ .Values.kerberos.keytabPath }}'
+    reinit_frequency: '{{ .Values.kerberos.reinitFrequency }}'
+    principal: '{{ .Values.kerberos.principal }}'
+    ccache: '{{ .Values.kerberos.ccacheMountPath }}/{{ .Values.kerberos.ccacheFileName }}'
   celery_kubernetes_executor:
-    kubernetes_queue: "kubernetes"
+    kubernetes_queue: 'kubernetes'
+  # The `kubernetes` section is deprecated in Airflow >= 2.5.0 due to an airflow.cfg schema change.
+  # The `kubernetes` section can be removed once the helm chart no longer supports Airflow < 2.5.0.
   kubernetes:
-    namespace: "{{ .Release.Namespace }}"
-    airflow_configmap: "{{ include \"airflow_config\" . }}"
-    airflow_local_settings_configmap: "{{ include \"airflow_config\" . }}"
-    pod_template_file: "{{ include \"airflow_pod_template_file\" . }}/pod_template_file.yaml"
-    worker_container_repository: "{{ .Values.images.airflow.repository | default .Values.defaultAirflowRepository }}"
-    worker_container_tag: "{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}"
-    multi_namespace_mode: "{{ ternary \"True\" \"False\" .Values.multiNamespaceMode }}"
+    namespace: '{{ .Release.Namespace }}'
+    # The following `airflow_` entries are for Airflow 1, and can be removed when it is no longer supported.
+    airflow_configmap: '{{ include "airflow_config" . }}'
+    airflow_local_settings_configmap: '{{ include "airflow_config" . }}'
+    pod_template_file: '{{ include "airflow_pod_template_file" . }}/pod_template_file.yaml'
+    worker_container_repository: '{{ .Values.images.airflow.repository | default .Values.defaultAirflowRepository }}'
+    worker_container_tag: '{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}'
+    multi_namespace_mode: '{{ ternary "True" "False" .Values.multiNamespaceMode }}'
+  # The `kubernetes_executor` section duplicates the `kubernetes` section in Airflow >= 2.5.0 due to an airflow.cfg schema change.
   kubernetes_executor:
-    namespace: "{{ .Release.Namespace }}"
-    pod_template_file: "{{ include \"airflow_pod_template_file\" . }}/pod_template_file.yaml"
-    worker_container_repository: "{{ .Values.images.airflow.repository | default .Values.defaultAirflowRepository }}"
-    worker_container_tag: "{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}"
-    multi_namespace_mode: "{{ ternary \"True\" \"False\" .Values.multiNamespaceMode }}"
-
+    namespace: '{{ .Release.Namespace }}'
+    pod_template_file: '{{ include "airflow_pod_template_file" . }}/pod_template_file.yaml'
+    worker_container_repository: '{{ .Values.images.airflow.repository | default .Values.defaultAirflowRepository }}'
+    worker_container_tag: '{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}'
+    multi_namespace_mode: '{{ ternary "True" "False" .Values.multiNamespaceMode }}'
+    
 scheduler:
   enabled: true
   hostAliases: []
