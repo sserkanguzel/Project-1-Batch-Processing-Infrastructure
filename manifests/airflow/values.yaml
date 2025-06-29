@@ -206,8 +206,11 @@ createUserJob:
   useHelmHooks: false
   applyCustomEnv: false
 migrateDatabaseJob:
+  enabled: true
   useHelmHooks: false
   applyCustomEnv: false
+  serviceAccount:
+    create: true
 
 enableBuiltInSecretEnvVars:
   AIRFLOW__CORE__FERNET_KEY: true
