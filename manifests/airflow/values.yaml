@@ -50,6 +50,14 @@ webserver:
     scheme: HTTP
     path: /health
     port: 8080
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: admin
+    email: admin@example.com
+    firstName: admin
+    lastName: user
+    password: admin
   securityContexts:
     pod: {}
     container: {}
