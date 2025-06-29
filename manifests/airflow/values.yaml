@@ -58,6 +58,8 @@ workers:
     enabled: false
     
 dags:
+  persistence:
+    enabled: false
   gitSync:
     enabled: true
     repo: https://github.com/sserkanguzel/your-dag-repo.git
