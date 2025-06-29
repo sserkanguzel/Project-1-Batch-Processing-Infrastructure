@@ -45,6 +45,10 @@ postgresql:
     username: airflow
     password: airflow
     database: airflow
+  persistence:
+    enabled: true
+    storageClass: "local-path"
+    size: 8Gi
 
 redis:
   enabled: true
