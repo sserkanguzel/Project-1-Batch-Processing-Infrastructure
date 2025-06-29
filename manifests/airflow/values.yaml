@@ -24,11 +24,13 @@ webserver:
   securityContexts:
     pod: {}
     container: {}
+  persistence:
+    enabled: false
   serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
     create: true
   hpa: ## hpa: Horizontal Pod AutoScaler
     enabled: false
-    
+  
 config:
   core:
     dags_folder: "/opt/airflow/dags"
