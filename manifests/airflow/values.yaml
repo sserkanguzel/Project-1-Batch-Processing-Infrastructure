@@ -214,8 +214,8 @@ migrateDatabaseJob:
   securityContexts:
     pod: {}
     container: {}
-   jobAnnotations: {}
-   labels: {}
+  jobAnnotations: {}
+  labels: {}
 
 enableBuiltInSecretEnvVars:
   AIRFLOW__CORE__FERNET_KEY: true
