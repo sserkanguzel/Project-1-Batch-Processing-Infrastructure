@@ -12,7 +12,7 @@ airflow:
       email: admin@example.com
 
   config:
-    AIRFLOW__CORE__FERNET_KEY: "your-fernet-key"
+    AIRFLOW__CORE__FERNET_KEY: "NSq_sxPq6m7ZfnZb5QpAKUCXoa1BoBD6Qg8Y41wM874="
     AIRFLOW__CORE__LOAD_EXAMPLES: "False"
 
   dags:
