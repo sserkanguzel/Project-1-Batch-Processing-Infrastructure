@@ -208,13 +208,6 @@ scheduler:
   # Scheduler pod disruption budget
   podDisruptionBudget:
     enabled: false
-
-    # PDB configuration
-    config:
-      # minAvailable and maxUnavailable are mutually exclusive
-      maxUnavailable: 1
-      # minAvailable: 1
-
   resources: {}
   #  limits:
   #   cpu: 100m
@@ -287,7 +280,9 @@ scheduler:
     securityContexts:
       container: {}
   env: []
-  
+  persistence:
+    enabled: false
+
 triggerer:
   enabled: true
   replicas: 1
