@@ -35,10 +35,16 @@ webserver:
 
 postgresql:
   enabled: true
-  
+  persistence:
+    enabled: true
+    storageClass: local-path
+    size: 8Gi
+
 logs:
   persistence:
-    enabled: false
+    enabled: true
+    storageClass: local-path
+    size: 1Gi
 
 createUserJob:
   useHelmHooks: false
