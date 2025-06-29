@@ -2687,7 +2687,12 @@ dags:
     #  requests:
     #   cpu: 100m
     #   memory: 128Mi
-
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
   # emptyDirConfig:
