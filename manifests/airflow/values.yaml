@@ -18,6 +18,9 @@ webserver:
     nodePort: 30080  # Optional: choose a specific port or remove to auto-assign
   podDisruptionBudget:
     enabled: false  
+  securityContexts:
+    pod: {}
+    container: {}
   serviceAccount:
     create: true
   hpa:
