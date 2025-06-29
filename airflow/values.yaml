@@ -1,21 +1,36 @@
-executor: CeleryExecutor
+executor: KubernetesExecutor
 
 airflow:
-  fernetKey: "aHnmZvJEV_3AGCK75H-lhBdcdhJCtRXC61tr9KyP6HM="
-  secretKey: "369cc880bf0de298e9457c0bc3bc712d1ff297ff9de29b9eb02d30eccbfcdce9"
   image:
-    tag: "2.10.3"
+    repository: apache/airflow
+    tag: 2.9.0
 
-postgresql:
-  enabled: true
+  config:
+    AIRFLOW__CORE__FERNET_KEY: "aHnmZvJEV_3AGCK75H-lhBdcdhJCtRXC61tr9KyP6HM=
+    AIRFLOW__CORE__EXECUTOR: KubernetesExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
 
-redis:
-  enabled: true
+  defaultUser:
+    enabled: true
+    username: admin
+    password: admin
 
 dags:
   gitSync:
     enabled: true
-    repo: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
+    repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
     branch: main
-    root: "dags"
-    syncInterval: 60
+    subPath: dags
+    interval: 60
+    depth: 1
+    wait: 5
+    credentialsSecret: ""  # Leave blank for public repo
+
+webserver:
+  service:
+    type: NodePort
+    port: 8080
+
+logs:
+  persistence:
+    enabled: false
