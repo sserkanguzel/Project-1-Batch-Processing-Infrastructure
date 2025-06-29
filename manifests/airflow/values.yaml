@@ -69,6 +69,14 @@ scheduler:
 
 triggerer:
   enabled: true
+  replicas: 1
+  serviceAccount:
+    create: true
+  securityContexts:
+    pod: {}
+    container: {}
+  persistence:
+    enabled: false
 
 workers:
   keda:
@@ -79,7 +87,6 @@ workers:
     cooldownPeriod: 300
   persistence:
     enabled: false
-  
   serviceAccount:
     create: true
   hpa:
