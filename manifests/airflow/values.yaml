@@ -11,10 +11,6 @@ airflow:
       role: Admin
       email: admin@example.com
 
-securityContexts:
-  pod: {}
-  container: {}
-
 webserver:
   enabled: true
   port: 8080
@@ -94,12 +90,17 @@ images:
     repository: apache/airflow
     tag: 2.9.1
 
+
 createUserJob:
   useHelmHooks: false
   applyCustomEnv: false
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
-
+securityContexts:
+  pod: {}
+  container: {}
+data:
+  metadataSecretName: ""
 networkPolicies:
   enabled: false
