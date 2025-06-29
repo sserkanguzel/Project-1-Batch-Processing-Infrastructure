@@ -66,6 +66,23 @@ config:
 
 scheduler:
   enabled: true
+  livenessProbe:
+    initialDelaySeconds: 10
+    timeoutSeconds: 20
+    failureThreshold: 5
+    periodSeconds: 60
+    command: ~
+  startupProbe:
+    initialDelaySeconds: 0
+    failureThreshold: 6
+    periodSeconds: 10
+    timeoutSeconds: 20
+    command: ~
+  securityContexts:
+    pod: {}
+    container: {}
+  serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
+    create: true
 
 triggerer:
   enabled: true
