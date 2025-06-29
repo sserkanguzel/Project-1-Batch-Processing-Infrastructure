@@ -23,6 +23,13 @@ triggerer:
 workers:
   serviceAccount:
     create: true
+
+  keda:
+    enabled: true
+    minReplicaCount: 1       # Minimum number of worker pods
+    maxReplicaCount: 10      # Maximum number of worker pods
+    pollingInterval: 30      # How often KEDA checks the metrics (in seconds)
+    cooldownPeriod: 300      # How long KEDA waits before scaling down (in seconds)
     
 dags:
   gitSync:
