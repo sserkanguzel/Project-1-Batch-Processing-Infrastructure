@@ -32,6 +32,7 @@ webserver:
     port: 8080
 
 postgresql:
+  enabled: true
   persistence:
     enabled: false
 
