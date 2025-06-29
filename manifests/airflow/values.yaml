@@ -211,6 +211,9 @@ migrateDatabaseJob:
   applyCustomEnv: false
   serviceAccount:
     create: true
+  securityContexts:
+    pod: {}
+    container: {}
 
 enableBuiltInSecretEnvVars:
   AIRFLOW__CORE__FERNET_KEY: true
