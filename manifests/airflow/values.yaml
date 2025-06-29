@@ -76,6 +76,14 @@ postgresql:
     storageClass: "local-path"
     size: 8Gi
 
+data:
+  metadataConnection:
+    host: postgresql
+    port: 5432
+    user: airflow
+    password: airflow
+    database: airflow
+
 redis:
   enabled: true
 
@@ -100,7 +108,5 @@ migrateDatabaseJob:
 securityContexts:
   pod: {}
   container: {}
-data:
-  metadataSecretName: ""
 networkPolicies:
   enabled: false
