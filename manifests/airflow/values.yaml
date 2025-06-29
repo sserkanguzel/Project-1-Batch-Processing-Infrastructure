@@ -24,8 +24,12 @@ webserver:
     create: true
   hpa: ## hpa: Horizontal Pod AutoScaler
     enabled: false
+    
+config:
+  core:
+    dags_folder: "/opt/airflow/dags"
+    load_examples: "False"
 
-  
 scheduler:
   enabled: true
 
