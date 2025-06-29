@@ -32,6 +32,15 @@ webserver:
     scheme: HTTP
     path: /health
     port: 8080
+   readinessProbe: # Tells Kubernetes when the pod is ready to accept traffic.
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    scheme: HTTP
+    path: /health
+    port: 8080
   securityContexts:
     pod: {}
     container: {}
