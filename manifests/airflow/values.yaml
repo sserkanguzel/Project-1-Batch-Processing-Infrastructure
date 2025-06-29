@@ -68,6 +68,10 @@ config:
 scheduler:
   enabled: true
   replicas: 1
+  waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date. 
+    enabled: false
+    securityContexts:
+      container: {}
   podDisruptionBudget: # How many pods of a particular application can be down at the same time during voluntary disruptions
     enabled: false
   logGroomerSidecar: # Whether to deploy the Airflow triggerer log groomer sidecar.
