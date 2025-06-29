@@ -77,7 +77,7 @@ triggerer:
     containerLifecycleHooks: {}
     securityContexts:
       container: {}
-  livenessProbe:
+  livenessProbe:  # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the triggerer and let Kubernetes restart it
     initialDelaySeconds: 10
     timeoutSeconds: 20
     failureThreshold: 5
@@ -198,6 +198,8 @@ registry: ## Used if pulling airflow images from a private registry
 elasticsearch:
   enabled: false
 opensearch:
+  enabled: false
+statsd:
   enabled: false
 
 images:
