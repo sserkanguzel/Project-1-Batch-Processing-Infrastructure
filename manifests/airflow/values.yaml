@@ -130,34 +130,62 @@ config:
 scheduler:
   enabled: true
   replicas: 1
-  waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date
-    enabled: false
-    securityContexts:
-      container: {}
-  podDisruptionBudget: # How many pods of a particular application can be down at the same time during voluntary disruptions
-    enabled: false
-  logGroomerSidecar: # Whether to deploy the Airflow triggerer log groomer sidecar.
-    enabled: false
-    containerLifecycleHooks: {}
-    securityContexts:
-      container: {}
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: ~
+    command: null
   startupProbe:
     initialDelaySeconds: 0
     failureThreshold: 6
     periodSeconds: 10
     timeoutSeconds: 20
-    command: ~
+    command: null
+  command: null
+  args: ["bash", "-c", "exec airflow scheduler"]
   securityContexts:
     pod: {}
     container: {}
-  serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
+  terminationGracePeriodSeconds: 10
+  serviceAccount:
     create: true
+    automountServiceAccountToken: true
+    name: null
+    annotations: {}
+  podDisruptionBudget:
+    enabled: false
+    config:
+      maxUnavailable: 1
+  safeToEvict: true
+  extraContainers: []
+  extraInitContainers: []
+  extraVolumes: []
+  extraVolumeMounts: []
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
+  annotations: {}
+  podAnnotations: {}
+  labels: {}
+  logGroomerSidecar:
+    enabled: true
+    command: null
+    args: ["bash", "/clean-logs"]
+    retentionDays: 15
+    frequencyMinutes: 15
+    resources: {}
+    securityContexts:
+      container: {}
+    containerLifecycleHooks: {}
+    env: []
+  waitForMigrations:
+    enabled: true
+    env: []
+    securityContexts:
+      container: {}
+  env: []
 
 triggerer:
   enabled: true
