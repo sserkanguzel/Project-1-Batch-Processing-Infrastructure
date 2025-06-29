@@ -25,10 +25,10 @@ dags:
     depth: 1
     wait: 5
     credentialsSecret: ""  # Leave blank for public repo
-    persistence:
-      enabled: true
-      storageClass: local-path
-      size: 1Gi
+  persistence:
+    enabled: true
+    storageClass: local-path
+    size: 1Gi
 
 webserver:
   service:
