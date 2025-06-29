@@ -998,7 +998,12 @@ scheduler:
     failureThreshold: 5
     periodSeconds: 60
     command: ~
-
+  startupProbe:
+    initialDelaySeconds: 0
+    failureThreshold: 6
+    periodSeconds: 10
+    timeoutSeconds: 20
+    command: ~
 
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
