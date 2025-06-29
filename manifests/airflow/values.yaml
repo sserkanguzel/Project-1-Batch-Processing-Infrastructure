@@ -1598,7 +1598,9 @@ triggerer:
   # Remove log groomer sidecar
   logGroomerSidecar:
     enabled: false
-
+    securityContexts:
+      container: {}
+      
   securityContexts:
     pod: {}
     container: {}
