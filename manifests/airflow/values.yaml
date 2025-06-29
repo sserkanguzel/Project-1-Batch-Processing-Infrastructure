@@ -146,12 +146,6 @@ ingress:
   apiServer:
     # Enable API Server ingress resource
     enabled: false
-    startupProbe:
-      initialDelaySeconds: 0
-      timeoutSeconds: 20
-      failureThreshold: 6
-      periodSeconds: 10
-      scheme: HTTP
 
     # Annotations for the API Server Ingress
     annotations: {}
@@ -1004,6 +998,9 @@ scheduler:
     failureThreshold: 5
     periodSeconds: 60
     command: ~
+
+  # Wait for at most 1 minute (6*10s) for the scheduler container to startup.
+  # livenessProbe kicks in after the first successful startupProbe
   startupProbe:
     initialDelaySeconds: 0
     failureThreshold: 6
@@ -1513,6 +1510,13 @@ apiServer:
     initialDelaySeconds: 15
     timeoutSeconds: 5
     failureThreshold: 5
+    periodSeconds: 10
+    scheme: HTTP
+
+  startupProbe:
+    initialDelaySeconds: 0
+    timeoutSeconds: 20
+    failureThreshold: 6
     periodSeconds: 10
     scheme: HTTP
 
