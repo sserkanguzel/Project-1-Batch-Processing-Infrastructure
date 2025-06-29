@@ -39,3 +39,11 @@ postgresql:
 logs:
   persistence:
     enabled: false
+
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+  
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
