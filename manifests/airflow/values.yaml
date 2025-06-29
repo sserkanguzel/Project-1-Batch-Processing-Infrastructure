@@ -11,6 +11,10 @@ airflow:
       role: Admin
       email: admin@example.com
 
+securityContexts:
+  pod: {}
+  container: {}
+
 webserver:
   enabled: true
   port: 8080
