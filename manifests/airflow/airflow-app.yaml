@@ -12,8 +12,6 @@ spec:
     helm:
       valueFiles:
         - values.yaml
-      chart: airflow
-      repoURL: https://airflow.apache.org
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
