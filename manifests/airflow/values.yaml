@@ -147,6 +147,10 @@ dags:
       pod: {}
       container: {}
       
+dagProcessor:
+  enabled: true
+  replicas: 1
+      
 logs:
   persistence:
     enabled: false
