@@ -91,11 +91,13 @@ ingress:
     enabled: false
 namespace: airflow
 
+ports:
+  pgbouncer: 6432
+
 images:
   airflow:
     repository: apache/airflow
     tag: 2.9.1
-
 
 createUserJob:
   useHelmHooks: false
@@ -103,6 +105,7 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
+  
 securityContexts: ## Security Context: Filesystem access, UID ID access etc configurations
   pod: {}
   container: {}
