@@ -1,6 +1,7 @@
 airflowVersion: "2.9.1"
 ## hpa: Horizontal Pod AutoScaler
 ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
+## Security Context: Filesystem access, UID ID access etc configurations
 executor: KubernetesExecutor
 
 airflow:
