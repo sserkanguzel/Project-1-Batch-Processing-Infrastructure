@@ -81,7 +81,7 @@ data:
     user: airflow
     password: airflow
     database: airflow
-    sslmode: disable
+    query: sslmode=disable
 
 redis:
   enabled: true
