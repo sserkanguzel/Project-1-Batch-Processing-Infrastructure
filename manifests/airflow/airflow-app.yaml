@@ -7,19 +7,17 @@ spec:
   project: default
   source:
     repoURL: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
-    targetRevision: HEAD
-    path: airflow
+    targetRevision: main
+    path: manifests/airflow
     helm:
-      chart: airflow
-      repoURL: https://airflow.apache.org
-      version: 11.0.5
-      valuesFile: values.yaml
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
   syncPolicy:
     automated:
-      prune: true
       selfHeal: true
+      prune: true
     syncOptions:
       - CreateNamespace=true

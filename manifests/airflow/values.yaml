@@ -1,0 +1,36 @@
+executor: KubernetesExecutor
+
+airflow:
+  image:
+    repository: apache/airflow
+    tag: 2.9.0
+
+  config:
+    AIRFLOW__CORE__FERNET_KEY: "aHnmZvJEV_3AGCK75H-lhBdcdhJCtRXC61tr9KyP6HM=
+    AIRFLOW__CORE__EXECUTOR: KubernetesExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+  defaultUser:
+    enabled: true
+    username: admin
+    password: admin
+
+dags:
+  gitSync:
+    enabled: true
+    repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
+    branch: main
+    subPath: dags
+    interval: 60
+    depth: 1
+    wait: 5
+    credentialsSecret: ""  # Leave blank for public repo
+
+webserver:
+  service:
+    type: NodePort
+    port: 8080
+
+logs:
+  persistence:
+    enabled: false
