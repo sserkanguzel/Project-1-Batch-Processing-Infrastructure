@@ -75,7 +75,8 @@ redis:
 
 ingress:
   enabled: false  # We're using NodePort instead
-
+  web:
+    enabled: false
 namespace: airflow
 
 images:
