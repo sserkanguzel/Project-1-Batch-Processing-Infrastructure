@@ -98,7 +98,6 @@ data:
     database: "airflow"
     query: "sslmode=disable"
 
-
 redis:
   enabled: true
 
