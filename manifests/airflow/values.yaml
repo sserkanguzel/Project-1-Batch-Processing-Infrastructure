@@ -167,6 +167,34 @@ dags:
 dagProcessor:
   enabled: true
   replicas: 1
+  args: ["bash", "-c", "exec airflow dag-processor"]
+  strategy:
+    rollingUpdate:
+      maxSurge: "100%"
+      maxUnavailable: "50%"
+  livenessProbe:
+    initialDelaySeconds: 10
+    timeoutSeconds: 20
+    failureThreshold: 5
+    periodSeconds: 60
+    command: ~
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: true
+  securityContexts:
+    pod: {}
+    container: {}
+  terminationGracePeriodSeconds: 60
+  safeToEvict: true
+  logGroomerSidecar:
+    enabled: false
+    securityContexts:
+      container: {}
+  waitForMigrations:
+    enabled: false
+    securityContexts:
+      container: {}
+  env: []
       
 logs:
   persistence:
@@ -210,7 +238,7 @@ namespace: airflow
 ports:
   pgbouncer: 6432
 
-createUserJob:
+createUserJob: ## Kubernetes Job that automatically creates a default user (typically an admin) in the Airflow metadata database when the chart is installed.
   enabled: true
   useHelmHooks: false
   applyCustomEnv: false
