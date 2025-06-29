@@ -15,16 +15,16 @@ webserver:
   port: 8080
   service:
     type: NodePort
-    nodePort: 30080  # Optional: choose a specific port or remove to auto-assign
+    nodePort: 30080
   persistence:
     enabled: false
-  waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date. 
+  waitForMigrations:
     enabled: false
     securityContexts:
-      container: {} 
-  podDisruptionBudget: # How many pods of a particular application can be down at the same time during voluntary disruptions
+      container: {}
+  podDisruptionBudget:
     enabled: false
-  livenessProbe: # Kubernetes mechanism to check if a pod is healthy
+  livenessProbe:
     enabled: true
     initialDelaySeconds: 60
     periodSeconds: 10
@@ -33,7 +33,7 @@ webserver:
     scheme: HTTP
     path: /health
     port: 8080
-  readinessProbe: # Tells Kubernetes when the pod is ready to accept traffic.
+  readinessProbe:
     enabled: true
     initialDelaySeconds: 60
     periodSeconds: 10
@@ -42,7 +42,7 @@ webserver:
     scheme: HTTP
     path: /health
     port: 8080
-  startupProbe: # Checks if the app inside the pod has started properly
+  startupProbe:
     enabled: true
     failureThreshold: 30
     periodSeconds: 10
@@ -61,11 +61,11 @@ webserver:
   securityContexts:
     pod: {}
     container: {}
-  serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
+  serviceAccount:
     create: true
-  hpa: ## hpa: Horizontal Pod AutoScaler
+  hpa:
     enabled: false
-  
+
 config:
   core:
     dags_folder: "{{ include \"airflow_dags\" . }}"
@@ -126,7 +126,6 @@ config:
     worker_container_tag: "{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}"
     multi_namespace_mode: "{{ ternary \"True\" \"False\" .Values.multiNamespaceMode }}"
 
-    
 scheduler:
   enabled: true
   replicas: 1
@@ -135,14 +134,14 @@ scheduler:
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: null
+    command: []
   startupProbe:
     initialDelaySeconds: 0
     failureThreshold: 6
     periodSeconds: 10
     timeoutSeconds: 20
-    command: null
-  command: null
+    command: []
+  command: []
   args: ["bash", "-c", "exec airflow scheduler"]
   securityContexts:
     pod: {}
@@ -171,7 +170,7 @@ scheduler:
   labels: {}
   logGroomerSidecar:
     enabled: true
-    command: null
+    command: []
     args: ["bash", "/clean-logs"]
     retentionDays: 15
     frequencyMinutes: 15
@@ -192,18 +191,18 @@ triggerer:
   replicas: 1
   keda:
     enabled: false
-  logGroomerSidecar: # Whether to deploy the Airflow triggerer log groomer sidecar.
+  logGroomerSidecar:
     enabled: false
     containerLifecycleHooks: {}
     securityContexts:
       container: {}
-  livenessProbe:  # If the triggerer stops heartbeating for 5 minutes (5*60s) kill the triggerer and let Kubernetes restart it
+  livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: ~
-  waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date. 
+    command: []
+  waitForMigrations:
     enabled: false
     securityContexts:
       container: {}
@@ -228,7 +227,7 @@ workers:
     create: true
   hpa:
     enabled: false
-    
+
 dags:
   persistence:
     enabled: false
@@ -236,17 +235,17 @@ dags:
     enabled: true
     repo: https://github.com/sserkanguzel/your-dag-repo.git
     branch: main
-    subPath: dags   # adjust if your DAGs are in a subfolder
+    subPath: dags
     depth: 1
     syncInterval: 60
     credentials:
-      username: ""   # Leave blank if public repo
-      password: ""   # Or use `existingSecret` if private
+      username: ""
+      password: ""
     securityContexts:
       pod: {}
       container: {}
-      
-dagProcessor: ## responsible for parsing, processing, and managing DAG files 
+
+dagProcessor:
   enabled: true
   replicas: 1
   args: ["bash", "-c", "exec airflow dag-processor"]
@@ -259,7 +258,7 @@ dagProcessor: ## responsible for parsing, processing, and managing DAG files
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: ~
+    command: []
   serviceAccount:
     create: true
     automountServiceAccountToken: true
@@ -277,7 +276,7 @@ dagProcessor: ## responsible for parsing, processing, and managing DAG files
     securityContexts:
       container: {}
   env: []
-      
+
 logs:
   persistence:
     enabled: false
@@ -312,7 +311,7 @@ flower:
   enabled: false
 
 ingress:
-  enabled: false  # We're using NodePort instead
+  enabled: false
   web:
     enabled: false
   flower:
@@ -323,13 +322,13 @@ ingress:
     enabled: false
   pgbouncer:
     enabled: false
-    
+
 namespace: airflow
 
 ports:
   pgbouncer: 6432
 
-createUserJob: ## Kubernetes Job that automatically creates a default user (typically an admin) in the Airflow metadata database when the chart is installed.
+createUserJob:
   enabled: true
   useHelmHooks: false
   applyCustomEnv: false
@@ -367,40 +366,51 @@ enableBuiltInSecretEnvVars:
   AIRFLOW__ELASTICSEARCH__HOST: true
   AIRFLOW__ELASTICSEARCH__ELASTICSEARCH_HOST: true
   AIRFLOW__OPENSEARCH__HOST: true
-  
-securityContexts: ## Security Context: Filesystem access, UID ID access etc configurations
+
+securityContexts:
   pod: {}
   container: {}
+
 networkPolicies: 
   enabled: false
-pgbouncer: # ## Security Context: Filesystem access, UID ID access etc configurations
+
+pgbouncer:
   enabled: false
   ssl:
     ca: ""
     cert: ""
     key: ""
-  serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
+  serviceAccount:
     create: true
-kerberos: ## Airflow can optionally integrate with Kerberos for secure user authentication.
+
+kerberos:
   enabled: false
-registry: ## Used if pulling airflow images from a private registry
+
+registry:
   secretName: ""
+
 elasticsearch:
   enabled: false
+
 opensearch:
   enabled: false
-statsd: # StatsD collects metrics about Airflow components (like task durations, number of running tasks, scheduler performance).
+
+statsd:
   enabled: false
-rbac: #  Role-Based Access Control
+
+rbac:
   create: true
-apiServer: # This setting controls whether the Airflow API server allows pods’ logs to be read via the API
+
+apiServer:
   allowPodLogReading: true
   serviceAccount:
     create: true
-cleanup: # Clean up old pods
+
+cleanup:
   enabled: false
   serviceAccount:
     create: true
+
 multiNamespaceMode: false
 
 images:
