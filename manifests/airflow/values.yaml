@@ -116,7 +116,10 @@ dags:
     credentials:
       username: ""   # Leave blank if public repo
       password: ""   # Or use `existingSecret` if private
-
+    securityContexts:
+      pod: {}
+      container: {}
+      
 logs:
   persistence:
     enabled: false
