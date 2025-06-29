@@ -22,7 +22,16 @@ webserver:
     securityContexts:
       container: {} 
   podDisruptionBudget:
-    enabled: false  
+    enabled: false
+ livenessProbe: # Kubernetes mechanism to check if a pod is healthy
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    scheme: HTTP
+    path: /health
+    port: 8080
   securityContexts:
     pod: {}
     container: {}
