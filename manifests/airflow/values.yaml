@@ -6,7 +6,7 @@ airflow:
     tag: 2.9.0
 
   config:
-    AIRFLOW__CORE__FERNET_KEY: "aHnmZvJEV_3AGCK75H-lhBdcdhJCtRXC61tr9KyP6HM=
+    AIRFLOW__CORE__FERNET_KEY: "aHnmZvJEV_3AGCK75H-lhBdcdhJCtRXC61tr9KyP6HM="
     AIRFLOW__CORE__EXECUTOR: KubernetesExecutor
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
 
