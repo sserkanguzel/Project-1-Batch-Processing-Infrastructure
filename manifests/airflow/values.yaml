@@ -943,7 +943,7 @@ workers:
   # Configuration of wait-for-airflow-migration init container for Airflow Celery workers
   waitForMigrations:
     # Whether to create init container to wait for db migrations
-    enabled: true
+    enabled: false
 
     env: []
 
@@ -1152,7 +1152,7 @@ scheduler:
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
-    enabled: true
+    enabled: false
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
@@ -1423,7 +1423,7 @@ apiServer:
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
-    enabled: true
+    enabled: false
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
@@ -1548,7 +1548,7 @@ webserver:
     password: admin
 
   waitForMigrations:
-    enabled: true
+    enabled: false
     env: []
     securityContexts:
       container: {}
@@ -1808,7 +1808,7 @@ dagProcessor:
 
   waitForMigrations:
     # Whether to create init container to wait for db migrations
-    enabled: true
+    enabled: false
     env: []
     # Detailed default security context for waitForMigrations for container level
     securityContexts:
