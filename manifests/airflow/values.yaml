@@ -373,7 +373,8 @@ cleanup: # Clean up old pods
   enabled: false
   serviceAccount:
     create: true
-  
+multiNamespaceMode: false
+
 images:
   airflow:
     repository: apache/airflow
