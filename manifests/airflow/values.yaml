@@ -72,6 +72,8 @@ triggerer:
   replicas: 1
   keda:
     enabled: false
+  logGroomerSidecar: # Whether to deploy the Airflow triggerer log groomer sidecar.
+    enabled: false
   serviceAccount:
     create: true
   securityContexts:
