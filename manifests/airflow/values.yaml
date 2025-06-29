@@ -21,7 +21,7 @@ webserver:
     enabled: false
     securityContexts:
       container: {} 
-  podDisruptionBudget:
+  podDisruptionBudget: # How many pods of a particular application can be down at the same time during voluntary disruptions
     enabled: false
   livenessProbe: # Kubernetes mechanism to check if a pod is healthy
     enabled: true
@@ -38,6 +38,14 @@ webserver:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 6
+    scheme: HTTP
+    path: /health
+    port: 8080
+  startupProbe: # Checks if the app inside the pod has started properly
+    enabled: true
+    failureThreshold: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
     scheme: HTTP
     path: /health
     port: 8080
