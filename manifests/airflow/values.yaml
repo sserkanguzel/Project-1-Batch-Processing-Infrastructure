@@ -304,6 +304,8 @@ rbac: #  Role-Based Access Control
   create: true
 apiServer: # This setting controls whether the Airflow API server allows pods’ logs to be read via the API
   allowPodLogReading: true
+  serviceAccount:
+    create: true
 cleanup: # Clean up old pods
   enabled: false
   serviceAccount:
