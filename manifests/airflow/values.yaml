@@ -15,6 +15,8 @@ webserver:
   service:
     type: NodePort
     nodePort: 30080  # Optional: choose a specific port or remove to auto-assign
+  persistence:
+    enabled: false
   waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date. 
     enabled: false
     securityContexts:
@@ -24,8 +26,6 @@ webserver:
   securityContexts:
     pod: {}
     container: {}
-  persistence:
-    enabled: false
   serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
     create: true
   hpa: ## hpa: Horizontal Pod AutoScaler
