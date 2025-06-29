@@ -1,7 +1,5 @@
 airflowVersion: "2.9.1"
-## hpa: Horizontal Pod AutoScaler
-## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
-## Security Context: Filesystem access, UID ID access etc configurations
+
 executor: KubernetesExecutor
 
 airflow:
@@ -22,9 +20,9 @@ webserver:
   securityContexts:
     pod: {}
     container: {}
-  serviceAccount:
+  serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
     create: true
-  hpa:
+  hpa: ## hpa: Horizontal Pod AutoScaler
     enabled: false
 
   
@@ -105,8 +103,10 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
-securityContexts:
+securityContexts: ## Security Context: Filesystem access, UID ID access etc configurations
   pod: {}
   container: {}
-networkPolicies:
+networkPolicies: 
+  enabled: false
+pgbouncer: # ## Security Context: Filesystem access, UID ID access etc configurations
   enabled: false
