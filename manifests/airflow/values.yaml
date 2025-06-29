@@ -73,8 +73,8 @@ config:
     dags_folder: "/opt/airflow/dags"
     load_examples: "False"
   logging:
-  remote_logging:
-
+    remote_logging: "false"
+    
 scheduler:
   enabled: true
   replicas: 1
