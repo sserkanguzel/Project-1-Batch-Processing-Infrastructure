@@ -11,6 +11,7 @@ airflow:
 
 webserver:
   enabled: true
+  replicas: 1
   port: 8080
   service:
     type: NodePort
@@ -66,6 +67,7 @@ config:
 
 scheduler:
   enabled: true
+  replicas: 1
   podDisruptionBudget: # How many pods of a particular application can be down at the same time during voluntary disruptions
     enabled: false
   livenessProbe:
