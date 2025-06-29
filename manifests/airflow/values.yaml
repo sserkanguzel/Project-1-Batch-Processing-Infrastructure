@@ -16,13 +16,14 @@ webserver:
   service:
     type: NodePort
     nodePort: 30080  # Optional: choose a specific port or remove to auto-assign
-  serviceAccount:
-    create: true
   podDisruptionBudget:
     enabled: false  
+  serviceAccount:
+    create: true
   hpa:
     enabled: false
 
+  
 scheduler:
   enabled: true
 
@@ -30,19 +31,17 @@ triggerer:
   enabled: true
 
 workers:
-  serviceAccount:
-    create: true
-
   keda:
     enabled: true
     minReplicaCount: 1
     maxReplicaCount: 10
     pollingInterval: 30
     cooldownPeriod: 300
-
   persistence:
     enabled: false
-
+  
+  serviceAccount:
+    create: true
   hpa:
     enabled: false
     
