@@ -66,6 +66,8 @@ config:
 
 scheduler:
   enabled: true
+  podDisruptionBudget: # How many pods of a particular application can be down at the same time during voluntary disruptions
+    enabled: false
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
