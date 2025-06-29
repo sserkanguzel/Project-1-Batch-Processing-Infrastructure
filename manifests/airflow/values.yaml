@@ -258,7 +258,7 @@ dagProcessor:
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
-    command: ~
+    command: []
   serviceAccount:
     create: true
     automountServiceAccountToken: true
@@ -275,7 +275,7 @@ dagProcessor:
     enabled: false
     securityContexts:
       container: {}
-  command: ~
+  command: []
   env: []
 
 logs:
