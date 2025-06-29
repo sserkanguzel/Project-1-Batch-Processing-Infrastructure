@@ -201,18 +201,7 @@ scheduler:
 
   # Create ServiceAccount
   serviceAccount:
-    # only affect CeleryExecutor, default value is true
-    # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-    automountServiceAccountToken: true
-    # Specifies whether a ServiceAccount should be created
     create: true
-    # The name of the ServiceAccount to use.
-    # If not set and create is true, a name is generated using the release name
-    name: ~
-
-    # Annotations to add to scheduler kubernetes service account.
-    annotations: {}
-
   # Scheduler pod disruption budget
   podDisruptionBudget:
     enabled: false
@@ -279,40 +268,21 @@ scheduler:
 
   # Labels specific to scheduler objects and pods
   labels: {}
-
   logGroomerSidecar:
-    # Whether to deploy the Airflow scheduler log groomer sidecar.
     enabled: false
-    # Command to use when running the Airflow scheduler log groomer sidecar (templated).
     command: ~
-    # Args to use when running the Airflow scheduler log groomer sidecar (templated).
     args: ["bash", "/clean-logs"]
-    # Number of days to retain logs
     retentionDays: 15
-    # frequency to attempt to groom logs, in minutes
     frequencyMinutes: 15
     resources: {}
-    #  limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #  requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # Detailed default security context for logGroomerSidecar for container level
     securityContexts:
       container: {}
-    # container level lifecycle hooks
-    containerLifecycleHooks: {}
     env: []
-
   waitForMigrations:
-    # Whether to create init container to wait for db migrations
     enabled: false
     env: []
-    # Detailed default security context for waitForMigrations for container level
     securityContexts:
       container: {}
-
   env: []
   
 triggerer:
