@@ -2691,6 +2691,18 @@ createUserJob:
   useHelmHooks: false
   applyCustomEnv: false
 migrateDatabaseJob:
+  serviceAccount:
+    # default value is true
+    # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+    automountServiceAccountToken: true
+    # Specifies whether a ServiceAccount should be created
+    create: true
+    # The name of the ServiceAccount to use.
+    # If not set and create is true, a name is generated using the release name
+    name: ~
+
+  # Annotations to add to cleanup cronjob kubernetes service account.
+  annotations: {}
   useHelmHooks: false
   applyCustomEnv: false
 logs:
