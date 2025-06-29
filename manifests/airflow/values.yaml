@@ -1196,12 +1196,6 @@ createUserJob:
   # Labels specific to createUserJob objects and pods
   labels: {}
 
-  # When not set, the values defined in the global securityContext will be used
-  securityContext: {}
-  #  runAsUser: 50000
-  #  fsGroup: 0
-  #  runAsGroup: 0
-
   # Detailed default security context for createUserJob for container and pod level
   securityContexts:
     pod: {}
