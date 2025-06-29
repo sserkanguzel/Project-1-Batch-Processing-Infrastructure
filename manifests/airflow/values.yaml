@@ -138,61 +138,185 @@ config:
     
 scheduler:
   enabled: true
+  #  hostAliases for the scheduler pod
   hostAliases: []
+  #  - ip: "127.0.0.1"
+  #    hostnames:
+  #      - "foo.local"
+  #  - ip: "10.1.2.3"
+  #    hostnames:
+  #      - "foo.remote"
+
+  # If the scheduler stops heartbeating for 5 minutes (5*60s) kill the
+  # scheduler and let Kubernetes restart it
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
     failureThreshold: 5
     periodSeconds: 60
     command: ~
+
+  # Wait for at most 1 minute (6*10s) for the scheduler container to startup.
+  # livenessProbe kicks in after the first successful startupProbe
   startupProbe:
     initialDelaySeconds: 0
     failureThreshold: 6
     periodSeconds: 10
     timeoutSeconds: 20
     command: ~
+
+  # Airflow 2.0 allows users to run multiple schedulers,
+  # However this feature is only recommended for MySQL 8+ and Postgres
   replicas: 1
+  # Max number of old replicasets to retain
   revisionHistoryLimit: ~
+
+  # Command to use when running the Airflow scheduler (templated).
   command: ~
+  # Args to use when running the Airflow scheduler (templated).
   args: ["bash", "-c", "exec airflow scheduler"]
+
+  # Update Strategy when scheduler is deployed as a StatefulSet
+  # (when using LocalExecutor and workers.persistence)
   updateStrategy: ~
+  # Update Strategy when scheduler is deployed as a Deployment
+  # (when not using LocalExecutor and workers.persistence)
   strategy: ~
+
+  # When not set, the values defined in the global securityContext will be used
+  # (deprecated, use `securityContexts` instead)
+  securityContext: {}
+  #  runAsUser: 50000
+  #  fsGroup: 0
+  #  runAsGroup: 0
+
+  # Detailed default security context for scheduler deployments for container and pod level
   securityContexts:
     pod: {}
     container: {}
+
+  # container level lifecycle hooks
   containerLifecycleHooks: {}
+
+  # Grace period for tasks to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 10
+
+  # Create ServiceAccount
   serviceAccount:
+    # only affect CeleryExecutor, default value is true
+    # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+    automountServiceAccountToken: true
+    # Specifies whether a ServiceAccount should be created
     create: true
+    # The name of the ServiceAccount to use.
+    # If not set and create is true, a name is generated using the release name
+    name: ~
+
+    # Annotations to add to scheduler kubernetes service account.
+    annotations: {}
+
+  # Scheduler pod disruption budget
   podDisruptionBudget:
     enabled: false
+
+    # PDB configuration
+    config:
+      # minAvailable and maxUnavailable are mutually exclusive
+      maxUnavailable: 1
+      # minAvailable: 1
+
   resources: {}
+  #  limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #  requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+  # This setting tells kubernetes that its ok to evict
+  # when it wants to scale a node down.
   safeToEvict: true
+
+  # Launch additional containers into scheduler (templated).
   extraContainers: []
+  # Add additional init containers into scheduler (templated).
   extraInitContainers: []
+
+  # Mount additional volumes into scheduler. It can be templated like in the following example:
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
   extraVolumes: []
   extraVolumeMounts: []
+
+  # Select certain nodes for airflow scheduler pods.
   nodeSelector: {}
   affinity: {}
+  # default scheduler affinity is:
+  #  podAntiAffinity:
+  #    preferredDuringSchedulingIgnoredDuringExecution:
+  #    - podAffinityTerm:
+  #        labelSelector:
+  #          matchLabels:
+  #            component: scheduler
+  #        topologyKey: kubernetes.io/hostname
+  #      weight: 100
   tolerations: []
   topologySpreadConstraints: []
+
   priorityClassName: ~
+
+  # annotations for scheduler deployment
   annotations: {}
+
   podAnnotations: {}
+
+  # Labels specific to scheduler objects and pods
   labels: {}
+
   logGroomerSidecar:
+    # Whether to deploy the Airflow scheduler log groomer sidecar.
     enabled: false
+    # Command to use when running the Airflow scheduler log groomer sidecar (templated).
+    command: ~
+    # Args to use when running the Airflow scheduler log groomer sidecar (templated).
+    args: ["bash", "/clean-logs"]
+    # Number of days to retain logs
+    retentionDays: 15
+    # frequency to attempt to groom logs, in minutes
+    frequencyMinutes: 15
+    resources: {}
+    #  limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #  requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # Detailed default security context for logGroomerSidecar for container level
     securityContexts:
       container: {}
+    # container level lifecycle hooks
     containerLifecycleHooks: {}
     env: []
+
   waitForMigrations:
+    # Whether to create init container to wait for db migrations
     enabled: false
     env: []
+    # Detailed default security context for waitForMigrations for container level
     securityContexts:
       container: {}
-  env: []
 
+  env: []
+  
 triggerer:
   enabled: true
   replicas: 1
