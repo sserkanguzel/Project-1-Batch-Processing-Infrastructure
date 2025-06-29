@@ -191,6 +191,10 @@ networkPolicies:
   enabled: false
 pgbouncer: # ## Security Context: Filesystem access, UID ID access etc configurations
   enabled: false
+  ssl:
+  ca: ""
+  cert: ""
+  key: ""
 kerberos: ## Airflow can optionally integrate with Kerberos for secure user authentication.
   enabled: false
 registry: ## Used if pulling airflow images from a private registry
@@ -199,7 +203,7 @@ elasticsearch:
   enabled: false
 opensearch:
   enabled: false
-statsd:
+statsd: # StatsD collects metrics about Airflow components (like task durations, number of running tasks, scheduler performance).
   enabled: false
 
 images:
