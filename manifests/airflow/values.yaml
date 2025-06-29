@@ -19,6 +19,8 @@ webserver:
     create: true
   podDisruptionBudget:
     enabled: false  
+  hpa:
+  enabled: false
 
 scheduler:
   enabled: true
