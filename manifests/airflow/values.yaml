@@ -175,3 +175,5 @@ registry: ## Used if pulling airflow images from a private registry
   secretName: ""
 elasticsearch:
   enabled: false
+opensearch:
+  enabled: false
