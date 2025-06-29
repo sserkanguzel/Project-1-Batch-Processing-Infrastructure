@@ -74,6 +74,9 @@ triggerer:
     enabled: false
   logGroomerSidecar: # Whether to deploy the Airflow triggerer log groomer sidecar.
     enabled: false
+    containerLifecycleHooks: {}
+    securityContexts:
+      container: {}
   serviceAccount:
     create: true
   securityContexts:
