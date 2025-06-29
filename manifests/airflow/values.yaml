@@ -520,7 +520,7 @@ data:
     user: postgres
     pass: postgres
     protocol: postgresql
-    host: ~
+    host: airflow-postgresql.airflow
     port: 5432
     db: postgres
     sslmode: disable
