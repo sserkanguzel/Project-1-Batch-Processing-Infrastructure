@@ -25,6 +25,8 @@ dags:
     depth: 1
     wait: 5
     credentialsSecret: ""  # Leave blank for public repo
+    persistence:
+      enabled: false
 
 webserver:
   service:
@@ -33,10 +35,6 @@ webserver:
 
 postgresql:
   enabled: true
-  persistence:
-    enabled: false
-
-dags:
   persistence:
     enabled: false
 
