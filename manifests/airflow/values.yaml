@@ -233,6 +233,15 @@ ingress:
   enabled: false  # We're using NodePort instead
   web:
     enabled: false
+  flower:
+    enabled: false
+  apiServer:
+    enabled: false
+  statsd:
+    enabled: false
+  pgbouncer:
+    enabled: false
+    
 namespace: airflow
 
 ports:
