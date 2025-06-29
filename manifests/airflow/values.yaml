@@ -15,7 +15,9 @@ webserver:
   service:
     type: NodePort
     nodePort: 30080  # Optional: choose a specific port or remove to auto-assign
-
+  serviceAccount:
+    create: true
+    
 scheduler:
   enabled: true
 
