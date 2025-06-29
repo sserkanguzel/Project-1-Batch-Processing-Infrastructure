@@ -249,10 +249,6 @@ dagProcessor:
   enabled: true
   replicas: 1
   args: ["bash", "-c", "exec airflow dag-processor"]
-  strategy:
-    rollingUpdate:
-      maxSurge: "100%"
-      maxUnavailable: "50%"
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
@@ -267,16 +263,29 @@ dagProcessor:
     container: {}
   terminationGracePeriodSeconds: 60
   safeToEvict: true
+  extraContainers: []
+  extraInitContainers: []
+  extraVolumes: []
+  extraVolumeMounts: []
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
   logGroomerSidecar:
     enabled: false
     securityContexts:
       container: {}
+    args: ["bash", "/clean-logs"]
+    retentionDays: 15
+    frequencyMinutes: 15
+    env: []
   waitForMigrations:
     enabled: false
+    env: []
     securityContexts:
       container: {}
-  command: []
   env: []
+
 
 logs:
   persistence:
