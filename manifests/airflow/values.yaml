@@ -248,7 +248,10 @@ dags:
 dagProcessor:
   enabled: true
   replicas: 1
-  args: ["bash", "-c", "exec airflow dag-processor"]
+  args:
+    - bash
+    - -c
+    - exec airflow dag-processor
   livenessProbe:
     initialDelaySeconds: 10
     timeoutSeconds: 20
