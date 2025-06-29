@@ -214,7 +214,6 @@ migrateDatabaseJob:
   securityContexts:
     pod: {}
     container: {}
-   annotations: {}
    jobAnnotations: {}
    labels: {}
 
