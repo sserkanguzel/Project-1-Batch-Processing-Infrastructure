@@ -30,6 +30,9 @@ workers:
     maxReplicaCount: 10      # Maximum number of worker pods
     pollingInterval: 30      # How often KEDA checks the metrics (in seconds)
     cooldownPeriod: 300      # How long KEDA waits before scaling down (in seconds)
+
+    persistence:
+    enabled: false
     
 dags:
   gitSync:
