@@ -70,3 +70,6 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
+
+networkPolicies:
+  enabled: false
