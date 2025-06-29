@@ -19,7 +19,7 @@ webserver:
     enabled: false
   podDisruptionBudget:
     enabled: false  
-  securityContexts: ## Security Context: Filesystem access, UID ID access etc configurations
+  securityContexts:
     pod: {}
     container: {}
   serviceAccount: ## Service Account: In Kubernetes, a ServiceAccount provides an identity for pods to interact with the Kubernetes API
