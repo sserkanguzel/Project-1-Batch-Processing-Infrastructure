@@ -15,8 +15,7 @@ webserver:
   service:
     type: NodePort
     nodePort: 30080  # Optional: choose a specific port or remove to auto-assign
-  waitForMigrations: # Ensure Airflow starts only after DB schema is up-to-date. 
-    enabled: false
+  waitForMigrations: false # Ensure Airflow starts only after DB schema is up-to-date. 
   podDisruptionBudget:
     enabled: false  
   securityContexts:
