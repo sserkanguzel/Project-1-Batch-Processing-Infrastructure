@@ -288,7 +288,7 @@ dagProcessor:
     securityContexts:
       container: {}
     env: []
- waitForMigrations:
+  waitForMigrations:
     enabled: false
     env: []
     securityContexts:
