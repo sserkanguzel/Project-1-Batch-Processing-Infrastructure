@@ -154,11 +154,6 @@ namespace: airflow
 ports:
   pgbouncer: 6432
 
-images:
-  airflow:
-    repository: apache/airflow
-    tag: 2.9.1
-
 createUserJob:
   useHelmHooks: false
   applyCustomEnv: false
@@ -195,3 +190,11 @@ elasticsearch:
   enabled: false
 opensearch:
   enabled: false
+
+images:
+  airflow:
+    repository: apache/airflow
+    tag: 2.9.1
+  gitSync:
+    repository: k8s.gcr.io/git-sync/git-sync
+    tag: v3.6.3
