@@ -76,12 +76,14 @@ postgresql:
 
 data:
   metadataConnection:
-    host: postgresql
+    protocol: "postgresql"
+    user: "airflow"
+    pass: "airflow"
+    host: "postgresql"
     port: 5432
-    user: airflow
-    password: airflow
-    database: airflow
-    query: sslmode=disable
+    database: "airflow"
+    query: "sslmode=disable"
+
 
 redis:
   enabled: true
