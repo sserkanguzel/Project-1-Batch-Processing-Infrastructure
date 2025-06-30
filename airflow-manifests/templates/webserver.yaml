@@ -46,6 +46,9 @@ spec:
           value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+        volumes:
+        - name: dags
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
