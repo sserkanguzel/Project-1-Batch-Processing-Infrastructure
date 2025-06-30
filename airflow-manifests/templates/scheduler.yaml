@@ -47,7 +47,7 @@ spec:
           - "--repo={{ .Values.dags.gitSync.repo }}"
           - "--branch={{ .Values.dags.gitSync.branch }}"
           - "--rev={{ .Values.dags.gitSync.rev }}"
-          - "--root={{ .Values.dags.gitSync.root }}"
+          - "--root={{ .Values.dags.gitSync.mountPath }}"
           - "--dest={{ .Values.dags.gitSync.dest }}"
           - "--wait={{ .Values.dags.gitSync.wait }}"
         volumeMounts:
