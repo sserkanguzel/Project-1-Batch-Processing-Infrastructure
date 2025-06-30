@@ -46,19 +46,25 @@ spec:
           value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
-        volumes:
+        - name: AIRFLOW__CORE__DAGS_FOLDER
+          value: /opt/airflow/dags/repo/dags
+        volumeMounts:
+        - name: dags
+          mountPath: /opt/airflow/dags
+
+      - name: git-sync
+        image: k8s.gcr.io/git-sync/git-sync:v3.6.6
+        args:
+          - "--repo={{ .Values.dags.gitSync.repo }}"
+          - "--branch={{ .Values.dags.gitSync.branch }}"
+          - "--rev={{ .Values.dags.gitSync.rev }}"
+          - "--root={{ .Values.dags.gitSync.root }}"
+          - "--dest={{ .Values.dags.gitSync.dest }}"
+          - "--wait={{ .Values.dags.gitSync.wait }}"
+        volumeMounts:
+          - name: dags
+            mountPath: {{ .Values.dags.gitSync.mountPath }}
+
+      volumes:
         - name: dags
           emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: airflow-webserver
-  namespace: {{ .Values.namespace }}
-spec:
-  type: {{ .Values.service.webserver.type }}
-  ports:
-  - port: {{ .Values.service.webserver.port }}
-    targetPort: 8080
-  selector:
-    app: airflow-webserver
