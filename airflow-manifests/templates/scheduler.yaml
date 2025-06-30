@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-scheduler
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-scheduler
+  template:
+    metadata:
+      labels:
+        app: airflow-scheduler
+    spec:
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      containers:
+      - name: scheduler
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+        command: ["airflow", "scheduler"]
+        env:
+        - name: AIRFLOW__CORE__EXECUTOR
+          value: {{ .Values.airflow.executor }}
+        - name: AIRFLOW__KUBERNETES__NAMESPACE
+          value: {{ .Values.namespace }}
+        - name: AIRFLOW__CORE__FERNET_KEY
+          value: {{ .Values.airflow.fernetKey }}
+        - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+          value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
