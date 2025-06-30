@@ -8,6 +8,8 @@ airflow:
   fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="     # generate with python cryptography (see below)
   secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"     # random string for webserver session
   serviceAccountName: airflow
+  initDbJob: # Set to false after inital setup
+    enabled: false
 
 database:
   postgres:
