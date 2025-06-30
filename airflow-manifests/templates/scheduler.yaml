@@ -20,12 +20,12 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
           - |
-            until pg_isready -h postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local -p {{ .Values.database.postgres.port }}; do
+            until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres to be ready...";
               sleep 5;
             done;
             airflow db migrate && \
-            exec airflow scheduler
+            exec airflow scheduler        
         env:
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
@@ -35,34 +35,3 @@ spec:
           value: {{ .Values.airflow.fernetKey }}
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
-        - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: /opt/airflow/dags/repo/dags
-        - name: AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE
-          value: /opt/airflow/pod-template.yaml
-        volumeMounts:
-        - name: dags
-          mountPath: /opt/airflow/dags
-        - name: pod-template-volume
-          mountPath: /opt/airflow/pod-template.yaml
-          subPath: pod-template.yaml
-      - name: git-sync
-        image: k8s.gcr.io/git-sync/git-sync:v3.6.6
-        args:
-          - "--repo={{ .Values.dags.gitSync.repo }}"
-          - "--branch={{ .Values.dags.gitSync.branch }}"
-          - "--rev={{ .Values.dags.gitSync.rev }}"
-          - "--root={{ .Values.dags.gitSync.mountPath }}"
-          - "--dest={{ .Values.dags.gitSync.dest }}"
-          - "--wait={{ .Values.dags.gitSync.wait }}"
-        volumeMounts:
-          - name: dags
-            mountPath: {{ .Values.dags.gitSync.mountPath }}
-      volumes:
-      - name: dags
-        emptyDir: {}
-      - name: pod-template-volume
-        configMap:
-          name: airflow-pod-template
-          items:
-          - key: pod-template.yaml
-            path: pod-template.yaml

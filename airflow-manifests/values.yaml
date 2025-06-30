@@ -22,18 +22,3 @@ service:
   webserver:
     type: NodePort
     port: 8080
-
-dags:
-  gitSync:
-    repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
-    branch: main
-    rev: HEAD
-    root: /opt/airflow/dags
-    dest: repo
-    wait: 60
-    mountPath: /opt/airflow/dags
-
-kubernetesExecutor:
-  podTemplate:
-    enabled: true
-    path: templates/pod-template.yaml
