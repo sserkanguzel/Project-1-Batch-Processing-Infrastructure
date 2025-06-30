@@ -71,9 +71,6 @@ spec:
         volumeMounts:
           - name: dags
             mountPath: "{{ .Values.gitSync.volumeMountPath }}"
-      volumes:
-      - name: dags
-        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
