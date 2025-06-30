@@ -22,3 +22,15 @@ service:
   webserver:
     type: NodePort
     port: 8080
+
+gitSync:
+  enabled: true
+  image:
+    repository: k8s.gcr.io/git-sync/git-sync
+    tag: v3.7.5
+  repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
+  branch: main
+  root: /opt/airflow/dags
+  wait: 30
+  oneTime: false
+  volumeMountPath: /opt/airflow/dags
