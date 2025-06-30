@@ -14,7 +14,18 @@ spec:
       containers:
       - name: init-db
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-        command: ["airflow", "db", "init"]
+        command:
+          - "bash"
+          - "-c"
+          - |
+            airflow db init && \
+            airflow users create \
+              --username admin \
+              --password admin \
+              --firstname Airflow \
+              --lastname Admin \
+              --role Admin \
+              --email sserkanguzel@gmail.com
         env:
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
