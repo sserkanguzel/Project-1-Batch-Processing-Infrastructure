@@ -49,33 +49,35 @@ spec:
         volumeMounts:
         - name: dags
           mountPath: /opt/airflow/dags
+
       {{- if .Values.gitSync.enabled }}
       - name: git-sync
         image: "{{ .Values.gitSync.image.repository }}:{{ .Values.gitSync.image.tag }}"
         env:
-        - name: GIT_SYNC_REPO
-          value: "{{ .Values.gitSync.repo }}"
-        - name: GIT_SYNC_BRANCH
-          value: "{{ .Values.gitSync.branch }}"
-        - name: GIT_SYNC_ROOT
-          value: "{{ .Values.gitSync.root }}"
-        - name: GIT_SYNC_WAIT
-          value: "{{ .Values.gitSync.wait | quote }}"
-        - name: GIT_SYNC_ONE_TIME
-          value: "{{ .Values.gitSync.oneTime | quote }}"
+          - name: GIT_SYNC_REPO
+            value: "{{ .Values.gitSync.repo }}"
+          - name: GIT_SYNC_BRANCH
+            value: "{{ .Values.gitSync.branch }}"
+          - name: GIT_SYNC_ROOT
+            value: "{{ .Values.gitSync.root }}"
+          - name: GIT_SYNC_WAIT
+            value: "{{ .Values.gitSync.wait | quote }}"
+          - name: GIT_SYNC_ONE_TIME
+            value: "{{ .Values.gitSync.oneTime | quote }}"
         args:
-        - "--repo={{ .Values.gitSync.repo }}"
-        - "--branch={{ .Values.gitSync.branch }}"
-        - "--root={{ .Values.gitSync.root }}"
-        - "--wait={{ .Values.gitSync.wait }}"
-        - "--subpath=dags"
-        {{- if .Values.gitSync.oneTime }}
-        - "--one-time"
-        {{- end }}
+          - "--repo={{ .Values.gitSync.repo }}"
+          - "--branch={{ .Values.gitSync.branch }}"
+          - "--root={{ .Values.gitSync.root }}"
+          - "--wait={{ .Values.gitSync.wait }}"
+          - "--subpath=dags"
+          {{- if .Values.gitSync.oneTime }}
+          - "--one-time"
+          {{- end }}
         volumeMounts:
-        - name: dags
-          mountPath: "{{ .Values.gitSync.volumeMountPath }}"
+          - name: dags
+            mountPath: "{{ .Values.gitSync.volumeMountPath }}"
       {{- end }}
+
       volumes:
       - name: dags
         emptyDir: {}
