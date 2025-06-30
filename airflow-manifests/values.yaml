@@ -28,7 +28,7 @@ dags:
     repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
     branch: main
     rev: HEAD
-    root: /git
+    root: /opt/airflow/dags
     dest: repo
     wait: 60
     mountPath: /opt/airflow/dags
