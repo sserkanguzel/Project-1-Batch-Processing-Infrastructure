@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-init-db
+  namespace: {{ .Values.namespace }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: airflow-init-db
+    spec:
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      restartPolicy: Never
+      containers:
+      - name: init-db
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+        command: ["airflow", "db", "init"]
+        env:
+        - name: AIRFLOW__CORE__EXECUTOR
+          value: {{ .Values.airflow.executor }}
+        - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
+          value: {{ .Values.namespace }}
+        - name: AIRFLOW__CORE__FERNET_KEY
+          value: {{ .Values.airflow.fernetKey }}
+        - name: AIRFLOW__WEBSERVER__SECRET_KEY
+          value: {{ .Values.airflow.secretKey }}
+        - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+          value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
