@@ -46,28 +46,6 @@ spec:
           value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
-        volumeMounts:
-        - name: dags
-          mountPath: /opt/airflow/dags
-      - name: git-sync
-        image: "{{ .Values.gitSync.image.repository }}:{{ .Values.gitSync.image.tag }}"
-        env:
-        - name: GIT_SYNC_REPO
-          value: "{{ .Values.gitSync.repo }}"
-        - name: GIT_SYNC_BRANCH
-          value: "{{ .Values.gitSync.branch }}"
-        - name: GIT_SYNC_ROOT
-          value: "{{ .Values.gitSync.root }}"
-        - name: GIT_SYNC_WAIT
-          value: "{{ .Values.gitSync.wait | quote }}"
-        args:
-        - "--repo={{ .Values.gitSync.repo }}"
-        - "--branch={{ .Values.gitSync.branch }}"
-        - "--root={{ .Values.gitSync.root }}"
-        - "--wait={{ .Values.gitSync.wait }}"
-        volumeMounts:
-        - name: dags
-          mountPath: "{{ .Values.gitSync.volumeMountPath }}"
 ---
 apiVersion: v1
 kind: Service
