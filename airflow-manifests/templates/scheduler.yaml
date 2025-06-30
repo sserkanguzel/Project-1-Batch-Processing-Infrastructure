@@ -17,7 +17,11 @@ spec:
       containers:
       - name: scheduler
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-        command: ["airflow", "scheduler"]
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            airflow db upgrade && \
+            exec airflow scheduler        
         env:
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
