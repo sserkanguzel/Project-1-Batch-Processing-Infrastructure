@@ -17,7 +17,11 @@ spec:
       containers:
       - name: webserver
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-        command: ["airflow", "webserver"]
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            airflow db upgrade && \
+            exec airflow webserver
         ports:
         - containerPort: 8080
         env:
