@@ -4,6 +4,7 @@ metadata:
   name: airflow-init-db
   namespace: {{ .Values.namespace }}
 spec:
+  ttlSecondsAfterFinished: 60
   backoffLimit: 1
   template:
     metadata:
