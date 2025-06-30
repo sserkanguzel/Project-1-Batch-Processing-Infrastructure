@@ -1,11 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: airflow-task-pod
+  labels:
+    app: airflow-worker
 spec:
+  restartPolicy: Never
   containers:
     - name: base
       image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+      imagePullPolicy: IfNotPresent
       volumeMounts:
         - name: dags
           mountPath: /opt/airflow/dags
@@ -21,6 +24,7 @@ spec:
         - "--root={{ .Values.dags.gitSync.mountPath }}"
         - "--dest={{ .Values.dags.gitSync.dest }}"
         - "--wait={{ .Values.dags.gitSync.wait }}"
+        - "--one-time"
       volumeMounts:
         - name: dags
           mountPath: {{ .Values.dags.gitSync.mountPath }}

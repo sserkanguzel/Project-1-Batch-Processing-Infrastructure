@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-pod-template
+  namespace: {{ .Values.namespace }}
+data:
+  pod-template.yaml: |-
+{{- with .Files.Get "templates/pod-template.yaml" | indent 4 }}
+{{ . }}
+{{- end }}
