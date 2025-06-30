@@ -49,8 +49,6 @@ spec:
         volumeMounts:
         - name: dags
           mountPath: /opt/airflow/dags
-
-      {{- if .Values.gitSync.enabled }}
       - name: git-sync
         image: "{{ .Values.gitSync.image.repository }}:{{ .Values.gitSync.image.tag }}"
         env:
@@ -73,8 +71,6 @@ spec:
         volumeMounts:
           - name: dags
             mountPath: "{{ .Values.gitSync.volumeMountPath }}"
-      {{- end }}
-
       volumes:
       - name: dags
         emptyDir: {}
