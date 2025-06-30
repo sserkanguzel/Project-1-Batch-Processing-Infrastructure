@@ -70,9 +70,6 @@ spec:
           - "--root={{ .Values.gitSync.root }}"
           - "--wait={{ .Values.gitSync.wait }}"
           - "--subpath=dags"
-          {{- if .Values.gitSync.oneTime }}
-          - "--one-time"
-          {{- end }}
         volumeMounts:
           - name: dags
             mountPath: "{{ .Values.gitSync.volumeMountPath }}"
