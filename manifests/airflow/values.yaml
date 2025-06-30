@@ -546,7 +546,7 @@ data:
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
-fernetKey: ~
+fernetKey: bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g=
 fernetKeySecretName: ~
 # Add custom annotations to the fernet key secret
 fernetKeySecretAnnotations: {}
