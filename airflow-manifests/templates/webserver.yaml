@@ -68,3 +68,16 @@ spec:
       volumes:
         - name: dags
           emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-webserver
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.service.webserver.type }}
+  ports:
+  - port: {{ .Values.service.webserver.port }}
+    targetPort: 8080
+  selector:
+    app: airflow-webserver
