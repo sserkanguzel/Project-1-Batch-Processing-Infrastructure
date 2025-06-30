@@ -6,8 +6,6 @@ spec:
   containers:
     - name: base
       image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-      command: ["bash", "-c"]
-      args: ["exec airflow tasks run ..."]  # Optional override
       volumeMounts:
         - name: dags
           mountPath: /opt/airflow/dags
@@ -20,12 +18,12 @@ spec:
         - "--repo={{ .Values.dags.gitSync.repo }}"
         - "--branch={{ .Values.dags.gitSync.branch }}"
         - "--rev={{ .Values.dags.gitSync.rev }}"
-        - "--root={{ .Values.dags.gitSync.mountPath }}"
+        - "--root={{ .Values.dags.gitSync.root }}"
         - "--dest={{ .Values.dags.gitSync.dest }}"
         - "--wait={{ .Values.dags.gitSync.wait }}"
       volumeMounts:
         - name: dags
-          mountPath: /opt/airflow/dags
+          mountPath: {{ .Values.dags.gitSync.mountPath }}
   volumes:
     - name: dags
       emptyDir: {}
