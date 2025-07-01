@@ -1,23 +1,35 @@
-
+# kubernetes/airflow/config/pod_template.yaml
+# This is the base template for all pods launched by the Kubernetes Executor.
+# Airflow will merge this with task-specific configurations.
 apiVersion: v1
 kind: Pod
 metadata:
   name: airflow-worker-pod-template
   labels:
+    environment: production
     app: airflow-worker
 spec:
-  # serviceAccountName: airflow-worker # Uncomment if your worker pods need a specific SA
   restartPolicy: Never # Task pods should not restart automatically after completion
   containers:
     - name: base # This *must* be named 'base' for the Kubernetes Executor
-      image: "apache/airflow:2.7.1-python3.9" # <-- Crucial: Define the worker image from your values.yaml
-      imagePullPolicy: IfNotPresent # Or Always, depending on your needs
+      image: "apache/airflow:2.7.1-python3.9" # <-- Your worker image from values.yaml
+      imagePullPolicy: IfNotPresent
+
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # !!! IMPORTANT: REMOVE or COMMENT OUT any 'command' or 'args' lines here !!!
+      # !!! The Kubernetes Executor dynamically injects these for each task.    !!!
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # Example of what to REMOVE if present:
+      # command: ["airflow", "tasks", "run"]
+      # args: []
+
       env:
-        # Essential environment variables for the worker container
         - name: AIRFLOW_IS_K8S_EXECUTOR_POD
           value: "True"
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: "/opt/airflow/dags/repo/dags"
+        # Mirroring your scheduler's direct values for simplicity,
+        # but consider using Kubernetes Secrets for sensitive data.
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
         - name: AIRFLOW__CORE__FERNET_KEY
@@ -25,7 +37,6 @@ spec:
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
           value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
       volumeMounts:
-        # Mount the volume for DAGs so workers can find them
         - name: dags-volume
           mountPath: /opt/airflow/dags
           readOnly: true # Workers typically only need to read DAGs
