@@ -4,7 +4,7 @@ metadata:
   name: airflow-triggerer
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.triggerer.replicas }}
   selector:
     matchLabels:
       app: airflow-triggerer
