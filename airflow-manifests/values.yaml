@@ -11,6 +11,23 @@ airflow:
   initDbJob: # Set to false after inital setup
     enabled: false
 
+  # Git Sync configuration for DAGs
+  gitsync:
+    image:
+      repository: k8s.gcr.io/git-sync/git-sync
+      tag: v3.1.0 # It's good practice to pin to a specific version
+    repo: "https://github.com/your-username/your-airflow-dags-repo.git" # <<< IMPORTANT: REPLACE WITH YOUR GIT REPO URL
+    branch: "main" # <<< IMPORTANT: REPLACE WITH YOUR GIT BRANCH (e.g., main, master, dev)
+    # Configure secrets if your repository is private
+    # For username/password authentication:
+    #secret:
+    #  enabled: false # Set to true if using username/password for a private repo
+    #  name: airflow-git-secret # Name of the Kubernetes Secret for username/password
+    # For SSH key authentication:
+    #ssh:
+    #  enabled: false # Set to true if using SSH for a private repo
+    #  secretName: airflow-git-ssh-key # Name of the Kubernetes Secret for the SSH key
+
 database:
   postgres:
     user: airflow
