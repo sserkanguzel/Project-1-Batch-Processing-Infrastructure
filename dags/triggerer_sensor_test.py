@@ -10,5 +10,5 @@ with DAG(
 ) as dag:
     wait_until = TimeSensor(
         task_id='wait_until_5pm',
-        target_time=time(17, 2),
+        target_time=time(17, 5),
     )
