@@ -49,12 +49,10 @@ spec:
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
-        # --- ADD THIS LINE ---
         - name: AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_IMAGE
-          value: "{{ .Values.airflow.kubernetesExecutor.workerContainerImage }}" # This is the missing piece!
-        # --- END ADDITION ---
+          value: {{ .Values.airflow.kubernetesExecutor.workerContainerImage }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__IMAGE
-        value: "{{ .Values.airflow.kubernetesExecutor.workerContainerImage }}"
+        value: {{ .Values.airflow.kubernetesExecutor.workerContainerImage }}
         - name: AIRFLOW__CORE__FERNET_KEY
           value: {{ .Values.airflow.fernetKey }}
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
