@@ -16,7 +16,7 @@ airflow:
     image:
       repository: k8s.gcr.io/git-sync/git-sync
       tag: v3.1.0 # It's good practice to pin to a specific version
-    repo: "https://github.com/your-username/your-airflow-dags-repo.git" # <<< IMPORTANT: REPLACE WITH YOUR GIT REPO URL
+    repo: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git" # <<< IMPORTANT: REPLACE WITH YOUR GIT REPO URL
     branch: "main" # <<< IMPORTANT: REPLACE WITH YOUR GIT BRANCH (e.g., main, master, dev)
     # Configure secrets if your repository is private
     # For username/password authentication:
