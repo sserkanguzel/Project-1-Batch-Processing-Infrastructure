@@ -1,0 +1,42 @@
+# kubernetes/airflow/config/airflow-pod-template-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-pod-template # This name must match the volume reference in scheduler.yaml
+  namespace: {{ .Values.namespace }} # Ensure this matches your Airflow namespace
+data:
+  # The key 'pod_template.yaml' must match the 'path' in the volumeMounts in scheduler.yaml
+  # The value is the *entire content* of the pod_template.yaml file, properly indented.
+  pod_template.yaml: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: airflow-worker-pod-template
+      labels:
+        environment: production
+        app: airflow-worker
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: base
+          image: "apache/airflow:2.7.1-python3.9"
+          imagePullPolicy: IfNotPresent
+          command: ["airflow", "tasks", "run"]
+          env:
+            - name: AIRFLOW_IS_K8S_EXECUTOR_POD
+              value: "True"
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: "/opt/airflow/dags/repo/dags"
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
+            - name: AIRFLOW__CORE__FERNET_KEY
+              value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+            - name: AIRFLOW__WEBSERVER__SECRET_KEY
+              value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
+          volumeMounts:
+            - name: dags-volume
+              mountPath: /opt/airflow/dags
+              readOnly: true
+    volumes:
+      - name: dags-volume
+        emptyDir: {}

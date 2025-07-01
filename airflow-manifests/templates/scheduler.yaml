@@ -49,8 +49,10 @@ spec:
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
-        - name: AIRFLOW__KUBERNETES_EXECUTOR__IMAGE
-          value: {{ .Values.airflow.kubernetesExecutor.workerContainerImage }}
+        # --- ADD THIS NEW ENVIRONMENT VARIABLE ---
+        - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
+          value: "/opt/airflow/pod_templates/pod_template.yaml" # This path inside the container
+        # --- END NEW ENVIRONMENT VARIABLE ---
         - name: AIRFLOW__CORE__FERNET_KEY
           value: {{ .Values.airflow.fernetKey }}
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
@@ -62,7 +64,19 @@ spec:
         volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags
+        # --- ADD THIS NEW VOLUME MOUNT ---
+        - name: pod-template-volume # This name must match the volume definition below
+          mountPath: /opt/airflow/pod_templates # The directory where the template file will appear
+        # --- END NEW VOLUME MOUNT ---
 
       volumes:
       - name: dags-volume
         emptyDir: {}
+      # --- ADD THIS NEW VOLUME DEFINITION ---
+      - name: pod-template-volume
+        configMap:
+          name: airflow-pod-template # This name must match the ConfigMap created above
+          items:
+            - key: pod_template.yaml # The key in the ConfigMap's 'data' section
+              path: pod_template.yaml # The filename it will appear as in the mountPath
+      # --- END NEW VOLUME DEFINITION ---
