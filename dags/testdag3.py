@@ -6,7 +6,7 @@ def hello_world():
     print("Hello World")
 
 with DAG(
-    dag_id="simple_hello_world",
+    dag_id="simple_hello_world3",
     start_date=datetime(2025, 1, 1),
     schedule_interval=None,
     catchup=False,
