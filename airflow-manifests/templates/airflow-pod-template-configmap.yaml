@@ -2,11 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-pod-template # This name must match the volume reference in scheduler.yaml
-  namespace: {{ .Values.namespace }} # Ensure this matches your Airflow namespace
+  name: airflow-pod-template
+  namespace: {{ .Values.namespace }}
 data:
-  # The key 'pod_template.yaml' must match the 'path' in the volumeMounts in scheduler.yaml
-  # The value is the *entire content* of the pod_template.yaml file, properly indented.
   pod_template.yaml: |
     apiVersion: v1
     kind: Pod
