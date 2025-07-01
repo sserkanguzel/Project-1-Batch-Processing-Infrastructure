@@ -26,6 +26,8 @@ spec:
           value: "/git"
         - name: GIT_SYNC_DEST
           value: "repo"
+        - name: GIT_SYNC_SUBPATH
+          value: "dags"
         - name: GIT_SYNC_ONE_TIME
           value: "false"   # Continuous sync enabled
         volumeMounts:
@@ -52,7 +54,7 @@ spec:
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
           value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: /opt/airflow/dags/repo/dags
+          value: /opt/airflow/dags
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
         volumeMounts:
