@@ -42,9 +42,9 @@ airflow:
       existingClaim: airflow-logs-pvc
       mountPath: /opt/airflow/logs
 
-  triggerer:
-    enabled: true
-    replicas: 1
+triggerer:
+  enabled: true
+  replicas: 1
 
 database:
   postgres:
