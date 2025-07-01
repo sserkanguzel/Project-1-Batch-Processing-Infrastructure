@@ -20,8 +20,7 @@ data:
       initContainers:
         - name: git-sync
           image: "k8s.gcr.io/git-sync/git-sync:v3.6.9"
-          command: []
-          args: []
+          command: ["/entrypoint.sh"]
           env:
             - name: GIT_SYNC_REPO
               value: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
