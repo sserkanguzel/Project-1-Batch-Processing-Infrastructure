@@ -28,14 +28,20 @@ with DAG(
         python_callable=generate_message,
         provide_context=True,
     )
-
+    
     process_in_pod = KubernetesPodOperator(
         task_id='process_message_in_pod',
         name='process-message',
         namespace='airflow',
         image='python:3.9-slim',
         cmds=["python", "-c"],
-        arguments=["import os; msg = os.getenv('MESSAGE'); print(f'Processed: {msg}')"],
+        arguments=[
+            "import os, json; "
+            "msg = os.getenv('MESSAGE', ''); "
+            "processed = f'Processed: {msg}'; "
+            "print(processed); "
+            "json.dump({'return': processed}, open('/airflow/xcom/return.json', 'w'))"
+        ],
         env_vars={
             'MESSAGE': '{{ ti.xcom_pull(task_ids="generate_message", key="msg") }}'
         },
