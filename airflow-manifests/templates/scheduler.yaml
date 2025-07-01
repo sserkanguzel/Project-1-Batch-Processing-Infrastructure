@@ -51,8 +51,6 @@ spec:
           value: {{ .Values.namespace }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_IMAGE
           value: {{ .Values.airflow.kubernetesExecutor.workerContainerImage }}
-        - name: AIRFLOW__KUBERNETES_EXECUTOR__IMAGE
-        value: {{ .Values.airflow.kubernetesExecutor.workerContainerImage }}
         - name: AIRFLOW__CORE__FERNET_KEY
           value: {{ .Values.airflow.fernetKey }}
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
