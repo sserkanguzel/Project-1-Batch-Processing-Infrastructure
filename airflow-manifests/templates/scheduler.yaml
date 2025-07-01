@@ -27,7 +27,7 @@ spec:
         - name: GIT_SYNC_DEST
           value: "repo" 
         - name: GIT_SYNC_ONE_TIME
-          value: "true" # Set to "false" for continuous sync by default with Argo CD. If you only want a one-time clone on pod start, set to "true".
+          value: "false" # Set to "false" for continuous sync by default with Argo CD. If you only want a one-time clone on pod start, set to "true".
         volumeMounts:
         - name: dags-volume
           mountPath: /git
