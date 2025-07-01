@@ -21,10 +21,16 @@ spec:
           value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
           value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: "/opt/airflow/logs"
+        - name: AIRFLOW__LOGGING__REMOTE_LOGGING
+          value: "False"
       volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags
           readOnly: true
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
 
     - name: git-sync
       image: k8s.gcr.io/git-sync/git-sync:v3.6.9
@@ -49,3 +55,6 @@ spec:
   volumes:
     - name: dags-volume
       emptyDir: {}
+    - name: logs-volume
+      persistentVolumeClaim:
+        claimName: airflow-logs-pvc

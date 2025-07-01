@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-scheduler
+  name: airflow-webserver
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: airflow-scheduler
+      app: airflow-webserver
   template:
     metadata:
       labels:
-        app: airflow-scheduler
+        app: airflow-webserver
     spec:
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}
       containers:
@@ -29,12 +29,12 @@ spec:
         - name: GIT_SYNC_SUBPATH
           value: "dags"
         - name: GIT_SYNC_ONE_TIME
-          value: "false"   # Continuous sync enabled
+          value: "false"
         volumeMounts:
         - name: dags-volume
           mountPath: /git
 
-      - name: scheduler
+      - name: webserver
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
         command: ["/bin/bash", "-c"]
         args:
@@ -43,16 +43,12 @@ spec:
                 echo "Waiting for Postgres to be ready...";
                 sleep 5;
             done;
-            exec airflow scheduler
+            exec airflow webserver
         env:
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
-        # --- ADD THIS NEW ENVIRONMENT VARIABLE ---
-        - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
-          value: "/opt/airflow/pod_templates/pod_template.yaml" # This path inside the container
-        # --- END NEW ENVIRONMENT VARIABLE ---
         - name: AIRFLOW__CORE__FERNET_KEY
           value: {{ .Values.airflow.fernetKey }}
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
@@ -61,22 +57,25 @@ spec:
           value: /opt/airflow/dags/repo/dags
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: /opt/airflow/logs
         volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags
-        # --- ADD THIS NEW VOLUME MOUNT ---
-        - name: pod-template-volume # This name must match the volume definition below
-          mountPath: /opt/airflow/pod_templates # The directory where the template file will appear
-        # --- END NEW VOLUME MOUNT ---
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
+        - name: pod-template-volume
+          mountPath: /opt/airflow/pod_templates
 
       volumes:
       - name: dags-volume
         emptyDir: {}
-      # --- ADD THIS NEW VOLUME DEFINITION ---
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
       - name: pod-template-volume
         configMap:
-          name: airflow-pod-template # This name must match the ConfigMap created above
+          name: airflow-pod-template
           items:
-            - key: pod_template.yaml # The key in the ConfigMap's 'data' section
-              path: pod_template.yaml # The filename it will appear as in the mountPath
-      # --- END NEW VOLUME DEFINITION ---
+            - key: pod_template.yaml
+              path: pod_template.yaml

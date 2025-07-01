@@ -4,35 +4,43 @@ airflow:
   image:
     repository: apache/airflow
     tag: 2.7.1-python3.9
+
   executor: KubernetesExecutor
+
   kubernetesExecutor:
     workerContainerImage: "apache/airflow:2.7.1-python3.9"
     podTemplate:
       configMapName: airflow-pod-template
       name: pod_template.yaml
-  fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="     # generate with python cryptography (see below)
-  secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"     # random string for webserver session
+
+  fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="     # generate with python cryptography
+  secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"      # random string for webserver session
+
   serviceAccountName: airflow
-  initDbJob: # Set to false after inital setup
+
+  initDbJob:
     enabled: false
 
   # Git Sync configuration for DAGs
   gitsync:
     image:
       repository: k8s.gcr.io/git-sync/git-sync
-      tag: v3.6.9 # It's good practice to pin to a specific version
-    repo: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git" # <<< IMPORTANT: REPLACE WITH YOUR GIT REPO URL
-    branch: "main" # <<< IMPORTANT: REPLACE WITH YOUR GIT BRANCH (e.g., main, master, dev)
+      tag: v3.6.9
+    repo: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
+    branch: "main"
     subPath: dags
-    # Configure secrets if your repository is private
-    # For username/password authentication:
-    #secret:
-    #  enabled: false # Set to true if using username/password for a private repo
-    #  name: airflow-git-secret # Name of the Kubernetes Secret for username/password
-    # For SSH key authentication:
-    #ssh:
-    #  enabled: false # Set to true if using SSH for a private repo
-    #  secretName: airflow-git-ssh-key # Name of the Kubernetes Secret for the SSH key
+
+  # Logging configuration
+  config:
+    logging:
+      base_log_folder: /opt/airflow/logs
+      remote_logging: "False"
+
+  logs:
+    persistence:
+      enabled: true
+      existingClaim: airflow-logs-pvc
+      mountPath: /opt/airflow/logs
 
 database:
   postgres:

@@ -29,7 +29,7 @@ spec:
         - name: GIT_SYNC_SUBPATH
           value: "dags"
         - name: GIT_SYNC_ONE_TIME
-          value: "false"   # continuous sync
+          value: "false"
         volumeMounts:
         - name: dags-volume
           mountPath: /git
@@ -67,15 +67,31 @@ spec:
           value: /opt/airflow/dags/repo/dags
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: /opt/airflow/logs
         volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags
-          
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
+        - name: pod-template-volume
+          mountPath: /opt/airflow/pod_templates
+
       volumes:
       - name: dags-volume
         emptyDir: {}
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
+      - name: pod-template-volume
+        configMap:
+          name: airflow-pod-template
+          items:
+            - key: pod_template.yaml
+              path: pod_template.yaml
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
