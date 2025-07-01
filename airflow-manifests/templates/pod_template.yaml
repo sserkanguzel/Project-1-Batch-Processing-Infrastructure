@@ -1,114 +1,76 @@
 # kubernetes/airflow/config/pod_template.yaml
-# This is the resolved template for KubernetesExecutor worker pods.
-# It explicitly sets the command for the 'base' container and includes git-sync.
+# This is the FULLY RESOLVED, STATIC YAML content for the Airflow worker pod template.
+# It contains NO Helm templating ({{...}}) and is ready to be embedded in a ConfigMap.
 apiVersion: v1
 kind: Pod
 metadata:
-  name: airflow-worker-pod-template # Keep this from the Helm template
-  # If you had specific podAnnotations or podLabels in your values.airflow.kubernetesPodTemplate,
-  # you'd resolve them here, e.g.:
-  # annotations:
-  #   some-annotation: "value"
-  # labels:
-  #   some-label: "value"
+  name: dummy-name # This name is a placeholder for the template
 spec:
   restartPolicy: Never
-  # If your Airflow image requires pull secrets, specify them here manually.
+  # If your images require pull secrets, uncomment and specify them manually here
   # imagePullSecrets:
   #   - name: your-image-pull-secret
-  serviceAccountName: airflow # Resolved from {{ include "airflow.serviceAccountName" . }}
-  shareProcessNamespace: false # Resolved from {{ .Values.airflow.kubernetesPodTemplate.shareProcessNamespace }}
+  serviceAccountName: airflow # Resolved from your values
+  shareProcessNamespace: false # Resolved from your values
 
-  # Node selectors, affinity, tolerations, security context from your Helm values:
-  # {{- if $podNodeSelector }}
-  # nodeSelector: {} # Resolve from your .Values.airflow.kubernetesPodTemplate.nodeSelector
-  # {{- end }}
-  # {{- if $podTopologySpreadConstraints }}
-  # topologySpreadConstraints: [] # Resolve from your .Values.airflow.kubernetesPodTemplate.topologySpreadConstraints
-  # {{- end }}
-  # {{- if $podAffinity }}
-  # affinity: {} # Resolve from your .Values.airflow.kubernetesPodTemplate.affinity
-  # {{- end }}
-  # {{- if $podTolerations }}
-  # tolerations: [] # Resolve from your .Values.airflow.kubernetesPodTemplate.tolerations
-  # {{- end }}
-  # {{- if $podSecurityContext }}
-  # securityContext: {} # Resolve from your .Values.airflow.kubernetesPodTemplate.securityContext
-  # {{- end }}
+  # No nodeSelector, topologySpreadConstraints, affinity, tolerations, securityContext
+  # blocks included here, as they resolved to empty based on typical default values.
 
   initContainers:
-    # Git Sync container to pull DAGs into the worker pod
-    # Resolved from {{- include "airflow.container.git_sync" ... }}
+    # Git Sync container for fetching DAGs into each worker pod
     - name: git-sync
-      image: "k8s.gcr.io/git-sync/git-sync:v3.6.9" # Resolved from your git-sync image values
+      image: "k8s.gcr.io/git-sync/git-sync:v3.6.9" # Resolved git-sync image
       env:
         - name: GIT_SYNC_REPO
-          value: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
+          value: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git" # Resolved repo URL
         - name: GIT_SYNC_BRANCH
-          value: "main"
+          value: "main" # Resolved branch
         - name: GIT_SYNC_ROOT
           value: "/git"
         - name: GIT_SYNC_DEST
-          value: "repo"
+          value: "repo" # DAGs will be in /git/repo/dags
         - name: GIT_SYNC_SUBPATH
           value: "dags"
         - name: GIT_SYNC_ONE_TIME
-          value: "true" # IMPORTANT: For worker pods, sync once and exit.
+          value: "true" # For worker pods, sync once and exit
       volumeMounts:
         - name: dags-volume
-          mountPath: /git # git-sync mounts to /git, and then DAGs are in /git/repo/dags
+          mountPath: /git # git-sync mounts to /git
 
-    # If you had extraPipPackages, you'd add the install_pip_packages initContainer here:
-    # {{- if $extraPipPackages }}
-    # {{- include "airflow.init_container.install_pip_packages" (dict "Release" .Release "Values" .Values "extraPipPackages" $extraPipPackages) | indent 4 }}
-    # {{- end }}
-
-    # If you had extraInitContainers, you'd add them here:
-    # {{- if .Values.airflow.kubernetesPodTemplate.extraInitContainers }}
-    # {{- toYaml .Values.airflow.kubernetesPodTemplate.extraInitContainers | nindent 4 }}
-    # {{- end }}
+    # No initContainer for extraPipPackages as no value was provided for it.
+    # No extraInitContainers as no value was provided for them.
 
   containers:
-    - name: base
-      image: "apache/airflow:2.7.1-python3.9" # Resolved from {{ include "airflow.image" . }}
-      imagePullPolicy: IfNotPresent # Common default; adjust if needed
+    - name: base # Crucial name for Kubernetes Executor
+      image: "apache/airflow:2.7.1-python3.9" # Resolved Airflow worker image
+      imagePullPolicy: IfNotPresent
 
       # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      # !!! CRITICAL FIX: Explicitly set command to the entrypoint.           !!!
-      # !!! DO NOT include an 'args:' line. The Kubernetes Executor will      !!!
-      # !!! append its task-specific arguments directly to this command.      !!!
+      # !!! CRITICAL FIX: Explicitly set command. Do NOT include 'args:'      !!!
+      # !!! The Kubernetes Executor will APPEND its task-specific arguments   !!!
+      # !!! directly to this command, which is the standard Docker ENTRYPOINT.!!!
       # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       command: ["/entrypoint.sh"]
-      # args: []  <-- REMOVE THIS LINE IF IT WAS THERE!
-
-      envFrom:
-        # If your 'airflow.envFrom' included Secret or ConfigMap references,
-        # you need to manually resolve them or include the direct references.
-        # Example if using a secret:
-        # - secretRef:
-        #     name: airflow-secrets-common
+      # No 'args:' line here!
 
       env:
-        ## KubernetesExecutor Pods use LocalExecutor internally
+        # Essential Airflow environment variables for worker operation
         - name: AIRFLOW__CORE__EXECUTOR
-          value: LocalExecutor
-        # DAGs_FOLDER points to where DAGs are found AFTER git-sync.
-        # git-sync puts them in /git/repo/dags, which is then mounted to /opt/airflow/dags.
+          value: LocalExecutor # KubernetesExecutor pods use LocalExecutor internally
         - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: "/opt/airflow/dags/repo/dags" # Matches how git-sync works.
-        # Resolved from your postgres and secret keys
+          value: "/opt/airflow/dags/repo/dags" # Path where DAGs are expected inside the worker pod
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-          value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
+          value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db" # Resolved DB Conn
         - name: AIRFLOW__CORE__FERNET_KEY
-          value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+          value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g=" # Resolved Fernet Key
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
-          value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
-        - name: CONNECTION_CHECK_MAX_COUNT # Resolved from {{ include "airflow.env" ... }}
-          value: "20"
-      ports: [] # Keep as is from template
+          value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0" # Resolved Secret Key
+        - name: CONNECTION_CHECK_MAX_COUNT
+          value: "20" # Resolved from your template's env include
 
-      # Resources resolved from .Values.airflow.kubernetesPodTemplate.resources
-      resources:
+      ports: [] # As in your template
+
+      resources: # Resolved resources for worker pods
         requests:
           cpu: "250m"
           memory: "512Mi"
@@ -117,21 +79,14 @@ spec:
           memory: "2Gi"
 
       volumeMounts:
-        # Resolved from {{- if $volumeMounts }}
-        # The primary volume mount for DAGs (shared with git-sync)
+        # Mount the DAGs volume for the base container
         - name: dags-volume
-          mountPath: /opt/airflow/dags # Scheduler's /opt/airflow/dags is where workers look
+          mountPath: /opt/airflow/dags # Worker reads DAGs from here
           readOnly: true
-        # {{- $volumeMounts | indent 8 }} # If you had extra volume mounts, resolve them here.
 
-    # If you had extraContainers, you'd add them here:
-    # {{- if .Values.airflow.kubernetesPodTemplate.extraContainers }}
-    # {{- toYaml .Values.airflow.kubernetesPodTemplate.extraContainers | nindent 4 }}
-    # {{- end }}
+    # No extraContainers as no value was provided for them.
 
   volumes:
-    # Resolved from {{- if $volumes }}
-    # The volume where git-sync will put DAGs and where the base container will read them from.
+    # Volume definition for DAGs
     - name: dags-volume
-      emptyDir: {} # Assuming EmptyDir as per previous discussions
-    # {{- $volumes | indent 4 }} # If you had extra volumes, resolve them here.
+      emptyDir: {} # Assumed EmptyDir for DAGs
