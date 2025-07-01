@@ -21,7 +21,6 @@ data:
         - name: base
           image: "apache/airflow:2.7.1-python3.9"
           imagePullPolicy: IfNotPresent
-          command: ["airflow", "tasks", "run"]
           env:
             - name: AIRFLOW_IS_K8S_EXECUTOR_POD
               value: "True"
