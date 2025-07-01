@@ -8,7 +8,6 @@ airflow:
   executor: KubernetesExecutor
 
   kubernetesExecutor:
-    workerContainerImage: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-01"
     podTemplate:
       configMapName: airflow-pod-template
       name: pod_template.yaml
