@@ -49,7 +49,7 @@ spec:
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
-        - name: AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_IMAGE
+        - name: AIRFLOW__KUBERNETES_EXECUTOR__IMAGE
           value: {{ .Values.airflow.kubernetesExecutor.workerContainerImage }}
         - name: AIRFLOW__CORE__FERNET_KEY
           value: {{ .Values.airflow.fernetKey }}
