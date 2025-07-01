@@ -1,17 +1,18 @@
 # kubernetes/airflow/config/airflow-pod-template-configmap.yaml
+# This ConfigMap will hold the static pod_template.yaml for Airflow's Kubernetes Executor.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-pod-template # This must match the ConfigMap name in scheduler.yaml
-  namespace: airflow # Resolved from {{ .Values.namespace }}
+  name: airflow-pod-template # This name must match the ConfigMap name referenced in scheduler.yaml
+  namespace: airflow # Resolved namespace
 data:
-  # The key 'pod_template.yaml' must match the 'path' in the volumeMounts in scheduler.yaml
-  # The value is the *entire content* of the pod_template.yaml file, properly indented.
+  # The key must be 'pod_template.yaml' to match the path in scheduler.yaml
   pod_template.yaml: |
+    # All content below this line is the static YAML from the pod_template.yaml file above.
     apiVersion: v1
     kind: Pod
     metadata:
-      name: airflow-worker-pod-template
+      name: dummy-name
     spec:
       restartPolicy: Never
       serviceAccountName: airflow
@@ -39,14 +40,14 @@ data:
         - name: base
           image: "apache/airflow:2.7.1-python3.9"
           imagePullPolicy: IfNotPresent
-          command: ["/entrypoint.sh"] # CRITICAL FIX
+          command: ["/entrypoint.sh"]
           env:
             - name: AIRFLOW__CORE__EXECUTOR
               value: LocalExecutor
             - name: AIRFLOW__CORE__DAGS_FOLDER
               value: "/opt/airflow/dags/repo/dags"
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
+              value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db"
             - name: AIRFLOW__CORE__FERNET_KEY
               value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
             - name: AIRFLOW__WEBSERVER__SECRET_KEY
