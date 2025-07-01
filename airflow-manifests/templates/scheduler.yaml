@@ -28,24 +28,6 @@ spec:
           value: "dags" # This should match the path inside your repository where DAGs are.
         - name: GIT_SYNC_ONE_TIME
           value: "false" # Set to "false" for continuous sync by default with Argo CD. If you only want a one-time clone on pod start, set to "true".
-        # If your repo is private via username/password, uncomment and configure these:
-        #- name: GIT_SYNC_USERNAME
-        #  valueFrom:
-        #    secretKeyRef:
-        #      name: {{ .Values.airflow.gitsync.secret.name }}
-        #      key: username
-        #- name: GIT_SYNC_PASSWORD
-        #  valueFrom:
-        #    secretKeyRef:
-        #      name: {{ .Values.airflow.gitsync.secret.name }}
-        #      key: password
-        # If your repo is private via SSH, uncomment and configure these:
-        #- name: GIT_SYNC_SSH
-        #  value: "true"
-        #volumeMounts:
-        #- name: git-sync-ssh-key
-        #  mountPath: /etc/git-sync-ssh
-        #  readOnly: true
         volumeMounts:
         - name: dags-volume
           mountPath: /tmp/git/dags
@@ -77,8 +59,3 @@ spec:
       volumes:
       - name: dags-volume
         emptyDir: {}
-      # If your repo is private via SSH, uncomment and configure this:
-      #- name: git-sync-ssh-key
-      #  secret:
-      #    secretName: {{ .Values.airflow.gitsync.ssh.secretName }} # Name of your Kubernetes Secret containing the SSH key
-      #    defaultMode: 0400 # Permissions for the key
