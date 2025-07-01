@@ -4,5 +4,5 @@ metadata:
   name: airflow-pod-template
   namespace: {{ .Values.namespace }}
 data:
-  pod_template.yaml:
-    {{- (.Files.Get "config/pod_template.yaml") | indent 4 }}
+  pod_template.yaml: |
+{{ .Files.Get "config/pod_template.yaml" | indent 4 }}
