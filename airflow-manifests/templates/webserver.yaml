@@ -66,7 +66,7 @@ spec:
         volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags # This is where Airflow expects to find DAGs
-          subpath: repo/dags
+          subPath: repo/dags
       volumes:
       - name: dags-volume
         emptyDir: {}
