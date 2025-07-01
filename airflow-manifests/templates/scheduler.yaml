@@ -30,7 +30,7 @@ spec:
           value: "true" # Set to "false" for continuous sync by default with Argo CD. If you only want a one-time clone on pod start, set to "true".
         volumeMounts:
         - name: dags-volume
-          mountPath: git
+          mountPath: /git
       containers:
       - name: scheduler # Corrected container name
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
@@ -56,7 +56,7 @@ spec:
         volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags # This is where Airflow expects to find DAGs
-          subpath: repo/dags
+          subPath: repo/dags
       volumes:
       - name: dags-volume
         emptyDir: {}
