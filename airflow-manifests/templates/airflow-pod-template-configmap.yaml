@@ -1,26 +1,43 @@
-# kubernetes/airflow/config/airflow-pod-template-configmap.yaml
-# This ConfigMap will hold the static pod_template.yaml for Airflow's Kubernetes Executor.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-pod-template # This name must match the ConfigMap name referenced in scheduler.yaml
-  namespace: airflow # Resolved namespace
+  name: airflow-pod-template
+  namespace: {{ .Values.namespace }}
 data:
-  # The key must be 'pod_template.yaml' to match the path in scheduler.yaml
   pod_template.yaml: |
-    # All content below this line is the static YAML from the pod_template.yaml file above.
     apiVersion: v1
     kind: Pod
     metadata:
-      name: dummy-name
+      name: airflow-worker-pod-template
+      labels:
+        environment: production
+        app: airflow-worker
     spec:
       restartPolicy: Never
-      serviceAccountName: airflow
-      shareProcessNamespace: false
-      initContainers:
+      containers:
+        - name: base
+          image: "apache/airflow:2.7.1-python3.9"
+          imagePullPolicy: IfNotPresent
+          command: ["airflow", "tasks", "run"]
+          env:
+            - name: AIRFLOW_IS_K8S_EXECUTOR_POD
+              value: "True"
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: "/opt/airflow/dags/repo/dags"
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
+            - name: AIRFLOW__CORE__FERNET_KEY
+              value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+            - name: AIRFLOW__WEBSERVER__SECRET_KEY
+              value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
+          volumeMounts:
+            - name: dags-volume
+              mountPath: /opt/airflow/dags
+              readOnly: true
+
         - name: git-sync
-          image: "k8s.gcr.io/git-sync/git-sync:v3.6.9"
-          command: ["/entrypoint.sh"]
+          image: k8s.gcr.io/git-sync/git-sync:v3.6.9
+          imagePullPolicy: IfNotPresent
           env:
             - name: GIT_SYNC_REPO
               value: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
@@ -30,43 +47,14 @@ data:
               value: "/git"
             - name: GIT_SYNC_DEST
               value: "repo"
-            - name: GIT_SYNC_SUBPATH
-              value: "dags"
+            - name: GIT_SYNC_WAIT
+              value: "60"
             - name: GIT_SYNC_ONE_TIME
               value: "true"
           volumeMounts:
             - name: dags-volume
               mountPath: /git
-      containers:
-        - name: base
-          image: "apache/airflow:2.7.1-python3.9"
-          imagePullPolicy: IfNotPresent
-          command: ["/entrypoint.sh"]
-          env:
-            - name: AIRFLOW__CORE__EXECUTOR
-              value: LocalExecutor
-            - name: AIRFLOW__CORE__DAGS_FOLDER
-              value: "/opt/airflow/dags/repo/dags"
-            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db"
-            - name: AIRFLOW__CORE__FERNET_KEY
-              value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
-            - name: AIRFLOW__WEBSERVER__SECRET_KEY
-              value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
-            - name: CONNECTION_CHECK_MAX_COUNT
-              value: "20"
-          ports: []
-          resources:
-            requests:
-              cpu: "250m"
-              memory: "512Mi"
-            limits:
-              cpu: "1000m"
-              memory: "2Gi"
-          volumeMounts:
-            - name: dags-volume
-              mountPath: /opt/airflow/dags
-              readOnly: true
+
       volumes:
         - name: dags-volume
           emptyDir: {}
