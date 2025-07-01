@@ -15,7 +15,7 @@ airflow:
   gitsync:
     image:
       repository: k8s.gcr.io/git-sync/git-sync
-      tag: v3.1.0 # It's good practice to pin to a specific version
+      tag: v3.6.9 # It's good practice to pin to a specific version
     repo: "https://github.com/your-username/your-airflow-dags-repo.git" # <<< IMPORTANT: REPLACE WITH YOUR GIT REPO URL
     branch: "main" # <<< IMPORTANT: REPLACE WITH YOUR GIT BRANCH (e.g., main, master, dev)
     subPath: dags
