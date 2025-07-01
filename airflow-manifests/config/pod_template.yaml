@@ -9,7 +9,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: base
-      image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+      image: {{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}
       imagePullPolicy: IfNotPresent
       env:
         - name: AIRFLOW_IS_K8S_EXECUTOR_POD
