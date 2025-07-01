@@ -5,24 +5,24 @@ airflow:
     repository: apache/airflow
     tag: 2.7.1-python3.9
   executor: KubernetesExecutor
-  fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="     # generate with python cryptography (see below)
-  secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"     # random string for webserver session
+  fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+  secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
   serviceAccountName: airflow
-  initDbJob: # Set to false after inital setup
+  initDbJob:
     enabled: false
 
-  # Git Sync configuration for DAGs
-gitSync:
-  enabled: true
-  repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
-  branch: main
-  rev: HEAD
-  depth: 1
-  wait: 60
-  subPath: dags  # <- Your DAGs live inside this folder in the repo
-  image:
-    repository: registry.k8s.io/git-sync/git-sync
-    tag: v3.6.9
+dags:
+  gitSync:
+    enabled: true
+    repo: https://github.com/sserkanguzel/Project-1-Batch-Processing.git
+    branch: main
+    rev: HEAD
+    depth: 1
+    wait: 60
+    subPath: dags
+    image:
+      repository: registry.k8s.io/git-sync/git-sync
+      tag: v3.6.9
 
 database:
   postgres:
