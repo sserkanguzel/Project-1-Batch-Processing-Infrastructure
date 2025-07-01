@@ -2,13 +2,13 @@ namespace: airflow
 
 airflow:
   image:
-    repository: apache/airflow
-    tag: 2.7.1-python3.9
+    repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow
+    tag: 2025-07-01  # <-- Update this tag whenever a new image is pushed
 
   executor: KubernetesExecutor
 
   kubernetesExecutor:
-    workerContainerImage: "apache/airflow:2.7.1-python3.9"
+    workerContainerImage: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-01"
     podTemplate:
       configMapName: airflow-pod-template
       name: pod_template.yaml
@@ -21,16 +21,6 @@ airflow:
   initDbJob:
     enabled: false
 
-  # Git Sync configuration for DAGs
-  gitsync:
-    image:
-      repository: k8s.gcr.io/git-sync/git-sync
-      tag: v3.6.9
-    repo: "https://github.com/sserkanguzel/Project-1-Batch-Processing-Infrastructure.git"
-    branch: "main"
-    subPath: dags
-
-  # Logging configuration
   config:
     logging:
       base_log_folder: /opt/airflow/logs

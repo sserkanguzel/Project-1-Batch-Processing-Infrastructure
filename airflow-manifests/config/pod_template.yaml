@@ -15,7 +15,7 @@ spec:
         - name: AIRFLOW_IS_K8S_EXECUTOR_POD
           value: "True"
         - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: "/opt/airflow/dags/repo/dags"
+          value: "/opt/airflow/dags"
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
         - name: AIRFLOW__CORE__FERNET_KEY
@@ -27,35 +27,10 @@ spec:
         - name: AIRFLOW__LOGGING__REMOTE_LOGGING
           value: "False"
       volumeMounts:
-        - name: dags-volume
-          mountPath: /opt/airflow/dags
-          readOnly: true
         - name: logs-volume
           mountPath: /opt/airflow/logs
 
-    - name: git-sync
-      image: k8s.gcr.io/git-sync/git-sync:v3.6.9
-      imagePullPolicy: IfNotPresent
-      env:
-        - name: GIT_SYNC_REPO
-          value: "https://github.com/sserkanguzel/Project-1-Batch-Processing-Infrastructure.git"
-        - name: GIT_SYNC_BRANCH
-          value: "main"
-        - name: GIT_SYNC_ROOT
-          value: "/git"
-        - name: GIT_SYNC_DEST
-          value: "repo"
-        - name: GIT_SYNC_WAIT
-          value: "60"
-        - name: GIT_SYNC_ONE_TIME
-          value: "true"
-      volumeMounts:
-        - name: dags-volume
-          mountPath: /git
-
   volumes:
-    - name: dags-volume
-      emptyDir: {}
     - name: logs-volume
       persistentVolumeClaim:
         claimName: airflow-logs-pvc
