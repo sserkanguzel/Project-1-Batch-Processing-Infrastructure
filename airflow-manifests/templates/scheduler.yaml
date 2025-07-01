@@ -46,23 +46,32 @@ spec:
             exec airflow scheduler
         env:
         - name: AIRFLOW__CORE__EXECUTOR
-          value: {{ .Values.airflow.executor }}
+          value: "{{ .Values.airflow.executor }}"
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
-          value: {{ .Values.namespace }}
+          value: "{{ .Values.namespace }}"
         - name: AIRFLOW__CORE__FERNET_KEY
-          value: {{ .Values.airflow.fernetKey }}
+          value: "{{ .Values.airflow.fernetKey }}"
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
-          value: {{ .Values.airflow.secretKey }}
+          value: "{{ .Values.airflow.secretKey }}"
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: /opt/airflow/dags/repo/dags
         - name: AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_IMAGE
           value: "{{ .Values.airflow.kubernetesExecutor.workerContainerImage }}"
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+        - name: AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE
+          value: /opt/airflow/pod_template.yaml
+
         volumeMounts:
         - name: dags-volume
           mountPath: /opt/airflow/dags
+        - name: pod-template-volume
+          mountPath: /opt/airflow/pod_template.yaml
+          subPath: worker-pod-template.yaml
 
       volumes:
       - name: dags-volume
         emptyDir: {}
+      - name: pod-template-volume
+        configMap:
+          name: airflow-worker-pod-template

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    airflow-worker: "true"
+spec:
+  restartPolicy: Never
+  containers:
+    - name: base
+      image: apache/airflow:2.7.1-python3.9
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: AIRFLOW__CORE__FERNET_KEY
+          value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+        - name: AIRFLOW__WEBSERVER__SECRET_KEY
+          value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
+        - name: AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_IMAGE
+          value: "apache/airflow:2.7.1-python3.9"
+      volumeMounts:
+        - name: dags
+          mountPath: /opt/airflow/dags
+    - name: git-sync
+      image: k8s.gcr.io/git-sync/git-sync:v3.6.9
+      env:
+        - name: GIT_SYNC_REPO
+          value: "https://github.com/sserkanguzel/Project-1-Batch-Processing.git"
+        - name: GIT_SYNC_BRANCH
+          value: "main"
+        - name: GIT_SYNC_ROOT
+          value: "/git"
+        - name: GIT_SYNC_DEST
+          value: "repo"
+        - name: GIT_SYNC_SUBPATH
+          value: "dags"
+        - name: GIT_SYNC_ONE_TIME
+          value: "false"
+      volumeMounts:
+        - name: dags
+          mountPath: /git
+  volumes:
+    - name: dags
+      emptyDir: {}
