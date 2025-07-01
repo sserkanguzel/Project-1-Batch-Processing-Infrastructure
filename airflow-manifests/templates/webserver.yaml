@@ -14,7 +14,7 @@ spec:
         app: airflow-webserver
     spec:
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}
-      initContainers:
+      containers:
       - name: git-sync
         image: "{{ .Values.airflow.gitsync.image.repository }}:{{ .Values.airflow.gitsync.image.tag }}"
         env:
@@ -25,13 +25,13 @@ spec:
         - name: GIT_SYNC_ROOT
           value: "/git"
         - name: GIT_SYNC_DEST
-          value: "repo" 
+          value: "repo"
         - name: GIT_SYNC_ONE_TIME
-          value: "false" # Set to "false" for continuous sync by default with Argo CD. If you only want a one-time clone on pod start, set to "true".
+          value: "false"   # continuous sync
         volumeMounts:
         - name: dags-volume
           mountPath: /git
-      containers:
+
       - name: webserver
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
         command: ["/bin/bash", "-c"]
@@ -65,8 +65,9 @@ spec:
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
         volumeMounts:
         - name: dags-volume
-          mountPath: /opt/airflow/dags # This is where Airflow expects to find DAGs
+          mountPath: /opt/airflow/dags
           subPath: repo/dags
+
       volumes:
       - name: dags-volume
         emptyDir: {}
