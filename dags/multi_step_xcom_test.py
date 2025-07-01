@@ -2,14 +2,12 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.utils.dates import days_ago
-from airflow.utils.task_group import TaskGroup
-from airflow.models import Variable
 
 from datetime import timedelta
 
 default_args = {
     "owner": "airflow",
-    "retries": 1,
+    "retries": 0,
     "retry_delay": timedelta(minutes=1),
 }
 
@@ -37,13 +35,7 @@ with DAG(
         namespace='airflow',
         image='python:3.9-slim',
         cmds=["python", "-c"],
-        arguments=[
-            "import os; "
-            "msg = os.environ.get('MESSAGE', ''); "
-            "print('Processing:', msg); "
-            "from airflow.models import XCom; "
-            "print(f'{{\"processed_msg\": \"Processed - {msg}\"}}')"
-        ],
+        arguments=["import os; msg = os.getenv('MESSAGE'); print(f'Processed: {msg}')"],
         env_vars={
             'MESSAGE': '{{ ti.xcom_pull(task_ids="generate_message", key="msg") }}'
         },
@@ -54,8 +46,8 @@ with DAG(
     )
 
     def consume_message(**kwargs):
-        result = kwargs['ti'].xcom_pull(task_ids='process_message_in_pod')
-        print(f"Received from pod: {result}")
+        logs = kwargs['ti'].xcom_pull(task_ids='process_message_in_pod')
+        print(f"Message from pod logs:\n{logs}")
 
     consume_task = PythonOperator(
         task_id='consume_result',
