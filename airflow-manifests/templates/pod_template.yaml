@@ -12,8 +12,6 @@ spec:
     - name: base # This *must* be named 'base' for the Kubernetes Executor
       image: "apache/airflow:2.7.1-python3.9" # <-- Crucial: Define the worker image from your values.yaml
       imagePullPolicy: IfNotPresent # Or Always, depending on your needs
-      command: ["airflow", "tasks", "run"] # Default command for Airflow tasks
-      args: []
       env:
         # Essential environment variables for the worker container
         - name: AIRFLOW_IS_K8S_EXECUTOR_POD
