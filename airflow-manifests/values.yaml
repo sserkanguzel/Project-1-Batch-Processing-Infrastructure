@@ -13,8 +13,8 @@ airflow:
       configMapName: airflow-pod-template
       name: pod_template.yaml
 
-  fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="     # generate with python cryptography
-  secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"      # random string for webserver session
+  fernetKey: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+  secretKey: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
 
   serviceAccountName: airflow
 
@@ -41,6 +41,10 @@ airflow:
       enabled: true
       existingClaim: airflow-logs-pvc
       mountPath: /opt/airflow/logs
+
+  triggerer:
+    enabled: true
+    replicas: 1
 
 database:
   postgres:
