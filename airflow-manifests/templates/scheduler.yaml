@@ -22,15 +22,13 @@ spec:
           value: "{{ .Values.airflow.gitsync.repo }}"
         - name: GIT_SYNC_BRANCH
           value: "{{ .Values.airflow.gitsync.branch }}"
-        - name: GIT_SYNC_ROOT
-          value: "/tmp/git"
         - name: GIT_SYNC_DEST
-          value: "dags" # This should match the path inside your repository where DAGs are.
+          value: "" # This should match the path inside your repository where DAGs are.
         - name: GIT_SYNC_ONE_TIME
           value: "true" # Set to "false" for continuous sync by default with Argo CD. If you only want a one-time clone on pod start, set to "true".
         volumeMounts:
         - name: dags-volume
-          mountPath: /tmp/git/dags
+          mountPath: /tmp/git
       containers:
       - name: scheduler # Corrected container name
         image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
