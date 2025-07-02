@@ -1,7 +1,7 @@
 trino:
   image:
     repository: trinodb/trino
-    tag: "438"
+    tag: "476-amd64"
 
   service:
     type: NodePort
