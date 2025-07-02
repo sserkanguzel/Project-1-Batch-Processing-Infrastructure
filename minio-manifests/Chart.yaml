@@ -1,0 +1,5 @@
+apiVersion: v2
+name: minio
+description: A custom MinIO chart
+version: 0.1.0
+appVersion: "RELEASE.2024-01-01T00-00-00Z"

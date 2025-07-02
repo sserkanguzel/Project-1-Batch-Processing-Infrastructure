@@ -1,0 +1,25 @@
+minio:
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2024-01-01T00-00-00Z
+    pullPolicy: IfNotPresent
+
+  accessKey: minioadmin
+  secretKey: minioadmin
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: local-path
+
+  service:
+    type: NodePort
+    nodePort: 30090
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
