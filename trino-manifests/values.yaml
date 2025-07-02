@@ -1,0 +1,16 @@
+trino:
+  image:
+    repository: trinodb/trino
+    tag: "438"
+
+  service:
+    type: NodePort
+    nodePort: 30100
+
+  hiveCatalog:
+    name: lake
+    s3:
+      endpoint: http://minio.minio.svc.cluster.local:9000
+      accessKey: minioadmin
+      secretKey: minioadmin
+      bucket: my-bucket
