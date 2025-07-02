@@ -3,12 +3,11 @@ namespace: airflow
 airflow:
   image:
     repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow
-    tag: '2025-07-01-2032'
+    tag: '2025-07-01-2209'
 
   executor: KubernetesExecutor
 
   kubernetesExecutor:
-    workerContainerImage: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-01"
     podTemplate:
       configMapName: airflow-pod-template
       name: pod_template.yaml
