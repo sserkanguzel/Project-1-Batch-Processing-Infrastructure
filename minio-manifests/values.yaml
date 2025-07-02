@@ -1,7 +1,7 @@
 minio:
   image:
     repository: quay.io/minio/minio
-    tag: RELEASE.2024-06-11T03-13-30Z
+    tag: RELEASE.2023-12-09T18-17-53Z
     pullPolicy: IfNotPresent
 
   accessKey: minioadmin
