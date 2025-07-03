@@ -16,9 +16,6 @@ spec:
       containers:
         - name: postgres
           image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
-          args:
-            - "-c"
-            - "config_file=/bitnami/postgresql/conf/postgresql.conf"
           ports:
             - containerPort: {{ .Values.postgresql.port }}
           env:
