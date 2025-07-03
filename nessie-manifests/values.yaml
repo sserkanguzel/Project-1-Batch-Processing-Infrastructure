@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/projectnessie/nessie
-  tag: "0.104.1"
+  repository: projectnessie/nessie
+  tag: "0.83.1"
   pullPolicy: IfNotPresent
 
 service:
