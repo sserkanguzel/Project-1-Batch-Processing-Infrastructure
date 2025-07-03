@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hive-metastore
-  namespace: {{ .Release.Namespace }}
+  namespace: hive
 spec:
   replicas: 1
   selector:
@@ -13,21 +13,44 @@ spec:
       labels:
         app: hive-metastore
     spec:
+      volumes:
+        - name: hive-extra-libs
+          emptyDir: {}
+
+      initContainers:
+        - name: download-s3-jars
+          image: bitnami/minideb
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              apt-get update && apt-get install -y wget ca-certificates
+              wget -P /shared https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.4/hadoop-aws-2.7.4.jar
+              wget -P /shared https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.271/aws-java-sdk-bundle-1.11.271.jar
+          volumeMounts:
+            - name: hive-extra-libs
+              mountPath: /shared
+
       containers:
         - name: hive-metastore
-          image: "{{ .Values.hive.image.repository }}:{{ .Values.hive.image.tag }}"
-          command: ["/opt/hive/bin/hive"]
-          args: ["--service", "metastore"]
+          image: your-hive-image:tag  # Replace with your Hive image
           ports:
             - containerPort: 9083
+          env:
+            - name: HIVE_METASTORE_USER
+              value: "admin"
+            - name: HIVE_METASTORE_DB
+              value: "hive_metastore"
+            - name: HIVE_METASTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: your-postgres-secret
+                  key: password
+            - name: HIVE_METASTORE_URI
+              value: "jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/hive_metastore"
           volumeMounts:
-            - name: hive-site
-              mountPath: /opt/hive/conf/hive-site.xml
-              subPath: hive-site.xml
-      volumes:
-        - name: hive-site
-          configMap:
-            name: hive-site-config
+            - name: hive-extra-libs
+              mountPath: /opt/hive/lib
+
 
 ---
 apiVersion: v1
