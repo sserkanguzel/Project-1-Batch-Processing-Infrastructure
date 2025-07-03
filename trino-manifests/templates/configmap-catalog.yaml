@@ -5,7 +5,6 @@ metadata:
 data:
   ice.properties: |
     connector.name=iceberg
-    catalog.type=hive
     hive.metastore.uri=thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
     warehouse=s3a://testbuckettrino/testpathtrino
     
