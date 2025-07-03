@@ -1,6 +1,6 @@
 hive:
   image:
-    repository: bde2020/hive-metastore-postgresql
+    repository: bde2020/hive
     tag: 3.1.0
   database:
     host: postgresql.postgresql.svc.cluster.local
