@@ -1,7 +1,7 @@
 trino:
   image:
     repository: trinodb/trino
-    tag: "422"
+    tag: "424"
 
   service:
     type: NodePort
