@@ -4,8 +4,10 @@ metadata:
   name: trino-catalog-ice
 data:
   ice.properties: |
-    connector.name=iceberg
-    hive.metastore.uri=thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
+    connector.name=hive
+    
+    hive.metastore=file
+    hive.metastore.catalog.dir=s3a://testbuckettrino/testpathtrino/
     
     hive.s3.aws-access-key=minioadmin
     hive.s3.aws-secret-key=minioadmin
