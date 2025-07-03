@@ -31,8 +31,8 @@ spec:
         - name: trino-catalog
           configMap:
             name: trino-catalog-ice
-        - name: hive-plugins
-          emptyDir: {}  # Shared volume for the JARs
+        - name: trino-lib-extra
+          emptyDir: {}
 
       initContainers:
         - name: fetch-hadoop-s3a-jars
@@ -41,11 +41,11 @@ spec:
           args:
             - |
               mkdir -p /jars && cd /jars
-              echo "Downloading Hadoop S3A dependencies..."
+              echo "Downloading Hadoop AWS and SDK jars..."
               curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar
               curl -LO https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
           volumeMounts:
-            - name: hive-plugins
+            - name: trino-lib-extra
               mountPath: /jars
 
       containers:
@@ -53,9 +53,13 @@ spec:
           image: "{{ .Values.trino.image.repository }}:{{ .Values.trino.image.tag }}"
           ports:
             - containerPort: 8080
+          env:
+            - name: TRINO_EXTRA_CLASSPATH
+              value: /usr/lib/trino/lib-extra/*
           volumeMounts:
             - name: trino-catalog
               mountPath: /etc/trino/catalog
-            - name: hive-plugins
-              mountPath: /usr/lib/trino/plugin/hive-hadoop2
+            - name: trino-lib-extra
+              mountPath: /usr/lib/trino/lib-extra
+
 
