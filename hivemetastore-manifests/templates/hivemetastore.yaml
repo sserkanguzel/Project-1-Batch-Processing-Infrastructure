@@ -21,7 +21,7 @@ spec:
             name: hive-site-config
 
       initContainers:
-        - name: download-s3-jars
+        - name: download-extra-jars
           image: bitnami/minideb
           command: ["/bin/bash", "-c"]
           args:
@@ -29,6 +29,7 @@ spec:
               apt-get update && apt-get install -y wget ca-certificates
               wget -P /shared https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.4/hadoop-aws-2.7.4.jar
               wget -P /shared https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.271/aws-java-sdk-bundle-1.11.271.jar
+              wget -P /shared https://jdbc.postgresql.org/download/postgresql-42.2.27.jar
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /shared
@@ -40,15 +41,15 @@ spec:
               value: /opt/hive/conf
             - name: HIVE_AUX_JARS_PATH
               value: /opt/hive/extra-jars
-            - name: DB_TYPE
-              value: postgres
+            - name: HADOOP_CLASSPATH
+              value: /opt/hive/conf
           command: ["/bin/bash", "-c"]
           args:
             - |
-              echo "[INFO] Hive lib content before init:"
-              ls -l /opt/hive/lib || true
               echo "[INFO] Extra JARs:"
               ls -l /opt/hive/extra-jars || true
+              echo "[INFO] Config dir:"
+              ls -l /opt/hive/conf || true
               echo "[INFO] Running Hive schema initialization..."
               schematool -dbType postgres -initSchema --verbose
           volumeMounts:
@@ -67,8 +68,8 @@ spec:
               value: /opt/hive/conf
             - name: HIVE_AUX_JARS_PATH
               value: /opt/hive/extra-jars
-            - name: DB_TYPE
-              value: postgres
+            - name: HADOOP_CLASSPATH
+              value: /opt/hive/conf
             - name: SKIP_SCHEMA_INIT
               value: "true"
           volumeMounts:
