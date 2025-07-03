@@ -11,7 +11,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: init-schema
-          image: apache/hive:2.3.2
+          image: bde2020/hive:2.3.2-postgresql-metastore
           command:
             - /bin/bash
             - -c
