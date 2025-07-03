@@ -36,22 +36,25 @@ spec:
 
         - name: setup-hive
           image: apache/hive:3.1.3
-          env:
-            - name: HIVE_CONF_DIR
-              value: /opt/hive/conf
-            - name: HIVE_AUX_JARS_PATH
-              value: /opt/hive/extra-jars
-            - name: HADOOP_CLASSPATH
-              value: /opt/hive/conf
           command: ["/bin/bash", "-c"]
           args:
             - |
-              echo "[INFO] Extra JARs:"
-              ls -l /opt/hive/extra-jars || true
-              echo "[INFO] Config dir:"
-              ls -l /opt/hive/conf || true
+              echo "[INFO] Copying extra jars..."
+              cp /opt/hive/extra-jars/*.jar /opt/hive/lib/ || true
               echo "[INFO] Running Hive schema initialization..."
-              schematool -dbType postgres --hiveConfDir /opt/hive/conf -initSchema --verbose
+              /opt/hive/bin/schematool \
+                --dbType postgres \
+                --url jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/hive_metastore \
+                --driver org.postgresql.Driver \
+                --userName admin \
+                --passWord admin \
+                --verbose \
+                --initSchema
+          env:
+            - name: HIVE_CONF_DIR
+              value: /opt/hive/conf
+            - name: CLASSPATH
+              value: /opt/hive/conf:/opt/hive/lib/*
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /opt/hive/extra-jars
@@ -66,15 +69,13 @@ spec:
           env:
             - name: HIVE_CONF_DIR
               value: /opt/hive/conf
-            - name: HIVE_AUX_JARS_PATH
-              value: /opt/hive/extra-jars
-            - name: HADOOP_CLASSPATH
-              value: /opt/hive/conf
+            - name: CLASSPATH
+              value: /opt/hive/conf:/opt/hive/lib/*
             - name: SKIP_SCHEMA_INIT
               value: "true"
           volumeMounts:
             - name: hive-extra-libs
-              mountPath: /opt/hive/extra-jars
+              mountPath: /opt/hive/lib
             - name: hive-config
               mountPath: /opt/hive/conf
 ---
