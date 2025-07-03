@@ -40,7 +40,7 @@ spec:
               value: /opt/hive/conf
             - name: HIVE_AUX_JARS_PATH
               value: /opt/hive/extra-jars
-            - name: HIVE_DB_TYPE
+            - name: DB_TYPE
               value: postgres
           command: ["/bin/bash", "-c"]
           args:
