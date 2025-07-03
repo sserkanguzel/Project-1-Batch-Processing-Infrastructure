@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: init-hive-db
-data:
-  create-hive-db.sql: |
-    CREATE DATABASE {{ .Values.postgresql.dbExtra }};
