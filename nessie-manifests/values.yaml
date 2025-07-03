@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: projectnessie/nessie
-  tag: "0.83.1"
+  tag: "0.76.6"
   pullPolicy: IfNotPresent
 
 service:
