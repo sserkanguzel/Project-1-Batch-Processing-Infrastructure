@@ -32,6 +32,7 @@ spec:
               value: "{{ .Values.hive.database.host }}"
             - name: HIVE_METASTORE_DATABASE_PORT
               value: "{{ .Values.hive.database.port | quote }}"
+              
 ---
 apiVersion: v1
 kind: Service
