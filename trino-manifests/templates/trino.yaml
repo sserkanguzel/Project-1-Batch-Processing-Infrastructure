@@ -57,5 +57,5 @@ spec:
             - name: trino-catalog
               mountPath: /etc/trino/catalog
             - name: hive-plugins
-              mountPath: /usr/lib/trino/plugin/hive
+              mountPath: /usr/lib/trino/plugin/hive-hadoop2
 
