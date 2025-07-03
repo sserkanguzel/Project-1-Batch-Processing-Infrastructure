@@ -19,7 +19,7 @@ spec:
             - containerPort: 9083
           env:
             - name: HIVE_SITE_CONF_fs_defaultFS
-              value: "s3a://testbuckettrino/testpathtrino"
+              value: "s3a://testbuckettrino"
             - name: HIVE_SITE_CONF_fs_s3a_endpoint
               value: "http://minio.minio.svc.cluster.local:9000"
             - name: HIVE_SITE_CONF_fs_s3a_access.key
@@ -28,7 +28,11 @@ spec:
               value: "minioadmin"
             - name: HIVE_SITE_CONF_fs_s3a_path.style.access
               value: "true"
-
+            - name: HIVE_SITE_CONF_fs_s3a_connection_ssl_enabled
+              value: "false"
+            - name: HIVE_SITE_CONF_hive.metastore.warehouse.dir
+              value: "s3a://testbuckettrino"
+---
 apiVersion: v1
 kind: Service
 metadata:
