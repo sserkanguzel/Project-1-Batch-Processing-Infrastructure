@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: projectnessie/nessie
+  repository: ghcr.io/projectnessie/nessie
   tag: "0.83.1"
   pullPolicy: IfNotPresent
 
