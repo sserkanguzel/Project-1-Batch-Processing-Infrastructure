@@ -10,4 +10,4 @@ postgresql:
     host all all all md5
   image:
     repository: bitnami/postgresql
-    tag: 15.5.0
+    tag: 13.0.0
