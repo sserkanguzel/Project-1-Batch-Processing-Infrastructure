@@ -36,4 +36,4 @@ spec:
       volumes:
         - name: catalog
           configMap:
-            name: trino-catalog-lake
+            name: trino-catalog-ice
