@@ -48,7 +48,7 @@ kind: Service
 metadata:
   name: postgresql
 spec:
-  type: ClusterIP
+  type: Nodeport
   ports:
     - port: {{ .Values.postgresql.port }}
       targetPort: {{ .Values.postgresql.port }}
