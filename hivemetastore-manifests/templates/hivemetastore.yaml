@@ -35,20 +35,22 @@ spec:
 
         - name: setup-hive
           image: apache/hive:3.1.3
-          command: ["/bin/bash", "-c"]
-          args:
-            - |
-              echo "[INFO] Hive lib content before init:"
-              ls -l /opt/hive/lib
-              echo "[INFO] Copied extra jars:"
-              ls -l /opt/hive/extra-jars
-              echo "[INFO] Running Hive schema initialization..."
-              schematool -dbType postgres -initSchema --verbose
           env:
             - name: HIVE_CONF_DIR
               value: /opt/hive/conf
             - name: HIVE_AUX_JARS_PATH
               value: /opt/hive/extra-jars
+            - name: HIVE_DB_TYPE
+              value: postgres
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              echo "[INFO] Hive lib content before init:"
+              ls -l /opt/hive/lib || true
+              echo "[INFO] Extra JARs:"
+              ls -l /opt/hive/extra-jars || true
+              echo "[INFO] Running Hive schema initialization..."
+              schematool -dbType postgres -initSchema --verbose
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /opt/hive/extra-jars
