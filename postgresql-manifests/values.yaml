@@ -1,0 +1,9 @@
+postgresql:
+  username: admin
+  password: admin
+  dbMain: project_output
+  dbExtra: hive_metastore
+  port: 5432
+  image:
+    repository: bitnami/postgresql
+    tag: 15.5.0
