@@ -6,7 +6,7 @@ data:
   lake.properties: |
     connector.name=iceberg
     catalog.type=filesystem
-    warehouse=s3a://testbuckettrino/testpathtrino  # change to your bucket
+    warehouse=s3a://testbuckettrino/testpathtrino
 
     hive.s3.aws-access-key=minioadmin
     hive.s3.aws-secret-key=minioadmin
