@@ -1,0 +1,14 @@
+hive:
+  image:
+    repository: ghcr.io/bitnami/hive-metastore
+    tag: 3.1.3
+  database:
+    host: postgresql.postgresql.svc.cluster.local
+    port: 5432
+    name: hive_metastore
+    user: admin
+    password: admin
+
+service:
+  type: ClusterIP
+  port: 9083
