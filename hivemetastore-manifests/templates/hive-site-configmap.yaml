@@ -9,7 +9,7 @@ data:
     <configuration>
       <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/{{ .Values.hive.database.name }}</value>
+        <value>jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/hive_metastore</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
