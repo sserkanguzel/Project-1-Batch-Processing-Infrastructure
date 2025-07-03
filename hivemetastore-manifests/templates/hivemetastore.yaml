@@ -13,65 +13,66 @@ spec:
       labels:
         app: hive-metastore
     spec:
+      volumes:
+        - name: hive-extra-libs
+          emptyDir: {}
+        - name: hive-config
+          configMap:
+            name: hive-site-config
+
       initContainers:
         - name: download-extra-jars
-          image: busybox:1.35
-          command:
-            - sh
-            - -c
-            - >
-              wget -P /shared https://jdbc.postgresql.org/download/postgresql-42.2.27.jar &&
-              wget -P /shared https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.4/hadoop-aws-2.7.4.jar &&
-              wget -P /shared https://repo1.maven.org/maven2/org/apache/hive/hive-exec/3.1.3/hive-exec-3.1.3.jar &&
+          image: bitnami/minideb
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              apt-get update && apt-get install -y wget ca-certificates
+              wget -P /shared https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.4/hadoop-aws-2.7.4.jar
               wget -P /shared https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.271/aws-java-sdk-bundle-1.11.271.jar
+              wget -P /shared https://jdbc.postgresql.org/download/postgresql-42.2.27.jar
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /shared
+
         - name: setup-hive
           image: apache/hive:3.1.3
-          command:
-            - sh
-            - -c
-            - >
-              cp /shared/*.jar /opt/hive/lib/ &&
-              /opt/hive/bin/schematool -dbType postgres -initSchema --verbose || true
           env:
             - name: HIVE_CONF_DIR
               value: /opt/hive/conf
+            - name: HIVE_AUX_JARS_PATH
+              value: /opt/hive/extra-jars
+            - name: HADOOP_CLASSPATH
+              value: /opt/hive/conf
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              echo "[INFO] Initializing Hive Metastore schema..."
+              /opt/hive/bin/schematool -dbType postgres -initSchema --verbose
           volumeMounts:
-            - name: hive-conf
-              mountPath: /opt/hive/conf
             - name: hive-extra-libs
-              mountPath: /opt/hive/lib
+              mountPath: /opt/hive/extra-jars
+            - name: hive-config
+              mountPath: /opt/hive/conf
+
       containers:
         - name: hive-metastore
           image: apache/hive:3.1.3
-          command:
-            - /opt/hive/bin/hive
-          args:
-            - --service
-            - metastore
+          command: ["/opt/hive/bin/hive"]
+          args: ["--service", "metastore"]
           ports:
             - containerPort: 9083
           env:
             - name: HIVE_CONF_DIR
               value: /opt/hive/conf
-            - name: HADOOP_CLIENT_OPTS
-              value: "-Xmx1G"
             - name: HIVE_AUX_JARS_PATH
               value: /opt/hive/lib
+            - name: HADOOP_CLASSPATH
+              value: /opt/hive/conf
           volumeMounts:
-            - name: hive-conf
-              mountPath: /opt/hive/conf
             - name: hive-extra-libs
               mountPath: /opt/hive/lib
-      volumes:
-        - name: hive-conf
-          configMap:
-            name: hive-site-config
-        - name: hive-extra-libs
-          emptyDir: {}
-
+            - name: hive-config
+              mountPath: /opt/hive/conf
 ---
 apiVersion: v1
 kind: Service
