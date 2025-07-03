@@ -15,8 +15,6 @@ spec:
       containers:
         - name: hive-metastore
           image: "{{ .Values.hive.image.repository }}:{{ .Values.hive.image.tag }}"
-          command: ["/opt/hive/bin/hive"]
-          args: ["--service", "metastore"]
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
@@ -31,7 +29,7 @@ spec:
             - name: HIVE_METASTORE_DATABASE_HOST
               value: "{{ .Values.hive.database.host }}"
             - name: HIVE_METASTORE_DATABASE_PORT
-              value: "{{ .Values.hive.database.port }}"
+              value: "{{ .Values.hive.database.port | quote }}"
 ---
 apiVersion: v1
 kind: Service
