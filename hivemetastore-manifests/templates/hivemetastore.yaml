@@ -18,19 +18,17 @@ spec:
           ports:
             - containerPort: 9083
           env:
-            - name: HIVE_METASTORE_DB_TYPE
-              value: "postgres"
-            - name: HIVE_METASTORE_USER
-              value: "metastore"
-            - name: HIVE_METASTORE_PASSWORD
-              value: "mypassword"
-            - name: HIVE_METASTORE_DATABASE_NAME
-              value: "metastore"
-            - name: HIVE_METASTORE_DATABASE_HOST
-              value: "postgresql.postgresql.svc.cluster.local"
-            - name: HIVE_METASTORE_DATABASE_PORT
-              value: "5432"
----
+            - name: HIVE_SITE_CONF_fs_defaultFS
+              value: "s3a://testbuckettrino/testpathtrino"
+            - name: HIVE_SITE_CONF_fs_s3a_endpoint
+              value: "http://minio.minio.svc.cluster.local:9000"
+            - name: HIVE_SITE_CONF_fs_s3a_access.key
+              value: "minioadmin"
+            - name: HIVE_SITE_CONF_fs_s3a_secret.key
+              value: "minioadmin"
+            - name: HIVE_SITE_CONF_fs_s3a_path.style.access
+              value: "true"
+
 apiVersion: v1
 kind: Service
 metadata:
