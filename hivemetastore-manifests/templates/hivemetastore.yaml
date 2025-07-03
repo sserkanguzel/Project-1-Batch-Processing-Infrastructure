@@ -67,6 +67,10 @@ spec:
               value: /opt/hive/conf
             - name: HIVE_AUX_JARS_PATH
               value: /opt/hive/extra-jars
+            - name: DB_TYPE
+              value: postgres
+            - name: SKIP_SCHEMA_INIT
+              value: "true"
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /opt/hive/extra-jars
