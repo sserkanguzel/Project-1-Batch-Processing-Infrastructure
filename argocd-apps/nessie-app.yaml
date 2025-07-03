@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-username/your-repo.git
+    repoURL: https://github.com/sserkanguzel/Project-1-Batch-Processing-Infrastructure
     targetRevision: main
     path: manifests/nessie
   destination:
