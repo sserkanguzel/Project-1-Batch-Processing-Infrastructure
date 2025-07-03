@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nessie
+  name: hive-metastore
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/sserkanguzel/Project-1-Batch-Processing-Infrastructure
+    repoURL: https://github.com/sserkanguzel/your-gitops-repo.git
     targetRevision: main
-    path: manifests/nessie
+    path: manifests/hive-metastore
   destination:
     server: https://kubernetes.default.svc
-    namespace: nessie
+    namespace: hive-metastore
   syncPolicy:
     automated:
       prune: true
