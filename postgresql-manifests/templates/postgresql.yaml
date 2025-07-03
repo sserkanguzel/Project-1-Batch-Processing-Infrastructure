@@ -33,6 +33,9 @@ spec:
             - name: pg-config
               mountPath: /bitnami/postgresql/conf/pg_hba.conf
               subPath: pg_hba.conf
+            - name: pg-main-config
+              mountPath: /bitnami/postgresql/conf/postgresql.conf
+              subPath: postgresql.conf
       volumes:
         - name: init-sql
           configMap:
@@ -40,6 +43,9 @@ spec:
         - name: pg-config
           configMap:
             name: custom-postgresql-config
+        - name: pg-main-config
+          configMap:
+            name: postgresql-conf
   volumeClaimTemplates:
     - metadata:
         name: data
