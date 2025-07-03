@@ -16,54 +16,56 @@ spec:
       volumes:
         - name: hive-extra-libs
           emptyDir: {}
+        - name: hive-config
+          configMap:
+            name: hive-site-config
 
       initContainers:
-        - name: download-s3-jars
-          image: bitnami/minideb
-          command: ["/bin/bash", "-c"]
-          args:
+        - name: setup-hive
+          image: apache/hive:3.1.3
+          command:
+            - /bin/bash
+            - -c
             - |
-              apt-get update && apt-get install -y wget ca-certificates
-              wget -P /shared https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.4/hadoop-aws-2.7.4.jar
-              wget -P /shared https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.271/aws-java-sdk-bundle-1.11.271.jar
-          volumeMounts:
-            - name: hive-extra-libs
-              mountPath: /shared
-
-      containers:
-        - name: hive-metastore
-          image: your-hive-image:tag  # Replace with your Hive image
-          ports:
-            - containerPort: 9083
+              echo "Downloading required jars..."
+              mkdir -p /opt/hive/lib
+              wget -P /opt/hive/lib https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.4/hadoop-aws-2.7.4.jar
+              wget -P /opt/hive/lib https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.271/aws-java-sdk-bundle-1.11.271.jar
+              echo "Initializing Hive schema..."
+              schematool -dbType postgres -initSchema --verbose
           env:
-            - name: HIVE_METASTORE_USER
-              value: "admin"
-            - name: HIVE_METASTORE_DB
-              value: "hive_metastore"
-            - name: HIVE_METASTORE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: your-postgres-secret
-                  key: password
-            - name: HIVE_METASTORE_URI
-              value: "jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/hive_metastore"
+            - name: HIVE_CONF_DIR
+              value: /opt/hive/conf
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /opt/hive/lib
+            - name: hive-config
+              mountPath: /opt/hive/conf
 
-
+      containers:
+        - name: hive-metastore
+          image: apache/hive:3.1.3  # or your custom image
+          ports:
+            - containerPort: 9083
+          env:
+            - name: HIVE_CONF_DIR
+              value: /opt/hive/conf
+          volumeMounts:
+            - name: hive-extra-libs
+              mountPath: /opt/hive/lib
+            - name: hive-config
+              mountPath: /opt/hive/conf
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
-  namespace: {{ .Release.Namespace }}
+  namespace: hive
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP  # or NodePort/LoadBalancer based on your use case
   selector:
     app: hive-metastore
   ports:
     - name: thrift
-      port: {{ .Values.service.port }}
+      port: 9083
       targetPort: 9083
-
