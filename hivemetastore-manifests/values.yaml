@@ -1,7 +1,7 @@
 hive:
   image:
-    repository: bde2020/hive-metastore
-    tag: 2.3.0-postgresql-metastore
+    repository: bde2020/hive-metastore-postgresql
+    tag: 3.1.0
   database:
     host: postgresql.postgresql.svc.cluster.local
     port: 5432
