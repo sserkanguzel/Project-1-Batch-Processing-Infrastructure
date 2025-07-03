@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/sserkanguzel/Project-1-Batch-Processing-Infrastructure
     targetRevision: main
-    path: manifests/postgresql
+    path: postgresql-manifests
     helm:
       releaseName: postgresql
   destination:
