@@ -1,0 +1,13 @@
+replicaCount: 1
+
+image:
+  repository: projectnessie/nessie
+  tag: "0.83.1"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP  # Or NodePort
+  port: 19120
+  nodePort: 31920  # Only used if type: NodePort
+
+resources: {}
