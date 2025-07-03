@@ -1,13 +1,21 @@
 hive:
   image:
-    repository: de2020/hive
+    repository: bde2020/hive
     tag: 2.3.2-postgresql-metastore
+
   database:
     host: postgresql.postgresql.svc.cluster.local
     port: 5432
     name: hive_metastore
     user: admin
     password: admin
+
+  warehouseDir: s3a://testbuckettrino/testpathtrino
+
+minio:
+  endpoint: http://minio.minio.svc.cluster.local:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
 
 service:
   type: ClusterIP
