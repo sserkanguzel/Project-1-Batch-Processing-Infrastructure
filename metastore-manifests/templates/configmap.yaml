@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hive-config
+data:
+  dbName: metastore
+  dbUser: hive
+  dbPassword: hivepass
+  dbHost: hive-postgres-postgresql.hive-metastore.svc.cluster.local
+  dbPort: "5432"
