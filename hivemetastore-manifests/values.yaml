@@ -5,7 +5,7 @@ hive:
 
   database:
     host: postgresql.postgresql.svc.cluster.local
-    port: 5432
+    port: 30054
     name: hive_metastore
     user: admin
     password: admin
