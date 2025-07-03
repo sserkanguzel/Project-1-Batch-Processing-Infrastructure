@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <configuration>
-  <!-- PostgreSQL Metastore Configuration -->
   <property>
     <name>javax.jdo.option.ConnectionURL</name>
-    <value>jdbc:postgresql://postgres.postgres.svc.cluster.local:5432/hive_metastore</value>
+    <value>jdbc:postgresql://{{ .Values.hive.database.host }}:{{ .Values.hive.database.port }}/{{ .Values.hive.database.name }}</value>
   </property>
   <property>
     <name>javax.jdo.option.ConnectionDriverName</name>
@@ -11,29 +10,29 @@
   </property>
   <property>
     <name>javax.jdo.option.ConnectionUserName</name>
-    <value>hive</value>
+    <value>{{ .Values.hive.database.user }}</value>
   </property>
   <property>
     <name>javax.jdo.option.ConnectionPassword</name>
-    <value>your-password-here</value>
+    <value>{{ .Values.hive.database.password }}</value>
   </property>
 
-  <!-- MinIO / S3A Filesystem Settings -->
   <property>
     <name>fs.defaultFS</name>
     <value>s3a://testbuckettrino</value>
   </property>
+
   <property>
     <name>fs.s3a.access.key</name>
-    <value>minioadmin</value>
+    <value>{{ .Values.minio.accessKey }}</value>
   </property>
   <property>
     <name>fs.s3a.secret.key</name>
-    <value>minioadmin</value>
+    <value>{{ .Values.minio.secretKey }}</value>
   </property>
   <property>
     <name>fs.s3a.endpoint</name>
-    <value>http://minio.minio.svc.cluster.local:9000</value>
+    <value>{{ .Values.minio.endpoint }}</value>
   </property>
   <property>
     <name>fs.s3a.path.style.access</name>
@@ -43,8 +42,9 @@
     <name>fs.s3a.connection.ssl.enabled</name>
     <value>false</value>
   </property>
+
   <property>
     <name>hive.metastore.warehouse.dir</name>
-    <value>s3a://testbuckettrino/warehouse</value>
+    <value>{{ .Values.hive.warehouseDir }}</value>
   </property>
 </configuration>
