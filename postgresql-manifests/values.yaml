@@ -4,6 +4,10 @@ postgresql:
   dbMain: project_output
   dbExtra: hive_metastore
   port: 5432
+  postgresqlExtendedConf:
+    password_encryption: md5
+  pgHbaConfiguration: |
+    host all all all md5
   image:
     repository: bitnami/postgresql
     tag: 15.5.0
