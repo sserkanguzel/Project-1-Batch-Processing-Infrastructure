@@ -4,7 +4,8 @@ metadata:
   name: trino-catalog-lake
 data:
   lake.properties: |
-    connector.name=hive
+    connector.name=iceberg
+    catalog.type=filesystem
     hive.metastore.uri=thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
 
     hive.s3.aws-access-key=minioadmin
