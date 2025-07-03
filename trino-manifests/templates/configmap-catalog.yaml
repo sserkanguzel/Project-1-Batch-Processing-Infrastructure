@@ -6,7 +6,7 @@ data:
   lake.properties: |
     connector.name=iceberg
     catalog.type=filesystem
-    hive.metastore.uri=thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
+    warehouse=s3a://testbuckettrino/testpathtrino  # change to your bucket
 
     hive.s3.aws-access-key=minioadmin
     hive.s3.aws-secret-key=minioadmin
