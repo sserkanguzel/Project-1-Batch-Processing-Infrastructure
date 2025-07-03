@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: projectnessie/nessie
-  tag: "0.76.6-java"
+  repository: ghcr.io/projectnessie
+  tag: "nessie:0.104.1"
   pullPolicy: IfNotPresent
 
 service:
