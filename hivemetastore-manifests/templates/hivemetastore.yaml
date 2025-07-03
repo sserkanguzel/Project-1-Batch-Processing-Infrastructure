@@ -14,31 +14,31 @@ spec:
     spec:
       containers:
         - name: hive-metastore
-          image: "{{ .Values.hive.image.repository }}:{{ .Values.hive.image.tag }}"
+          image: bde2020/hive-metastore-postgresql:3.1.0
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: 9083
           env:
             - name: HIVE_METASTORE_DB_TYPE
               value: "postgres"
             - name: HIVE_METASTORE_USER
-              value: "{{ .Values.hive.database.user }}"
+              value: "metastore"
             - name: HIVE_METASTORE_PASSWORD
-              value: "{{ .Values.hive.database.password }}"
+              value: "mypassword"
             - name: HIVE_METASTORE_DATABASE_NAME
-              value: "{{ .Values.hive.database.name }}"
+              value: "metastore"
             - name: HIVE_METASTORE_DATABASE_HOST
-              value: "{{ .Values.hive.database.host }}"
+              value: "postgresql.postgresql.svc.cluster.local"
             - name: HIVE_METASTORE_DATABASE_PORT
-              value: "{{ .Values.hive.database.port }}"
+              value: "5432"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
   selector:
     app: hive-metastore
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+    - port: 9083
+      targetPort: 9083
