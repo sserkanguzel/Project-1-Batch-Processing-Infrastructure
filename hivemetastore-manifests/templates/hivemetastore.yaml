@@ -38,15 +38,15 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
-              cp /shared/* /opt/hive/lib/
               echo "[INFO] Running Hive schema initialization..."
+              schematool -dbType postgres -info || \
               schematool -dbType postgres -initSchema --verbose
           env:
             - name: HIVE_CONF_DIR
               value: /opt/hive/conf
           volumeMounts:
             - name: hive-extra-libs
-              mountPath: /shared
+              mountPath: /opt/hive/lib
             - name: hive-config
               mountPath: /opt/hive/conf
 
@@ -58,13 +58,13 @@ spec:
           env:
             - name: HIVE_CONF_DIR
               value: /opt/hive/conf
+            - name: HIVE_AUX_JARS_PATH
+              value: /opt/hive/lib
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /opt/hive/lib
             - name: hive-config
               mountPath: /opt/hive/conf
-
-
 ---
 apiVersion: v1
 kind: Service
@@ -72,7 +72,7 @@ metadata:
   name: hive-metastore
   namespace: hive-metastore
 spec:
-  type: ClusterIP  # Adjust to NodePort/LoadBalancer if needed
+  type: ClusterIP
   selector:
     app: hive-metastore
   ports:
