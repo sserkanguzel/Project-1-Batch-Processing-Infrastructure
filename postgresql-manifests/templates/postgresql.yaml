@@ -30,10 +30,16 @@ spec:
               mountPath: /bitnami/postgresql
             - name: init-sql
               mountPath: /docker-entrypoint-initdb.d
+            - name: pg-config
+              mountPath: /bitnami/postgresql/conf/pg_hba.conf
+              subPath: pg_hba.conf
       volumes:
         - name: init-sql
           configMap:
             name: init-hive-db
+        - name: pg-config
+          configMap:
+            name: custom-postgresql-config
   volumeClaimTemplates:
     - metadata:
         name: data
