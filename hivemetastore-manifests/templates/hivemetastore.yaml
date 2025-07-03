@@ -16,6 +16,8 @@ spec:
       containers:
         - name: hive-metastore
           image: bde2020/hive:2.3.2-postgresql-metastore
+          command: ["/opt/hive/bin/hive"]
+          args: ["--service", "metastore"]
           ports:
             - containerPort: 9083
           env:
