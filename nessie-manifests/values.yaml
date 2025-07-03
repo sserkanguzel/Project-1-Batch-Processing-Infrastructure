@@ -2,7 +2,8 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/projectnessie/nessie
-  tag: "0.83.1"
+  tag: "0.83.0-java@sha256:7b9f292c51603c06a7baa5d43c483496e50bbccee8e441c14b1594a2ddfb8d4b"
+
   pullPolicy: IfNotPresent
 
 service:
