@@ -51,7 +51,7 @@ spec:
               echo "[INFO] Config dir:"
               ls -l /opt/hive/conf || true
               echo "[INFO] Running Hive schema initialization..."
-              schematool -dbType postgres -initSchema --verbose
+              schematool -dbType postgres --hiveConfDir /opt/hive/conf -initSchema --verbose
           volumeMounts:
             - name: hive-extra-libs
               mountPath: /opt/hive/extra-jars
