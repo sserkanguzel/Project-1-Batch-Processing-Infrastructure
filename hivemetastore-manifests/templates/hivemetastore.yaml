@@ -21,7 +21,7 @@ spec:
             - name: HIVE_SITE_CONF_fs_defaultFS
               value: "s3a://testbuckettrino"
             - name: HIVE_SITE_CONF_fs_s3a_endpoint
-              value: "http://minio.minio.svc.cluster.local:9000"
+              value: "http://minio.minio.svc.cluster.local:30090"
             - name: HIVE_SITE_CONF_fs_s3a_access.key
               value: "minioadmin"
             - name: HIVE_SITE_CONF_fs_s3a_secret.key
