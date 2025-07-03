@@ -62,7 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
-  namespace: hive
+  namespace: hive-metastore
 spec:
   type: ClusterIP  # Adjust to NodePort/LoadBalancer if needed
   selector:
