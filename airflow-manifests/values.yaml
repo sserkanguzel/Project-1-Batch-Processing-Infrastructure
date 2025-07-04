@@ -3,7 +3,7 @@ namespace: airflow
 airflow:
   image:
     repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow
-    tag: '2025-07-04-0750'
+    tag: '2025-07-02-2201'
 
   executor: KubernetesExecutor
 
@@ -29,7 +29,14 @@ airflow:
     persistence:
       enabled: true
       existingClaim: airflow-logs-pvc
-      mountPath: /opt/airflow/logs
+  extraVolumes:
+  - name: airflow-shared
+    persistentVolumeClaim:
+      claimName: airflow-shared-pvc
+
+  extraVolumeMounts:
+    - name: airflow-shared
+      mountPath: /opt/airflow/shared
 
 triggerer:
   enabled: true
