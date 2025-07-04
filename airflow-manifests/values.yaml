@@ -3,7 +3,7 @@ namespace: airflow
 airflow:
   image:
     repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow
-    tag: '2025-07-04-0814'
+    tag: '2025-07-04-2056'
 
   executor: KubernetesExecutor
 
