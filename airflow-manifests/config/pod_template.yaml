@@ -29,8 +29,12 @@ spec:
       volumeMounts:
         - name: logs-volume
           mountPath: /opt/airflow/logs
-
+        - name: shared-volume
+          mountPath: /opt/airflow/shared
   volumes:
     - name: logs-volume
       persistentVolumeClaim:
         claimName: airflow-logs-pvc
+    - name: shared-volume
+      persistentVolumeClaim:
+        claimName: airflow-shared-pvc
