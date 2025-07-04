@@ -9,7 +9,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: base
-      image: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-04-0721"
+      image: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-04-0727"
       imagePullPolicy: IfNotPresent
       env:
         - name: AIRFLOW_IS_K8S_EXECUTOR_POD
