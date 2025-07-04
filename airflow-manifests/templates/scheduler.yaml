@@ -45,6 +45,8 @@ spec:
           mountPath: /opt/airflow/pod_templates
         - name: logs-volume
           mountPath: /opt/airflow/logs
+        - name: shared-volume
+          mountPath: /opt/airflow/shared
 
       volumes:
       - name: pod-template-volume
@@ -56,3 +58,6 @@ spec:
       - name: logs-volume
         persistentVolumeClaim:
           claimName: airflow-logs-pvc
+      - name: shared-volume
+        persistentVolumeClaim:
+          claimName: airflow-shared-pvc
