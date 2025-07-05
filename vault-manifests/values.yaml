@@ -14,4 +14,4 @@ ui:
 persistence:
   enabled: true
   size: 5Gi
-  storageClass: ""
+  storageClass: local-path
