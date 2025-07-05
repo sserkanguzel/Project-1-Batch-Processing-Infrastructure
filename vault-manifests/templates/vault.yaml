@@ -17,6 +17,7 @@ spec:
       containers:
         - name: vault
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: [ "vault" ]
           args:
             - "server"
             - "-config=/vault/config/vault-config.hcl"
