@@ -4,17 +4,33 @@ kind: ClusterRole
 metadata:
   name: external-secrets-controller
 rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "serviceaccounts", "namespaces"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
   - apiGroups: ["external-secrets.io"]
-    resources: ["externalsecrets", "clustersecretstores", "secretstores"]
+    resources:
+      - "externalsecrets"
+      - "externalsecrets/status"
+      - "secretstores"
+      - "secretstores/status"
+      - "clustersecretstores"
+      - "clustersecretstores/status"
+      - "clusterexternalsecrets"
+      - "clusterexternalsecrets/status"
+      - "clusterpushsecrets"
+      - "clusterpushsecrets/status"
+      - "pushsecrets"
+      - "pushsecrets/status"
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: [""]
-    resources: ["secrets", "serviceaccounts", "configmaps"]
+
+  - apiGroups: ["generators.external-secrets.io"]
+    resources:
+      - "*"
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: [""]
-    resources: ["namespaces"]
-    verbs: ["get", "list", "watch"]
 
 ---
+
 # ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
