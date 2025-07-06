@@ -42,5 +42,5 @@ roleRef:
   name: external-secrets-controller
 subjects:
   - kind: ServiceAccount
-    name: external-secrets
+    name: eso
     namespace: external-secrets
