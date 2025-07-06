@@ -39,7 +39,8 @@ spec:
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: /opt/airflow/dags
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-          value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+          value: >-
+                postgresql+psycopg2://$(AIRFLOW__DATABASE__USER):$(AIRFLOW__DATABASE__PASSWORD)@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:5432/$(AIRFLOW__DATABASE__DB)
         volumeMounts:
         - name: pod-template-volume
           mountPath: /opt/airflow/pod_templates
