@@ -6,6 +6,6 @@ image:
 
 serviceAccount:
   create: true
-  name: external-secrets
+  name: eso
 
 resources: {}
