@@ -5,7 +5,6 @@ image:
   tag: v0.18.0
 
 serviceAccount:
-  create: true
   name: eso
 
 resources: {}
