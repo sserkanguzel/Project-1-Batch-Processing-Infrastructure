@@ -1,7 +1,7 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultConnection
 metadata:
-  name: {{ .Values.vaultConnection.connectionName }}
+  name: {{ .Values.vaultConnection.name }}
   namespace: {{ .Values.namespace }}
 spec:
   address: http://vault.vault.svc.cluster.local:8200
