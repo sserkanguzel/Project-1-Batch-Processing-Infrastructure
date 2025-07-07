@@ -3,6 +3,7 @@ kind: ClusterRole
 metadata:
   name: vso-controller-role
 rules:
+  # existing core & VSO rules…
   - apiGroups: ["", "secrets.hashicorp.com"]
     resources:
       - pods
@@ -21,7 +22,9 @@ rules:
       - update
       - patch
       - delete
-      - deletecollection        # <— added here
+      - deletecollection
+
+  # RBAC for roles & bindings
   - apiGroups: ["rbac.authorization.k8s.io"]
     resources:
       - roles
@@ -35,8 +38,19 @@ rules:
       - patch
       - delete
 
----
+  # <<< ADD THIS NEW BLOCK >>>
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -47,5 +61,5 @@ roleRef:
   name: vso-controller-role
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.serviceAccount.name }}
-    namespace: {{ .Values.namespace }}
+    name: eso
+    namespace: vault-secrets
