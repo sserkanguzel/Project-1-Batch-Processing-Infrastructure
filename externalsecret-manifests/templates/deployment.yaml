@@ -23,13 +23,19 @@ spec:
             - "--health-probe-bind-address=:8081"
             - "--leader-elect"
           ports:
-            - containerPort: 8080
-              name: metrics
+            - name: metrics
+              containerPort: 8080
+            - name: health
+              containerPort: 8081
           readinessProbe:
             httpGet:
-              path: /healthz
-              port: 8081
+              path: /readyz
+              port: health
+            initialDelaySeconds: 5
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 8081
+              port: health
+            initialDelaySeconds: 15
+            periodSeconds: 20
