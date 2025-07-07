@@ -13,7 +13,7 @@ spec:
       labels:
         app: vault-secrets-operator
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.vaultAuth.name }}
       containers:
         - name: manager
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
