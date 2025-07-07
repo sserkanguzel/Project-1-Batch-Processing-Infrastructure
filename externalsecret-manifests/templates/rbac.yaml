@@ -3,17 +3,12 @@ kind: ClusterRole
 metadata:
   name: vso-controller-role
 rules:
-  # existing core & VSO rules…
-  - apiGroups: ["", "secrets.hashicorp.com"]
+  # Core resources: pods, secrets, events (with deletecollection)
+  - apiGroups: [""]
     resources:
       - pods
       - secrets
-      - vaultconnections
-      - vaultauths
-      - vaultstaticsecrets
-      - vaultdynamicsecrets
-      - vaultpkisecrets
-      - hcpauths
+      - events
     verbs:
       - get
       - list
@@ -24,7 +19,40 @@ rules:
       - delete
       - deletecollection
 
-  # RBAC for roles & bindings
+  # Coordination for leader election
+  - apiGroups: ["coordination.k8s.io"]
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  # VSO CRDs: all the controller types under secrets.hashicorp.com
+  - apiGroups: ["secrets.hashicorp.com"]
+    resources:
+      - vaultconnections
+      - vaultauths
+      - vaultstaticsecrets
+      - vaultdynamicsecrets
+      - vaultpkisecrets
+      - secrettransformations
+      - hcpvaultsecretsapps
+      - vaultauthglobals
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  # RBAC management (unchanged)
   - apiGroups: ["rbac.authorization.k8s.io"]
     resources:
       - roles
@@ -38,17 +66,6 @@ rules:
       - patch
       - delete
 
-  # <<< ADD THIS NEW BLOCK >>>
-  - apiGroups: ["coordination.k8s.io"]
-    resources: ["leases"]
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
