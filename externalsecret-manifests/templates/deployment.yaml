@@ -4,7 +4,7 @@ metadata:
   name: vault-secrets-operator
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: vault-secrets-operator
