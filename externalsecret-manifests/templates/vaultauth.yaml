@@ -1,11 +1,10 @@
 apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultAuth
+kind: VaultAuthGlobal
 metadata:
   name: vault-auth
 spec:
-  vaultConnectionRef: vault-connection
-  method: kubernetes
-  mount: {{ .Values.vaultAuth.mount }}
   kubernetes:
-    role: {{ .Values.vaultAuth.role }}
-    serviceAccount: {{ .Values.vaultAuth.serviceAccount }}
+    mountPath: kubernetes
+    role: eso
+    serviceAccount: eso
+  allowDefault: true
