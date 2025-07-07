@@ -1,6 +1,6 @@
 apiVersion: v2
-name: external-secrets
-description: "Minimal ESO deployment"
+name: vso-helm
+description: "Vault Secrets Operator via Helm"
 type: application
 version: 0.1.0
-appVersion: "0.18.0" 
+appVersion: "1.12.3"
