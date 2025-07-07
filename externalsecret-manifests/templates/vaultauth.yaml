@@ -6,7 +6,7 @@ metadata:
 spec:
   vaultConnectionRef: vault-connection
   method: kubernetes
-  mount: {{ .Values.auth.mount }}
+  mount: {{ .Values.vaultAuth.mount }}
   kubernetes:
-    role: {{ .Values.auth.role }}
-    serviceAccount: {{ .Values.auth.serviceAccount }}
+    role: {{ .Values.vaultAuth.role }}
+    serviceAccount: {{ .Values.vaultAuth.serviceAccount }}
