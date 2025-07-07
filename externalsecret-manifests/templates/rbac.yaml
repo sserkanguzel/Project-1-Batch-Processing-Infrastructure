@@ -19,7 +19,7 @@ rules:
       - delete
       - deletecollection
 
-  # Coordination for leader election
+  # Coordination for leader election (leases)
   - apiGroups: ["coordination.k8s.io"]
     resources:
       - leases
@@ -32,18 +32,27 @@ rules:
       - patch
       - delete
 
-  # VSO CRDs: all the controller types under secrets.hashicorp.com
+  # Vault Secrets Operator CRDs & their status subresources
   - apiGroups: ["secrets.hashicorp.com"]
     resources:
       - vaultconnections
+      - vaultconnections/status
       - vaultauths
+      - vaultauths/status
       - vaultstaticsecrets
+      - vaultstaticsecrets/status
       - vaultdynamicsecrets
+      - vaultdynamicsecrets/status
       - vaultpkisecrets
+      - vaultpkisecrets/status
       - secrettransformations
+      - secrettransformations/status
       - hcpvaultsecretsapps
+      - hcpvaultsecretsapps/status
       - vaultauthglobals
+      - vaultauthglobals/status
       - hcpauths
+      - hcpauths/status
     verbs:
       - get
       - list
@@ -53,7 +62,7 @@ rules:
       - patch
       - delete
 
-  # RBAC management (unchanged)
+  # RBAC management for roles & bindings
   - apiGroups: ["rbac.authorization.k8s.io"]
     resources:
       - roles
@@ -67,8 +76,8 @@ rules:
       - patch
       - delete
 
-
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
