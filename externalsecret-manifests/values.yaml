@@ -20,7 +20,7 @@ vault:
   # KV v2 secrets you want to sync; can list multiple
   staticSecrets:
     - name: airflow-db-secret    # CR name
-      mount: kvv2               # engine mount
+      mount: kv              # engine mount
       path: app-secrets/airflow/db
       destinationName: airflow-db
       refreshAfter: 1m
