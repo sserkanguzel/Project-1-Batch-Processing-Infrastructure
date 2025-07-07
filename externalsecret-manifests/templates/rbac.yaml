@@ -43,6 +43,7 @@ rules:
       - secrettransformations
       - hcpvaultsecretsapps
       - vaultauthglobals
+      - hcpauths
     verbs:
       - get
       - list
