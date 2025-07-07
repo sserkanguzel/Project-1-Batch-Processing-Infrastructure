@@ -43,4 +43,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: eso
-    namespace: external-secrets
+    namespace: airflow
