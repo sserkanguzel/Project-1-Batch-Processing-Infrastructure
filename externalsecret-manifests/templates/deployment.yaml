@@ -13,11 +13,11 @@ spec:
       labels:
         app: vault-secrets-operator
     spec:
-      serviceAccountName: {{ .Values.vaultAuth.name }}
+      serviceAccountName: {{ .Values.vaultAuth.serviceAccount }}
       containers:
         - name: manager
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: IfNotPresent
           args:
             - "--metrics-addr=127.0.0.1:8080"
             - "--enable-leader-election"
