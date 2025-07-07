@@ -1,46 +1,26 @@
-# ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: external-secrets-controller
+  name: vso-controller
 rules:
   - apiGroups: [""]
-    resources: ["configmaps", "secrets", "serviceaccounts", "namespaces","events"]
+    resources: ["secrets", "serviceaccounts", "configmaps"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
-  - apiGroups: ["external-secrets.io"]
-    resources:
-      - "externalsecrets"
-      - "externalsecrets/status"
-      - "secretstores"
-      - "secretstores/status"
-      - "clustersecretstores"
-      - "clustersecretstores/status"
-      - "clusterexternalsecrets"
-      - "clusterexternalsecrets/status"
-      - "clusterpushsecrets"
-      - "clusterpushsecrets/status"
-      - "pushsecrets"
-      - "pushsecrets/status"
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
-  - apiGroups: ["generators.external-secrets.io"]
-    resources:
-      - "*"
+  - apiGroups: ["secrets.hashicorp.com"]
+    resources: ["vaultconnections", "vaultauths", "vaultstaticsecrets"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 
 ---
-
-# ClusterRoleBinding
+# templates/02-clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: external-secrets-controller
+  name: vso-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: external-secrets-controller
+  name: vso-controller
 subjects:
   - kind: ServiceAccount
-    name: eso
-    namespace: external-secrets
+    name: {{ .Values.serviceAccount.name }}
+    namespace: {{ .Release.Namespace }}
