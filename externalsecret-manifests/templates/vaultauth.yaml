@@ -10,4 +10,3 @@ spec:
   kubernetes:
     role: {{ .Values.vaultAuth.role }}
     serviceAccount: {{ .Values.vaultAuth.serviceAccount }}
-  allowDefault: true
