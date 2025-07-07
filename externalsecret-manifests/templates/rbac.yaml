@@ -4,13 +4,39 @@ metadata:
   name: vso-controller-role
 rules:
   - apiGroups: ["", "secrets.hashicorp.com"]
-    resources: ["pods","secrets","vaultconnections","vaultauths","vaultstaticsecrets","vaultdynamicsecrets","vaultpkisecrets","hcpauths"]
-    verbs: ["get","list","watch","create","update","patch","delete"]
+    resources:
+      - pods
+      - secrets
+      - vaultconnections
+      - vaultauths
+      - vaultstaticsecrets
+      - vaultdynamicsecrets
+      - vaultpkisecrets
+      - hcpauths
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+      - deletecollection        # <— added here
   - apiGroups: ["rbac.authorization.k8s.io"]
-    resources: ["roles","rolebindings"]
-    verbs: ["get","list","watch","create","update","patch","delete"]
+    resources:
+      - roles
+      - rolebindings
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
