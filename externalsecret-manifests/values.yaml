@@ -1,24 +1,26 @@
-replicaCount: 1
+# Namespace to install into (ArgoCD destination.namespace or helm --namespace)
+namespace: vault-secrets
 
-image:
-  repository: hashicorp/vault-secrets-operator
-  tag: 1.12.3
+replicaCount: 1
 
 serviceAccount:
   create: true
-  name: vso-sa
+  name: eso
 
+image:
+  repository: hashicorp/vault-secrets-operator
+  tag: "0.10.0"
+  pullPolicy: IfNotPresent
+
+# VaultConnection / VaultAuth / VaultStaticSecret settings
 vault:
-  address: http://vault.vault.svc.cluster.local:8200
-  skipTLSVerify: true
+  connectionName: vault-connection
+  authName: vault-auth
 
-auth:
-  mount: kubernetes   # Vault auth path
-  role: eso
-  serviceAccount: eso
-
-secret:
-  # KV v2 path (without data/) and target K8s Secret
-  path: app-secrets/airflow/db
-  secretName: airflow-db
-  refreshAfter: 1m
+  # KV v2 secrets you want to sync; can list multiple
+  staticSecrets:
+    - name: airflow-db-secret    # CR name
+      mount: kvv2               # engine mount
+      path: app-secrets/airflow/db
+      destinationName: airflow-db
+      refreshAfter: 1m
