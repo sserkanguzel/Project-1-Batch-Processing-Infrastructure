@@ -1,26 +1,24 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/external-secrets/external-secrets
-  tag: v0.18.0
+  repository: hashicorp/vault-secrets-operator
+  tag: 1.12.3
 
 serviceAccount:
-  name: eso
+  create: true
+  name: vso-sa
 
 vault:
-  server: http://vault.vault.svc.cluster.local:8200
-  path: kv
-  version: v2
-  auth:
-    mountPath: kubernetes
-    role: eso
+  address: http://vault.vault.svc.cluster.local:8200
+  skipTLSVerify: true
 
-externalSecret:
-  name: airflow-db-creds
-  targetSecret: airflow-db
-  vaultKey: app-secrets/airflow/db
-  properties:
-    - secretKey: username
-      property: username
-    - secretKey: password
-      property: password
+auth:
+  mount: kubernetes   # Vault auth path
+  role: eso
+  serviceAccount: eso
+
+secret:
+  # KV v2 path (without data/) and target K8s Secret
+  path: app-secrets/airflow/db
+  secretName: airflow-db
+  refreshAfter: 1m
