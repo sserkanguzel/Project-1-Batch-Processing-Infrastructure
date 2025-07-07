@@ -11,7 +11,11 @@ image:
   repository: hashicorp/vault-secrets-operator
   tag: "0.10.0"
   pullPolicy: IfNotPresent
-
+# ── Add this!
+auth:
+  mount: kubernetes       # the auth mount in Vault
+  role: eso               # the Vault role you created
+  serviceAccount: eso  # or “eso” if that’s your SA name
 # VaultConnection / VaultAuth / VaultStaticSecret settings
 vault:
   connectionName: vault-connection
