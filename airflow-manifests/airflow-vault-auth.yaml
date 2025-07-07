@@ -1,0 +1,9 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: airflow-auth
+  namespace: airflow
+spec:
+  # point this namespaced auth at the global in vault-secrets
+  vaultAuthGlobalRef:
+    name: vault-auth
