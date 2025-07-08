@@ -18,20 +18,22 @@ spec:
         - name: external-secrets
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
+          args:
+            - "--leader-elect"
           ports:
             - name: metrics
               containerPort: 8080
-            - name: health
-              containerPort: 8081
           readinessProbe:
-            httpGet:
-              path: /readyz
-              port: health
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
-            httpGet:
-              path: /healthz
-              port: health
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
             initialDelaySeconds: 15
             periodSeconds: 20
