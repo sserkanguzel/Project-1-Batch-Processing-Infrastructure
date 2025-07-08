@@ -12,53 +12,60 @@ spec:
     metadata:
       labels:
         app: airflow-scheduler
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "eso"
+        vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/db"
+        vault.hashicorp.com/agent-inject-template-sql: |
+          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
+          {{`export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"`}}
+          {{`{{- end }}`}}
     spec:
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}
       containers:
-      - name: scheduler
-        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-        command: ["/bin/bash", "-c"]
-        args:
-          - |
-            until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
+        - name: scheduler
+          image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              until pg_isready -h postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local -p 5432; do
                 echo "Waiting for Postgres to be ready...";
                 sleep 5;
-            done;
-            exec airflow scheduler
-        env:
-        - name: AIRFLOW__CORE__EXECUTOR
-          value: {{ .Values.airflow.executor }}
-        - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
-          value: {{ .Values.namespace }}
-        - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
-          value: "/opt/airflow/pod_templates/pod_template.yaml"
-        - name: AIRFLOW__CORE__FERNET_KEY
-          value: {{ .Values.airflow.fernetKey }}
-        - name: AIRFLOW__WEBSERVER__SECRET_KEY
-          value: {{ .Values.airflow.secretKey }}
-        - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: /opt/airflow/dags
-        - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-          value: >-
-                postgresql+psycopg2://$(AIRFLOW__DATABASE__USER):$(AIRFLOW__DATABASE__PASSWORD)@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:5432/$(AIRFLOW__DATABASE__DB)
-        volumeMounts:
-        - name: pod-template-volume
-          mountPath: /opt/airflow/pod_templates
-        - name: logs-volume
-          mountPath: /opt/airflow/logs
-        - name: shared-volume
-          mountPath: /opt/airflow/shared
+              done;
+              exec airflow scheduler
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: {{ .Values.airflow.executor }}
+            - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
+              value: {{ .Values.namespace }}
+            - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
+              value: "/opt/airflow/pod_templates/pod_template.yaml"
+            - name: AIRFLOW__CORE__FERNET_KEY
+              value: {{ .Values.airflow.fernetKey }}
+            - name: AIRFLOW__WEBSERVER__SECRET_KEY
+              value: {{ .Values.airflow.secretKey }}
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: /opt/airflow/dags
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: ""  # Placeholder; actual value injected by Vault
+          volumeMounts:
+            - name: pod-template-volume
+              mountPath: /opt/airflow/pod_templates
+            - name: logs-volume
+              mountPath: /opt/airflow/logs
+            - name: shared-volume
+              mountPath: /opt/airflow/shared
 
       volumes:
-      - name: pod-template-volume
-        configMap:
-          name: airflow-pod-template
-          items:
-            - key: pod_template.yaml
-              path: pod_template.yaml
-      - name: logs-volume
-        persistentVolumeClaim:
-          claimName: airflow-logs-pvc
-      - name: shared-volume
-        persistentVolumeClaim:
-          claimName: airflow-shared-pvc
+        - name: pod-template-volume
+          configMap:
+            name: airflow-pod-template
+            items:
+              - key: pod_template.yaml
+                path: pod_template.yaml
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: airflow-logs-pvc
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: airflow-shared-pvc
