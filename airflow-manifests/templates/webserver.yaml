@@ -17,9 +17,9 @@ spec:
         vault.hashicorp.com/role: "eso"
         vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/db"
         vault.hashicorp.com/agent-inject-template-sql: |
-          {{- with secret "kv/data/app-secrets/airflow/db" -}}
-          export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"
-          {{- end }}
+          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
+          {{`export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"`}}
+          {{`{{- end }}`}}
     spec:
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}
       containers:
@@ -32,7 +32,6 @@ spec:
                 echo "Waiting for Postgres to be ready...";
                 sleep 5;
               done;
-
               airflow db migrate
               airflow users create \
                 --username admin \
@@ -41,7 +40,6 @@ spec:
                 --lastname Admin \
                 --role Admin \
                 --email admin@example.com || true
-
               exec airflow webserver
           ports:
             - containerPort: 8080
@@ -57,10 +55,9 @@ spec:
             - name: AIRFLOW__CORE__DAGS_FOLDER
               value: /opt/airflow/dags
             - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-              value: /opt/airflow/logs
-            # Injected by Vault Agent — dummy placeholders to satisfy Kubernetes parser
+              value: {{ .Values.airflow.config.logging.base_log_folder }}
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: ""
+              value: ""  # Placeholder to allow env var to be present
           volumeMounts:
             - name: logs-volume
               mountPath: /opt/airflow/logs
