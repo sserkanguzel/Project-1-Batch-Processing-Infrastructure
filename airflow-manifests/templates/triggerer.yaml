@@ -24,7 +24,6 @@ spec:
               echo "Waiting for Postgres to be ready...";
               sleep 10;
             done;
-            airflow db upgrade
             exec airflow triggerer
         env:
         - name: AIRFLOW__CORE__EXECUTOR
