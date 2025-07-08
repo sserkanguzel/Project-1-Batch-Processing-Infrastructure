@@ -12,34 +12,37 @@ spec:
     metadata:
       labels:
         app: postgres
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "eso"
+        vault.hashicorp.com/agent-inject-secret-pg: "kv/data/app-secrets/airflow/db"
+        vault.hashicorp.com/agent-inject-template-pg: |
+          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
+          {{`export POSTGRES_USER="{{ .Data.data.POSTGRES_USER }}"`}}
+          {{`export POSTGRES_PASSWORD="{{ .Data.data.POSTGRES_PASSWORD }}"`}}
+          {{`export POSTGRES_DB="{{ .Data.data.POSTGRES_DB }}"`}}
+          {{`{{- end }}`}}
     spec:
+      serviceAccountName: {{ .Values.postgres.serviceAccountName | default "default" }}
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        env:
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_DB
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_USER
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: POSTGRES_PASSWORD
-        ports:
-        - containerPort: 5432
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_USER
+              value: ""
+            - name: POSTGRES_PASSWORD
+              value: ""
+            - name: POSTGRES_DB
+              value: ""
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
       volumes:
-      - name: postgres-data
-        emptyDir: {}
+        - name: postgres-data
+          emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service
