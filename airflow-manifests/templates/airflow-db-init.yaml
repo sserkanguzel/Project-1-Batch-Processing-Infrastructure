@@ -19,12 +19,12 @@ spec:
             done;
             airflow db init;
             airflow users create \
-              --username admin \
-              --password admin \
-              --firstname Airflow \
-              --lastname Admin \
+              --username "$_AIRFLOW_WWW_USER_USERNAME" \
+              --password "$_AIRFLOW_WWW_USER_PASSWORD" \
+              --firstname "$_AIRFLOW_WWW_USER_FIRSTNAME" \
+              --lastname "$_AIRFLOW_WWW_USER_LASTNAME" \
               --role Admin \
-              --email admin@example.com || true
+              --email "$_AIRFLOW_WWW_USER_EMAIL" || true
         env:
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
@@ -40,6 +40,31 @@ spec:
           value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
         - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
           value: /opt/airflow/logs
+        - name: _AIRFLOW_WWW_USER_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: webuser
+        - name: _AIRFLOW_WWW_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: webpassword
+        - name: _AIRFLOW_WWW_USER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: webuseremail
+        - name: _AIRFLOW_WWW_USER_FIRSTNAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: webuserfirstname
+        - name: _AIRFLOW_WWW_USER_LASTNAME
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: webuserlastname
 
 
 
