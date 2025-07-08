@@ -38,8 +38,12 @@ spec:
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
+          
         - name: AIRFLOW__CORE__FERNET_KEY
-          value: {{ .Values.airflow.fernetKey }}
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: fernetKey
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
