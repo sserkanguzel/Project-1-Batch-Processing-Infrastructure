@@ -26,7 +26,7 @@ spec:
             done;
 
             # Wait until the metadata database is initialized (e.g., ab_user table exists)
-            until psql -h postgres-postgresql.airflow.svc.cluster.local -U airflow -d airflow_db -c '\dt' | grep -q 'ab_user'; do
+            until psql -h postgres-postgresql.airflow.svc.cluster.local -c '\dt' | grep -q 'ab_user'; do
               echo "Waiting for Airflow metadata DB to be initialized...";
               sleep 5;
             done;
@@ -50,3 +50,13 @@ spec:
             secretKeyRef:
               name: airflow-db-secret
               key: password
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: user
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: db
