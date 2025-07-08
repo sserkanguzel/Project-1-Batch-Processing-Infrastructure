@@ -17,7 +17,10 @@ spec:
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: "/opt/airflow/dags"
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-          value: postgresql+psycopg2://airflow:airflowpassword@postgres-postgresql.airflow.svc.cluster.local:5432/airflow_db
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: sql_alchemy_conn
         - name: AIRFLOW__CORE__FERNET_KEY
           value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
