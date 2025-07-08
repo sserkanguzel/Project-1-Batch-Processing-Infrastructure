@@ -4,7 +4,7 @@ airflow:
   image:
     repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow
     tag: '2025-07-04-2056'
-  
+
   executor: KubernetesExecutor
 
   kubernetesExecutor:
@@ -39,9 +39,43 @@ airflow:
     - name: airflow-shared
       mountPath: /opt/airflow/shared
 
+scheduler:
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "eso"
+    vault.hashicorp.com/agent-inject-secret-db-creds: "kv/data/app-secrets/airflow/db"
+    vault.hashicorp.com/agent-inject-template-db-creds: |
+      {{- with secret "kv/data/app-secrets/airflow/db" -}}
+      export AIRFLOW__DATABASE__USER="{{ .Data.data.user }}"
+      export AIRFLOW__DATABASE__PASSWORD="{{ .Data.data.password }}"
+      export AIRFLOW__DATABASE__DB="{{ .Data.data.db }}"
+      {{- end }}
+
+web:
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "eso"
+    vault.hashicorp.com/agent-inject-secret-db-creds: "kv/data/app-secrets/airflow/db"
+    vault.hashicorp.com/agent-inject-template-db-creds: |
+      {{- with secret "kv/data/app-secrets/airflow/db" -}}
+      export AIRFLOW__DATABASE__USER="{{ .Data.data.user }}"
+      export AIRFLOW__DATABASE__PASSWORD="{{ .Data.data.password }}"
+      export AIRFLOW__DATABASE__DB="{{ .Data.data.db }}"
+      {{- end }}
+
 triggerer:
   enabled: true
   replicas: 1
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "eso"
+    vault.hashicorp.com/agent-inject-secret-db-creds: "kv/data/app-secrets/airflow/db"
+    vault.hashicorp.com/agent-inject-template-db-creds: |
+      {{- with secret "kv/data/app-secrets/airflow/db" -}}
+      export AIRFLOW__DATABASE__USER="{{ .Data.data.user }}"
+      export AIRFLOW__DATABASE__PASSWORD="{{ .Data.data.password }}"
+      export AIRFLOW__DATABASE__DB="{{ .Data.data.db }}"
+      {{- end }}
 
 service:
   webserver:
