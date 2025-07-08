@@ -1,27 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vault-secrets-operator
+  name: external-secrets-operator
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vault-secrets-operator
+      app: external-secrets-operator
   template:
     metadata:
       labels:
-        app: vault-secrets-operator
+        app: external-secrets-operator
     spec:
-      serviceAccountName: "{{ .Values.serviceAccount.name }}"
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-        - name: manager
+        - name: external-secrets
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
-          args:
-            - "--metrics-bind-address=:8080"
-            - "--health-probe-bind-address=:8081"
-            - "--leader-elect"
           ports:
             - name: metrics
               containerPort: 8080
