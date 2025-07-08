@@ -6,6 +6,7 @@ metadata:
 spec:
   template:
     spec:
+      ttlSecondsAfterFinished: 60
       restartPolicy: OnFailure
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}
       containers:
