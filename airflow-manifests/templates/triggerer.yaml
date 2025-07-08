@@ -33,7 +33,7 @@ spec:
         - name: AIRFLOW__CORE__FERNET_KEY
           value: {{ .Values.airflow.fernetKey }}
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-           valueFrom:
+          valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: sql_alchemy_conn
