@@ -44,13 +44,30 @@ spec:
           value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: /opt/airflow/dags
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: /opt/airflow/logs
+          
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: sql_alchemy_conn
-        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-          value: /opt/airflow/logs
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: password
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: user
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: airflow-db-secret
+              key: db
+
         volumeMounts:
         - name: logs-volume
           mountPath: /opt/airflow/logs
