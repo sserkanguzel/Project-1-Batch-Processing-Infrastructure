@@ -2,7 +2,7 @@ namespace: external-secrets
 
 image:
   repository: ghcr.io/external-secrets/external-secrets
-  tag: "0.9.19"
+  tag: "8.3.0"
 
 serviceAccount:
   create: true
