@@ -70,6 +70,27 @@ triggerer:
       {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
       {{`export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"`}}
       {{`{{- end }}`}}
+      
+postgresql:
+  enabled: true
+  image: postgres:15-alpine
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "eso"
+    vault.hashicorp.com/agent-inject-secret-pg: "kv/data/app-secrets/airflow/db"
+    vault.hashicorp.com/agent-inject-template-pg: |
+      {{- with secret "kv/data/app-secrets/airflow/db" -}}
+      export POSTGRES_USER="{{ .Data.data.user }}"
+      export POSTGRES_PASSWORD="{{ .Data.data.password }}"
+      export POSTGRES_DB="{{ .Data.data.db }}"
+      {{- end }}
+  initCommand: |
+    source /vault/secrets/pg
+    exec docker-entrypoint.sh postgres
+  volume:
+    name: postgres-data
+    mountPath: /var/lib/postgresql/data
+    type: emptyDir
 
 service:
   webserver:
