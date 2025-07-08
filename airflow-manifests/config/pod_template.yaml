@@ -16,19 +16,27 @@ spec:
           value: "True"
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: "/opt/airflow/dags"
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: "/opt/airflow/logs"
+        - name: AIRFLOW__LOGGING__REMOTE_LOGGING
+          value: "False"
+        
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: sql_alchemy_conn
         - name: AIRFLOW__CORE__FERNET_KEY
-          value: "bXKd_nJ7Yj0E309u7oh-cmXcFC89gi1IllSBl21Ku5g="
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: fernetKey
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
-          value: "Td_-CejX_6foYTgUzLXfrgVWvxlAuzp4Cemjf6J57b0"
-        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-          value: "/opt/airflow/logs"
-        - name: AIRFLOW__LOGGING__REMOTE_LOGGING
-          value: "False"
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: secretKey
+      
       volumeMounts:
         - name: logs-volume
           mountPath: /opt/airflow/logs
