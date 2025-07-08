@@ -103,9 +103,9 @@ metadata:
   name: airflow-webserver
   namespace: {{ .Values.namespace }}
 spec:
-  type: {{ .Values.service.webserver.type }}
+  type: NodePort
   ports:
-  - port: {{ .Values.service.webserver.port }}
+  - port: 8080
     targetPort: 8080
   selector:
     app: airflow-webserver
