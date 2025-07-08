@@ -39,24 +39,6 @@ airflow:
     - name: airflow-shared
       mountPath: /opt/airflow/shared
 
-  # Inject Postgres credentials from the K8s Secret
-  extraEnv:
-    - name: AIRFLOW__DATABASE__USER
-      valueFrom:
-        secretKeyRef:
-          name: airflow-db-secret
-          key: user
-    - name: AIRFLOW__DATABASE__PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: airflow-db-secret
-          key: password
-    - name: AIRFLOW__DATABASE__DB
-      valueFrom:
-        secretKeyRef:
-          name: airflow-db-secret
-          key: db
-
 triggerer:
   enabled: true
   replicas: 1
