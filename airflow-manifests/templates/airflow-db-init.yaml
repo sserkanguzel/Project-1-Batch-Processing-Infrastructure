@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-init-db
+  namespace: {{ .Values.namespace }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      containers:
+      - name: airflow-init
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            until pg_isready -h postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local -p {{ .Values.database.postgres.port }}; do
+              echo "Waiting for Postgres..."; sleep 5;
+            done;
+            airflow db migrate;
+            airflow users create \
+              --username admin \
+              --password admin \
+              --firstname Airflow \
+              --lastname Admin \
+              --role Admin \
+              --email admin@example.com || true
+        env:
+        - name: AIRFLOW__CORE__EXECUTOR
+          value: {{ .Values.airflow.executor }}
+        - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
+          value: {{ .Values.namespace }}
+        - name: AIRFLOW__CORE__FERNET_KEY
+          value: {{ .Values.airflow.fernetKey }}
+        - name: AIRFLOW__WEBSERVER__SECRET_KEY
+          value: {{ .Values.airflow.secretKey }}
+        - name: AIRFLOW__CORE__DAGS_FOLDER
+          value: /opt/airflow/dags
+        - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+          value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: /opt/airflow/logs
+
+
+
+
