@@ -21,8 +21,7 @@ spec:
           args:
             - "--loglevel=info"
             - "--metrics-addr=:8080"
-            - "--namespace={{ .Values.namespace }}"
-            - "--watch-namespace=*"
+            - "--namespace=*"
             # Uncomment below if you want to enable Vault token cache
             # - "--experimental-enable-vault-token-cache"
           ports:
