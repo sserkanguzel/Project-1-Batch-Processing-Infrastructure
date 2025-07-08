@@ -38,8 +38,3 @@ airflow:
 triggerer:
   enabled: true
   replicas: 1
-
-service:
-  webserver:
-    type: NodePort
-    port: 8080
