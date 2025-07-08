@@ -1,92 +1,28 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: vso-controller-role
+  name: external-secrets-controller
 rules:
-  # Core resources: pods, secrets, events (with deletecollection)
+  - apiGroups: ["external-secrets.io"]
+    resources: ["externalsecrets", "clustersecretstores", "secretstores"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: [""]
-    resources:
-      - pods
-      - secrets
-      - events
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
-      - deletecollection
+    resources: ["secrets"]
+    verbs: ["get", "create", "update", "patch", "delete"]
 
-  # Coordination for leader election (leases)
-  - apiGroups: ["coordination.k8s.io"]
-    resources:
-      - leases
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
-
-  # Vault Secrets Operator CRDs & their status subresources
-  - apiGroups: ["secrets.hashicorp.com"]
-    resources:
-      - vaultconnections
-      - vaultconnections/status
-      - vaultauths
-      - vaultauths/status
-      - vaultstaticsecrets
-      - vaultstaticsecrets/status
-      - vaultdynamicsecrets
-      - vaultdynamicsecrets/status
-      - vaultpkisecrets
-      - vaultpkisecrets/status
-      - secrettransformations
-      - secrettransformations/status
-      - hcpvaultsecretsapps
-      - hcpvaultsecretsapps/status
-      - vaultauthglobals
-      - vaultauthglobals/status
-      - hcpauths
-      - hcpauths/status
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
-
-  # RBAC management for roles & bindings
-  - apiGroups: ["rbac.authorization.k8s.io"]
-    resources:
-      - roles
-      - rolebindings
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
 
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: vso-controller-binding
+  name: external-secrets-controller-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: vso-controller-role
+  name: external-secrets-controller
 subjects:
   - kind: ServiceAccount
     name: eso
-    namespace: vault-secrets
+    namespace: external-secrets
+
