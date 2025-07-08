@@ -42,13 +42,6 @@ triggerer:
   enabled: true
   replicas: 1
 
-database:
-  postgres:
-    user: airflow
-    password: airflowpassword
-    db: airflow_db
-    port: 5432
-
 service:
   webserver:
     type: NodePort
