@@ -17,7 +17,7 @@ spec:
             until pg_isready -h postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local -p {{ .Values.database.postgres.port }}; do
               echo "Waiting for Postgres..."; sleep 5;
             done;
-            airflow db migrate;
+            airflow db init;
             airflow users create \
               --username admin \
               --password admin \
