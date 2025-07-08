@@ -38,15 +38,21 @@ spec:
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
-        - name: AIRFLOW__CORE__FERNET_KEY
-          value: {{ .Values.airflow.fernetKey }}
-        - name: AIRFLOW__WEBSERVER__SECRET_KEY
-          value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: /opt/airflow/dags
         - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-          value: /opt/airflow/logs
+          value: /opt/airflow/logs       
           
+        - name: AIRFLOW__CORE__FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: fernetKey
+        - name: AIRFLOW__WEBSERVER__SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: secretKey          
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
