@@ -17,7 +17,7 @@ spec:
         vault.hashicorp.com/role: "eso"
         vault.hashicorp.com/agent-inject-secret-pg: "kv/data/app-secrets/airflow/db"
         vault.hashicorp.com/agent-inject-template-pg: |
-          {{`{{- with secret "kv/data/app-secrets/airflow/connection" -}}`}}
+          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
           {{`export POSTGRES_USER="{{ .Data.data.user }}"`}}
           {{`export POSTGRES_PASSWORD="{{ .Data.data.password }}"`}}
           {{`export POSTGRES_DB="{{ .Data.data.db }}"`}}
