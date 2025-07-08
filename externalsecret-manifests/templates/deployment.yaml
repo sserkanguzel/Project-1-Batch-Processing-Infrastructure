@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: external-secrets-operator
+  name: external-secrets
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: external-secrets-operator
+      app: external-secrets
   template:
     metadata:
       labels:
-        app: external-secrets-operator
+        app: external-secrets
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
@@ -19,21 +19,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
           args:
-            - "--leader-elect"
+            - "--loglevel=info"
+            - "--metrics-addr=:8080"
+            - "--namespace={{ .Values.namespace }}"
+            # Uncomment below if you want to enable Vault token cache
+            # - "--experimental-enable-vault-token-cache"
           ports:
             - name: metrics
               containerPort: 8080
-          readinessProbe:
-            exec:
-              command:
-                - cat
-                - /tmp/healthy
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            exec:
-              command:
-                - cat
-                - /tmp/healthy
-            initialDelaySeconds: 15
-            periodSeconds: 20
