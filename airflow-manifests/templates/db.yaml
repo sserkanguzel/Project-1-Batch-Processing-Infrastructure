@@ -17,22 +17,22 @@ spec:
         vault.hashicorp.com/role: "eso"
         vault.hashicorp.com/agent-inject-secret-pg: "kv/data/app-secrets/airflow/db"
         vault.hashicorp.com/agent-inject-template-pg: |
-          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
-          {{`export POSTGRES_USER="{{ .Data.data.user }}"`}}
-          {{`export POSTGRES_PASSWORD="{{ .Data.data.password }}"`}}
-          {{`export POSTGRES_DB="{{ .Data.data.db }}"`}}
-          {{`{{- end }}`}}
+          {{- with secret "kv/data/app-secrets/airflow/db" -}}
+          export POSTGRES_USER="{{ .Data.data.user }}"
+          export POSTGRES_PASSWORD="{{ .Data.data.password }}"
+          export POSTGRES_DB="{{ .Data.data.db }}"
+          {{- end }}
     spec:
+      serviceAccountName: airflow
       containers:
         - name: postgres
           image: postgres:15-alpine
-          env:
-            - name: POSTGRES_USER
-              value: ""
-            - name: POSTGRES_PASSWORD
-              value: ""
-            - name: POSTGRES_DB
-              value: ""
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              echo "Sourcing Vault-injected secrets..."
+              source /vault/secrets/pg
+              exec docker-entrypoint.sh postgres
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -41,6 +41,7 @@ spec:
       volumes:
         - name: postgres-data
           emptyDir: {}
+
 
 
 ---
