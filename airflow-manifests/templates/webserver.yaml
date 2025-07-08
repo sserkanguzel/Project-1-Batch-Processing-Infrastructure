@@ -22,7 +22,7 @@ spec:
           - |
             until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres to be ready...";
-              sleep 5;
+              sleep 10;
             done;
             exec airflow webserver
         ports:
