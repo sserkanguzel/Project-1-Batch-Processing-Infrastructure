@@ -17,12 +17,13 @@ spec:
         vault.hashicorp.com/role: "eso"
         vault.hashicorp.com/agent-inject-secret-pg: "kv/data/app-secrets/airflow/db"
         vault.hashicorp.com/agent-inject-template-pg: |
-          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
-          {{`export POSTGRES_USER="{{ .Data.data.POSTGRES_USER }}"`}}
-          {{`export POSTGRES_PASSWORD="{{ .Data.data.POSTGRES_PASSWORD }}"`}}
-          {{`export POSTGRES_DB="{{ .Data.data.POSTGRES_DB }}"`}}
+          {{`{{- with secret "kv/data/app-secrets/airflow/connection" -}}`}}
+          {{`export POSTGRES_USER="{{ .Data.data.user }}"`}}
+          {{`export POSTGRES_PASSWORD="{{ .Data.data.password }}"`}}
+          {{`export POSTGRES_DB="{{ .Data.data.db }}"`}}
           {{`{{- end }}`}}
     spec:
+      serviceAccountName: {{ .Values.postgres.serviceAccountName | default "default" }}
       containers:
         - name: postgres
           image: postgres:15-alpine
@@ -41,6 +42,7 @@ spec:
       volumes:
         - name: postgres-data
           emptyDir: {}
+
 
 ---
 apiVersion: v1
