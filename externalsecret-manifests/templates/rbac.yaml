@@ -3,20 +3,33 @@ kind: ClusterRole
 metadata:
   name: external-secrets-cluster-role
 rules:
+  # Core secrets and namespace access
   - apiGroups: [""]
     resources: ["secrets", "namespaces"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 
+  # Allow ESO to emit events (used for status updates and errors)
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch", "update"]
+
+  # External Secrets main API group
   - apiGroups: ["external-secrets.io"]
     resources:
       - "externalsecrets"
+      - "externalsecrets/status"
       - "pushsecrets"
+      - "pushsecrets/status"
       - "clusterpushsecrets"
+      - "clusterpushsecrets/status"
       - "clusterexternalsecrets"
-      - "clustersecretstores"
+      - "clusterexternalsecrets/status"
       - "secretstores"
+      - "clustersecretstores"
+      - "clustersecretstores/status"
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 
+  # Generator controller support
   - apiGroups: ["generators.external-secrets.io"]
     resources:
       - "generatorstates"
