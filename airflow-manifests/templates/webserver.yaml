@@ -15,9 +15,9 @@ spec:
       annotations:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "eso"
-        vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/connection"
+        vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/db"
         vault.hashicorp.com/agent-inject-template-sql: |
-          {{- with secret "kv/data/app-secrets/airflow/connection" -}}
+          {{- with secret "kv/data/app-secrets/airflow/db" -}}
           export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"
           {{- end }}
     spec:
