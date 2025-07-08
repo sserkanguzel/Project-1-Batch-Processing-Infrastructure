@@ -23,7 +23,6 @@ spec:
           {{`export POSTGRES_DB="{{ .Data.data.db }}"`}}
           {{`{{- end }}`}}
     spec:
-      serviceAccountName: {{ .Values.postgres.serviceAccountName | default "default" }}
       containers:
         - name: postgres
           image: postgres:15-alpine
