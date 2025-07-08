@@ -18,7 +18,7 @@ airflow:
   serviceAccountName: airflow
 
   initDbJob:
-    enabled: false
+    enabled: true
 
   config:
     logging:
