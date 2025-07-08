@@ -24,7 +24,15 @@ spec:
               echo "Waiting for Postgres to be ready...";
               sleep 10;
             done;
+
+            # Wait until the metadata database is initialized (e.g., ab_user table exists)
+            until psql -h postgres-postgresql.airflow.svc.cluster.local -U airflow -d airflow_db -c '\dt' | grep -q 'ab_user'; do
+              echo "Waiting for Airflow metadata DB to be initialized...";
+              sleep 5;
+            done;
+
             exec airflow triggerer
+
         env:
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
