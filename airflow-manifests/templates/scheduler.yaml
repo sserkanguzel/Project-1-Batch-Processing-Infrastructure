@@ -38,12 +38,19 @@ spec:
           value: {{ .Values.namespace }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
           value: "/opt/airflow/pod_templates/pod_template.yaml"
-        - name: AIRFLOW__CORE__FERNET_KEY
-          value: {{ .Values.airflow.fernetKey }}
-        - name: AIRFLOW__WEBSERVER__SECRET_KEY
-          value: {{ .Values.airflow.secretKey }}
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: /opt/airflow/dags
+        
+        - name: AIRFLOW__CORE__FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: fernetKey
+        - name: AIRFLOW__WEBSERVER__SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secret
+              key: secretKey
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN        
           valueFrom:
             secretKeyRef:
