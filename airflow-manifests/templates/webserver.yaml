@@ -12,73 +12,65 @@ spec:
     metadata:
       labels:
         app: airflow-webserver
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "eso"
-        vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/db"
-        vault.hashicorp.com/agent-inject-template-sql: |
-          {{`{{- with secret "kv/data/app-secrets/airflow/db" -}}`}}
-          {{`export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"`}}
-          {{`{{- end }}`}}
     spec:
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}
       containers:
-        - name: webserver
-          image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-          command: ["/bin/bash", "-c"]
-          args:
-            - |
-              until pg_isready -h postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local -p 5432; do
-                echo "Waiting for Postgres to be ready...";
-                sleep 5;
-              done;
-              airflow db migrate
-              airflow users create \
-                --username admin \
-                --password admin \
-                --firstname Airflow \
-                --lastname Admin \
-                --role Admin \
-                --email admin@example.com || true
-              exec airflow webserver
-          ports:
-            - containerPort: 8080
-          env:
-            - name: AIRFLOW__CORE__EXECUTOR
-              value: {{ .Values.airflow.executor }}
-            - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
-              value: {{ .Values.namespace }}
-            - name: AIRFLOW__CORE__FERNET_KEY
-              value: {{ .Values.airflow.fernetKey }}
-            - name: AIRFLOW__WEBSERVER__SECRET_KEY
-              value: {{ .Values.airflow.secretKey }}
-            - name: AIRFLOW__CORE__DAGS_FOLDER
-              value: /opt/airflow/dags
-            - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-              value: {{ .Values.airflow.config.logging.base_log_folder }}
-            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: ""  # Placeholder to allow env var to be present
-          volumeMounts:
-            - name: logs-volume
-              mountPath: /opt/airflow/logs
-            - name: pod-template-volume
-              mountPath: /opt/airflow/pod_templates
-            - name: shared-volume
-              mountPath: /opt/airflow/shared
+      - name: webserver
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
+              echo "Waiting for Postgres to be ready...";
+              sleep 5;
+            done;
+            airflow db migrate
+            airflow users create \
+              --username admin \
+              --password admin \
+              --firstname Airflow \
+              --lastname Admin \
+              --role Admin \
+              --email admin@example.com || true
+            exec airflow webserver
+        ports:
+        - containerPort: 8080
+        env:
+        - name: AIRFLOW__CORE__EXECUTOR
+          value: {{ .Values.airflow.executor }}
+        - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
+          value: {{ .Values.namespace }}
+        - name: AIRFLOW__CORE__FERNET_KEY
+          value: {{ .Values.airflow.fernetKey }}
+        - name: AIRFLOW__WEBSERVER__SECRET_KEY
+          value: {{ .Values.airflow.secretKey }}
+        - name: AIRFLOW__CORE__DAGS_FOLDER
+          value: /opt/airflow/dags
+        - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+          value: postgresql+psycopg2://{{ .Values.database.postgres.user }}:{{ .Values.database.postgres.password }}@postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.database.postgres.port }}/{{ .Values.database.postgres.db }}
+        - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
+          value: /opt/airflow/logs
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
+        - name: pod-template-volume
+          mountPath: /opt/airflow/pod_templates
+        - name: shared-volume
+          mountPath: /opt/airflow/shared
 
       volumes:
-        - name: logs-volume
-          persistentVolumeClaim:
-            claimName: airflow-logs-pvc
-        - name: pod-template-volume
-          configMap:
-            name: airflow-pod-template
-            items:
-              - key: pod_template.yaml
-                path: pod_template.yaml
-        - name: shared-volume
-          persistentVolumeClaim:
-            claimName: airflow-shared-pvc
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
+      - name: pod-template-volume
+        configMap:
+          name: airflow-pod-template
+          items:
+            - key: pod_template.yaml
+              path: pod_template.yaml
+      - name: shared-volume
+        persistentVolumeClaim:
+          claimName: airflow-shared-pvc
 
 ---
 apiVersion: v1
@@ -89,7 +81,7 @@ metadata:
 spec:
   type: {{ .Values.service.webserver.type }}
   ports:
-    - port: {{ .Values.service.webserver.port }}
-      targetPort: 8080
+  - port: {{ .Values.service.webserver.port }}
+    targetPort: 8080
   selector:
     app: airflow-webserver
