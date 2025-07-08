@@ -3,38 +3,36 @@ kind: ClusterRole
 metadata:
   name: external-secrets-cluster-role
 rules:
-  # Core secrets and namespace access
+  # Allow ESO to manage Kubernetes Secrets across all namespaces
   - apiGroups: [""]
     resources: ["secrets", "namespaces"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 
-  # Allow ESO to emit events (used for status updates and errors)
+  # Allow ESO to emit events (used for debugging/status)
   - apiGroups: [""]
     resources: ["events"]
     verbs: ["create", "patch", "update"]
 
-  # External Secrets main API group
+  # External Secrets API group
   - apiGroups: ["external-secrets.io"]
     resources:
-      - "externalsecrets"
-      - "externalsecrets/status"
-      - "pushsecrets"
-      - "pushsecrets/status"
-      - "clusterpushsecrets"
-      - "clusterpushsecrets/status"
-      - "clusterexternalsecrets"
-      - "clusterexternalsecrets/status"
-      - "secretstores"
-      - "clustersecretstores"
-      - "clustersecretstores/status"
+      - externalsecrets
+      - externalsecrets/status
+      - clusterexternalsecrets
+      - clusterexternalsecrets/status
+      - pushsecrets
+      - pushsecrets/status
+      - clusterpushsecrets
+      - clusterpushsecrets/status
+      - secretstores
+      - clustersecretstores
+      - clustersecretstores/status
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 
-  # Generator controller support
+  # Generator support (for dynamic secret generation)
   - apiGroups: ["generators.external-secrets.io"]
-    resources:
-      - "generatorstates"
+    resources: ["generatorstates"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -45,6 +43,6 @@ subjects:
     name: eso
     namespace: external-secrets
 roleRef:
+  apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: external-secrets-cluster-role
-  apiGroup: rbac.authorization.k8s.io
