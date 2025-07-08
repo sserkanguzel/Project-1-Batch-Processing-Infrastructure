@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-postgresql
-  namespace: {{ .Values.namespace }}
+  namespace: airflow
 spec:
   replicas: 1
   selector:
@@ -22,6 +22,7 @@ spec:
           export POSTGRES_PASSWORD="{{ .Data.data.password }}"
           export POSTGRES_DB="{{ .Data.data.db }}"
           {{- end }}
+        vault.hashicorp.com/agent-inject-file-pg: "pg"
     spec:
       serviceAccountName: airflow
       containers:
@@ -41,6 +42,7 @@ spec:
       volumes:
         - name: postgres-data
           emptyDir: {}
+
 
 
 
