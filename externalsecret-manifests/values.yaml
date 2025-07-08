@@ -1,9 +1,17 @@
-namespace: vault-secrets
+namespace: external-secrets
+
+image:
+  repository: ghcr.io/external-secrets/external-secrets
+  tag: "0.9.19"
 
 serviceAccount:
   create: true
   name: eso
 
-image:
-  repository: ghcr.io/external-secrets/external-secrets
-  tag: "0.9.19"
+vault:
+  server: "http://vault.vault.svc.cluster.local:8200"
+  path: "kv"
+  version: "v2"
+  tokenSecretName: "vault-token"
+  tokenSecretNamespace: "external-secrets"
+  tokenSecretKey: "token"
