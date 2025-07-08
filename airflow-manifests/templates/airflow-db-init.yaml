@@ -14,7 +14,7 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
           - |
-            until pg_isready -h postgres-postgresql.{{ .Values.namespace }}.svc.cluster.local -p 5432; do
+            until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres..."; sleep 5;
             done;
             airflow db init;
