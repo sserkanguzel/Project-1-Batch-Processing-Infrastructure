@@ -38,12 +38,12 @@ spec:
         - name: AIRFLOW__CORE__FERNET_KEY
           valueFrom:
             secretKeyRef:
-              name: airflow-secret
+              name: airflow-db-secret
               key: fernetKey
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: airflow-secret
+              name: airflow-db-secret
               key: secretKey
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
