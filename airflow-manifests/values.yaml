@@ -53,13 +53,11 @@ web:
   annotations:
     vault.hashicorp.com/agent-inject: "true"
     vault.hashicorp.com/role: "eso"
-    vault.hashicorp.com/agent-inject-secret-db-creds: "kv/data/app-secrets/airflow/db"
-    vault.hashicorp.com/agent-inject-template-db-creds: |
-      {{- with secret "kv/data/app-secrets/airflow/db" -}}
-      export AIRFLOW__DATABASE__USER="{{ .Data.data.user }}"
-      export AIRFLOW__DATABASE__PASSWORD="{{ .Data.data.password }}"
-      export AIRFLOW__DATABASE__DB="{{ .Data.data.db }}"
-      {{- end }}
+    vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/connection"
+    vault.hashicorp.com/agent-inject-template-sql: |
+      {{`{{- with secret "kv/data/app-secrets/airflow/connection" -}}`}}
+      {{`export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"`}}
+      {{`{{- end }}`}}
 
 triggerer:
   enabled: true
@@ -67,13 +65,11 @@ triggerer:
   annotations:
     vault.hashicorp.com/agent-inject: "true"
     vault.hashicorp.com/role: "eso"
-    vault.hashicorp.com/agent-inject-secret-db-creds: "kv/data/app-secrets/airflow/db"
-    vault.hashicorp.com/agent-inject-template-db-creds: |
-      {{- with secret "kv/data/app-secrets/airflow/db" -}}
-      export AIRFLOW__DATABASE__USER="{{ .Data.data.user }}"
-      export AIRFLOW__DATABASE__PASSWORD="{{ .Data.data.password }}"
-      export AIRFLOW__DATABASE__DB="{{ .Data.data.db }}"
-      {{- end }}
+    vault.hashicorp.com/agent-inject-secret-sql: "kv/data/app-secrets/airflow/connection"
+    vault.hashicorp.com/agent-inject-template-sql: |
+      {{`{{- with secret "kv/data/app-secrets/airflow/connection" -}}`}}
+      {{`export AIRFLOW__DATABASE__SQL_ALCHEMY_CONN="{{ .Data.data.sql_alchemy_conn }}"`}}
+      {{`{{- end }}`}}
 
 service:
   webserver:
