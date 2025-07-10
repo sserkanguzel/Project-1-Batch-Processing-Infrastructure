@@ -23,16 +23,3 @@ spec:
           env:
           - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
             value: "true"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: metallb-webhook-service
-  namespace: metallb-system
-spec:
-  selector:
-    app: metallb
-  ports:
-    - name: webhook
-      port: 443
-      targetPort: webhook
