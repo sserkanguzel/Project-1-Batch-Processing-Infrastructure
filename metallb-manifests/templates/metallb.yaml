@@ -23,3 +23,4 @@ spec:
             - --webhook-secret=metallb-webhook-cert
             - --cert-service-name=metallb-webhook-service
             - --namespace={{ .Values.namespace }}
+            - --deployment=metallb-controller
