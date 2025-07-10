@@ -24,6 +24,15 @@ spec:
             - --cert-service-name=metallb-webhook-service
             - --namespace={{ .Values.namespace }}
             - --deployment=metallb-controller
+          volumeMounts:
+            - name: webhook-cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+      volumes:
+        - name: webhook-cert
+          secret:
+            secretName: metallb-webhook-cert
+
 ---
 apiVersion: v1
 kind: Service
