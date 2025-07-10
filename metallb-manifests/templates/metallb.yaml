@@ -32,6 +32,7 @@ spec:
         - name: webhook-cert
           secret:
             secretName: metallb-webhook-cert
+            optional: true
 
 ---
 apiVersion: v1
