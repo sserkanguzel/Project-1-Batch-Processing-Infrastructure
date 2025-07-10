@@ -1,0 +1,22 @@
+controller:
+  ingressClass: nginx
+  ingressClassDefault: true
+
+  replicaCount: 1
+  image:
+    repository: k8s.gcr.io/ingress-nginx/controller
+    tag:  v1.13.0
+    pullPolicy: IfNotPresent
+
+  service:
+    type: NodePort
+    httpPort: 30080
+    httpsPort: 30443
+
+  hostNetwork: false
+
+defaultBackend:
+  enabled: true
+  image:
+    repository: k8s.gcr.io/defaultbackend-amd64
+    tag: "1.5"
