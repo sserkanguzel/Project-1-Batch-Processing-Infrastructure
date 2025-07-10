@@ -33,7 +33,14 @@ metadata:
   name: metallb-speaker
 rules:
   - apiGroups: [""]
-    resources: ["pods", "services", "endpoints", "nodes"]
+    resources:
+      - pods
+      - nodes
+      - services
+      - endpoints
+      - namespaces
+      - configmaps
+      - secrets
     verbs: ["get", "list", "watch"]
   - apiGroups: ["discovery.k8s.io"]
     resources: ["endpointslices"]
@@ -43,11 +50,16 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: ["metallb.io"]
     resources:
-      - bgppeers
+      - ipaddresspools
       - l2advertisements
+      - bgpadvertisements
+      - bgppeers
+      - bfdprofiles
+      - communities
       - servicebgpstatuses
       - servicel2statuses
     verbs: ["get", "list", "watch"]
+
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
