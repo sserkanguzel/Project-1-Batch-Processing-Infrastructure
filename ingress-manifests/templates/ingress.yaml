@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: ingress-nginx
+  serviceAccountName: ingress-nginx-controller
   template:
     metadata:
       labels:
