@@ -12,7 +12,7 @@ controller:
   dnsPolicy: ClusterFirstWithHostNet
 
   service:
-    enabled: false
+    enabled: true
 
 defaultBackend:
   enabled: true
