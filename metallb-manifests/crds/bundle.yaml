@@ -10,6 +10,8 @@ spec:
     singular: bfdprofile
     kind: BFDProfile
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -33,6 +35,8 @@ spec:
     singular: bgpadvertisement
     kind: BGPAdvertisement
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -56,6 +60,8 @@ spec:
     singular: bgppeer
     kind: BGPPeer
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -88,6 +94,8 @@ spec:
     singular: community
     kind: Community
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -111,6 +119,8 @@ spec:
     singular: ipaddresspool
     kind: IPAddressPool
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -134,6 +144,8 @@ spec:
     singular: l2advertisement
     kind: L2Advertisement
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -157,6 +169,8 @@ spec:
     singular: servicebgpstatus
     kind: ServiceBGPStatus
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
@@ -177,6 +191,8 @@ spec:
     singular: servicel2status
     kind: ServiceL2Status
   scope: Namespaced
+  conversion:
+    strategy: None
   versions:
     - name: v1beta1
       served: true
