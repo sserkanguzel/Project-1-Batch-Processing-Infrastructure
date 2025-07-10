@@ -1,4 +1,3 @@
-{{- if not (lookup "v1" "Secret" "metallb-system" "metallb-webhook-cert") }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -20,4 +19,4 @@ spec:
             - --webhook-secret=metallb-webhook-cert
             - --cert-service-name=metallb-webhook-service
             - --namespace=metallb-system
-{{- end }}
+
