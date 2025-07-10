@@ -18,7 +18,8 @@ rules:
     resources:
       - ingresses
       - ingressclasses
-    verbs: ["get", "list", "watch"]
+      - ingresses/status
+    verbs: ["get", "list", "watch","update"]
 
   - apiGroups: ["coordination.k8s.io"]
     resources:
