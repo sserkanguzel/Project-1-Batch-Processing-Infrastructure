@@ -5,6 +5,7 @@ controller:
     repository: quay.io/metallb/controller
     tag: v0.15.2
   replicas: 1
+  webhookMode: disabled
 
 speaker:
   image:
