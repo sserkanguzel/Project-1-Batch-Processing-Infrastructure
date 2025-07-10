@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     app: metallb
-    component: controller
   ports:
-    - port: 443
+    - name: webhook
+      port: 443
       targetPort: webhook
