@@ -20,3 +20,6 @@ spec:
           args:
             - controller
             - --webhook-mode=disabled
+          env:
+          - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
+            value: "true"  
