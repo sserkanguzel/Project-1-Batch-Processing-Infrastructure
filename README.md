@@ -12,7 +12,7 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 
 ### 🔁 Data Ingestion
 
-- Schedule and orchestrate batch jobs using **Airflow DAGs** via the KubernetesExecutor.
+- Schedule and orchestrate batch jobs using **Airflow DAGs**.
 - Supports diverse data sources: **external APIs, FTP servers, internal systems, and web scrapers**.
 - DAGs are containerized, versioned in GitHub, and deployed via CI/CD pipelines.
 - Output is written as structured/unstructured files (CSV, JSON, Parquet) to **MinIO**, forming the **raw/staging layer**.
@@ -21,7 +21,7 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 
 - Airflow DAGs detect and extract schema metadata from newly ingested files.
 - Schemas are committed to a Git-based **Schema Repository** as YAML/SQL/JSON definitions.
-- Hive Metastore is synchronized with the schema repo, creating **external tables** dynamically with partition support.
+- Hive Metastore (backed by PostgreSQL DB) is synchronized with the schema repo, creating **external tables** dynamically with partition support.
 
 ### 🔍 Query Layer & Federated SQL
 
