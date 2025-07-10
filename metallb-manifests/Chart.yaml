@@ -3,4 +3,4 @@ name: metallb
 description: A custom MetalLB deployment
 type: application
 version: 0.1.0
-appVersion: v0.13.12
+appVersion: v0.15.2
