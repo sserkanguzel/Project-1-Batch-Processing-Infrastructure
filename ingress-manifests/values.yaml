@@ -5,15 +5,14 @@ controller:
   replicaCount: 1
   image:
     repository: k8s.gcr.io/ingress-nginx/controller
-    tag:  v1.13.0
+    tag: v1.13.0
     pullPolicy: IfNotPresent
 
-  service:
-    type: NodePort
-    httpPort: 30080
-    httpsPort: 30443
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
 
-  hostNetwork: false
+  service:
+    enabled: false
 
 defaultBackend:
   enabled: true
