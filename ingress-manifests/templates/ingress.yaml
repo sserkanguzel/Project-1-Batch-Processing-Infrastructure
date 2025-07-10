@@ -22,7 +22,7 @@ spec:
           args:
             - /nginx-ingress-controller
             - --ingress-class={{ .Values.controller.ingressClass }}
-            - --default-backend-service=$(POD_NAMESPACE)/default-backend
+            - --default-backend-service={{ .Release.Namespace }}/default-backend
           ports:
             - name: http
               containerPort: 80
