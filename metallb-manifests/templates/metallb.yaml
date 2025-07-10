@@ -16,6 +16,6 @@ spec:
       serviceAccountName: metallb-controller
       containers:
       - name: controller
-        image: {{ .Values.controller.image }}
+        image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
         args:
           - controller
