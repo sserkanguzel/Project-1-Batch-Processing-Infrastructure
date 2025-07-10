@@ -1,12 +1,17 @@
+{{- if not (lookup "v1" "Secret" "metallb-system" "metallb-webhook-cert") }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: metallb-certgen
   namespace: metallb-system
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   template:
     spec:
       serviceAccountName: metallb-controller
+      restartPolicy: OnFailure
       containers:
         - name: certgen
           image: quay.io/metallb/controller:v0.15.2
@@ -15,4 +20,4 @@ spec:
             - --webhook-secret=metallb-webhook-cert
             - --cert-service-name=metallb-webhook-service
             - --namespace=metallb-system
-      restartPolicy: OnFailure
+{{- end }}
