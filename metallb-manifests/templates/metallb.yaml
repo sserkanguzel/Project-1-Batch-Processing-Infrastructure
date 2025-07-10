@@ -20,23 +20,9 @@ spec:
           args:
             - controller
             - --webhook-mode=disabled
-            - --webhook-secret=metallb-webhook-cert
-            - --cert-service-name=metallb-webhook-service
-            - --namespace={{ .Values.namespace }}
-            - --deployment=metallb-controller
           env:
           - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
             value: "true"
-          volumeMounts:
-            - name: webhook-cert
-              mountPath: /tmp/k8s-webhook-server/serving-certs
-              readOnly: true
-      volumes:
-        - name: webhook-cert
-          secret:
-            secretName: metallb-webhook-cert
-            optional: true
-
 ---
 apiVersion: v1
 kind: Service
