@@ -23,9 +23,6 @@ spec:
             - --webhook-secret=metallb-webhook-cert
             - --cert-service-name=metallb-webhook-service
             - --namespace=metallb-system
-          env:
-            - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
-              value: "true"
 ---
 apiVersion: v1
 kind: Service
