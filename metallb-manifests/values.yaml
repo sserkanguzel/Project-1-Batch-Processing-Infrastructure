@@ -1,11 +1,11 @@
 namespace: metallb-system
 
 controller:
-  image: metallb/controller:v0.13.12
+  image: ghcr.io/metallb/speaker:v0.13.12
   replicas: 1
 
 speaker:
-  image: metallb/speaker:v0.13.12
+  image: ghcr.io/metallb/speaker:v0.13.12
 
 config:
   addressPool:
