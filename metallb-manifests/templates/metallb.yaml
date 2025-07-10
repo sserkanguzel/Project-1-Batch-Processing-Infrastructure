@@ -18,8 +18,11 @@ spec:
         - name: controller
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
           args:
-            - controller
-            - --webhook-mode=disabled
+            - --controller
+            - --webhook-mode=conversion
+            - --webhook-secret=metallb-webhook-cert
+            - --cert-service-name=metallb-webhook-service
+            - --namespace=metallb-system
           env:
             - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
               value: "true"
