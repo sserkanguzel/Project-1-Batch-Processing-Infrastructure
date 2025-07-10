@@ -333,7 +333,13 @@ metadata:
   name: bgppeers.metallb.io
 spec:
   conversion:
-    strategy: None
+   strategy: Webhook
+    webhook:
+      clientConfig:
+        service:
+          name: metallb-webhook-service
+          namespace: metallb-system
+          path: /convert
   group: metallb.io
   names:
     kind: BGPPeer
