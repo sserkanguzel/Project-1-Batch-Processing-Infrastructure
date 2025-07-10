@@ -2,14 +2,14 @@ namespace: metallb-system
 
 controller:
   image:
-    repository: ghcr.io/metallb/metallb/controller
-    tag: v0.13.12
+    repository: bitnami/metallb-controller
+    tag: 0.15.2
   replicas: 1
 
 speaker:
   image:
-    repository: ghcr.io/metallb/metallb/speaker
-    tag: v0.13.12
+    repository: bitnami/metallb-controller
+    tag: 0.15.2
 
 config:
   addressPool:
