@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metallb-controller
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.controller.replicas }}
+  selector:
+    matchLabels:
+      component: controller
+  template:
+    metadata:
+      labels:
+        component: controller
+    spec:
+      serviceAccountName: metallb-controller
+      containers:
+      - name: controller
+        image: {{ .Values.controller.image }}
+        args:
+          - controller

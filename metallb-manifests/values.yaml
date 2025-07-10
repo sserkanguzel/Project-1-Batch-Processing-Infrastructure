@@ -1,0 +1,15 @@
+namespace: metallb-system
+
+controller:
+  image: metallb/controller:v0.13.12
+  replicas: 1
+
+speaker:
+  image: metallb/speaker:v0.13.12
+
+config:
+  addressPool:
+    name: default
+    protocol: layer2
+    addresses:
+      - 192.168.1.200-192.168.1.202
