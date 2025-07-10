@@ -1,8 +1,17 @@
+# ----------------------------------------------------------
+# ConfigMap: Pod Template for KubernetesExecutor Worker Pods
+# ----------------------------------------------------------
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-pod-template
-  namespace: {{ .Values.namespace }}
+  name: airflow-pod-template  # Name of the ConfigMap
+  namespace: {{ .Values.namespace }}  # Namespace defined in Helm values
 data:
   pod_template.yaml: |
-{{ .Files.Get "config/pod_template.yaml" | indent 4 }}
+    {{ .Files.Get "config/pod_template.yaml" | indent 4 }}
+    # This line loads the external pod template file from the Helm chart's config directory.
+    # The pod_template.yaml defines:
+    # - How task worker pods should be launched by the KubernetesExecutor
+    # - What resources, volumes, sidecars, and env vars each task pod gets
+    # - It ensures all dynamically spawned task pods follow a consistent configuration
+

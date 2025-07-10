@@ -1,39 +1,47 @@
+# ------------------------------
+# Airflow Webserver Deployment
+# ------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: airflow-webserver
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.namespace }}  # Namespace injected from Helm values
 spec:
-  replicas: 1
+  replicas: 1  # One webserver pod (can be scaled if needed)
   selector:
     matchLabels:
-      app: airflow-webserver
+      app: airflow-webserver  # Label selector for pod matching
   template:
     metadata:
       labels:
         app: airflow-webserver
     spec:
-      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}  # Use Airflow-specific service account for RBAC
       containers:
       - name: webserver
-        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-        command: ["/bin/bash", "-c"]
-        args:
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"  # Airflow webserver container image
+        command: ["/bin/bash", "-c"]  # Start container with shell script
+        args: # Deployment waits for two conditions to become available before becoming available. First a PostgreSQL DB which holds the metadata, logs, credentials, users etc. information to become active. Secondly, PostgreSQL DB needs to be initiated via a one time running job so that it can become available all across the app components.
           - |
+            # Wait for PostgreSQL to be ready
             until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres to be ready...";
               sleep 10;
             done;
 
+            # Wait until Airflow metadata DB has been initialized (table ab_user exists)
             until psql -h postgres-postgresql.airflow.svc.cluster.local -c '\dt' | grep -q 'ab_user'; do
               echo "Waiting for Airflow metadata DB to be initialized...";
               sleep 5;
             done;
 
+            # Start the Airflow webserver
             exec airflow webserver
         ports:
-        - containerPort: 8080
+        - containerPort: 8080  # Expose port 8080 for the web UI
+
         env:
+        # Core Airflow settings from Helm values
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
@@ -41,10 +49,11 @@ spec:
         - name: AIRFLOW__CORE__DAGS_FOLDER
           value: /opt/airflow/dags
         - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-          value: /opt/airflow/logs       
+          value: /opt/airflow/logs
         - name: AIRFLOW__WEBSERVER__WEB_SERVER_HOST
           value: "0.0.0.0"
-          
+
+        # Secrets from Vault (synced into Kubernetes via ESO)
         - name: AIRFLOW__CORE__FERNET_KEY
           valueFrom:
             secretKeyRef:
@@ -54,7 +63,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
-              key: secretKey          
+              key: secretKey
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
@@ -78,38 +87,41 @@ spec:
 
         volumeMounts:
         - name: logs-volume
-          mountPath: /opt/airflow/logs
+          mountPath: /opt/airflow/logs  # Persist log data
         - name: pod-template-volume
-          mountPath: /opt/airflow/pod_templates
+          mountPath: /opt/airflow/pod_templates  # Location of KubernetesExecutor pod_template.yaml
         - name: shared-volume
-          mountPath: /opt/airflow/shared
+          mountPath: /opt/airflow/shared  # Shared volume for DAGs/data/etc.
 
       volumes:
       - name: logs-volume
         persistentVolumeClaim:
-          claimName: airflow-logs-pvc
+          claimName: airflow-logs-pvc  # PVC for log persistence
       - name: pod-template-volume
         configMap:
-          name: airflow-pod-template
+          name: airflow-pod-template  # ConfigMap containing pod_template.yaml
           items:
             - key: pod_template.yaml
               path: pod_template.yaml
       - name: shared-volume
         persistentVolumeClaim:
-          claimName: airflow-shared-pvc
+          claimName: airflow-shared-pvc  # Shared volume PVC
 
 ---
+
+# ------------------------------
+# Airflow Webserver Service
+# ------------------------------
 apiVersion: v1
 kind: Service
 metadata:
   name: airflow-webserver
   namespace: airflow
 spec:
-  type: ClusterIP
+  type: ClusterIP  # Internal access only (used with Ingress)
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8080  # Exposed service port
+      targetPort: 8080  # Target container port
       protocol: TCP
   selector:
-    app: airflow-webserver
-
+    app: airflow-webserver  # Select pods with this label

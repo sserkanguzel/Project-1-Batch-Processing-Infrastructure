@@ -1,71 +1,90 @@
+# ------------------------------------------
+# Airflow Scheduler Deployment
+# ------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-scheduler
-  namespace: {{ .Values.namespace }}
+  name: airflow-scheduler  # Name of the deployment
+  namespace: {{ .Values.namespace }}  # Namespace defined in Helm values
 spec:
-  replicas: 1
+  replicas: 1  # One instance of the scheduler (Airflow supports only one active scheduler by default)
   selector:
     matchLabels:
-      app: airflow-scheduler
+      app: airflow-scheduler  # Label selector for pods
   template:
     metadata:
       labels:
-        app: airflow-scheduler
+        app: airflow-scheduler  # Pod label
     spec:
-      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}  # ServiceAccount for RBAC access to K8s resources
+
       containers:
       - name: scheduler
-        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"  # Custom Airflow image
         command: ["/bin/bash", "-c"]
         args:
           - |
+            # Wait until PostgreSQL is accepting connections
             until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres to be ready...";
               sleep 10;
             done;
 
+            # Wait until Airflow metadata DB is initialized (ab_user table exists)
             until psql -h postgres-postgresql.airflow.svc.cluster.local -c '\dt' | grep -q 'ab_user'; do
               echo "Waiting for Airflow metadata DB to be initialized...";
               sleep 5;
             done;
 
+            # Start the Airflow scheduler
             exec airflow scheduler
+
         env:
+        # Core Airflow execution and scheduling settings
         - name: AIRFLOW__CORE__EXECUTOR
-          value: {{ .Values.airflow.executor }}
+          value: {{ .Values.airflow.executor }}  # Usually KubernetesExecutor
+
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
-          value: {{ .Values.namespace }}
+          value: {{ .Values.namespace }}  # Namespace for launching task pods
+
         - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
-          value: "/opt/airflow/pod_templates/pod_template.yaml"
+          value: "/opt/airflow/pod_templates/pod_template.yaml"  # Path to the worker pod spec
+
         - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: /opt/airflow/dags
-        
+          value: /opt/airflow/dags  # DAGs folder inside container
+
+        # Secrets for Airflow encryption, authentication, and DB access
         - name: AIRFLOW__CORE__FERNET_KEY
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: fernetKey
+
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: secretKey
+
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN        
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: sql_alchemy_conn
+
+        # PostgreSQL client env vars for readiness checks
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: password
+
         - name: PGUSER
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: user
+
         - name: PGDATABASE
           valueFrom:
             secretKeyRef:
@@ -74,22 +93,24 @@ spec:
 
         volumeMounts:
         - name: pod-template-volume
-          mountPath: /opt/airflow/pod_templates
+          mountPath: /opt/airflow/pod_templates  # Mount pod_template.yaml for worker pod specs
         - name: logs-volume
-          mountPath: /opt/airflow/logs
+          mountPath: /opt/airflow/logs  # Mount logs directory (backed by PVC)
         - name: shared-volume
-          mountPath: /opt/airflow/shared
+          mountPath: /opt/airflow/shared  # Mount shared volume (used by other components too)
 
       volumes:
       - name: pod-template-volume
         configMap:
-          name: airflow-pod-template
+          name: airflow-pod-template  # ConfigMap containing pod_template.yaml
           items:
             - key: pod_template.yaml
               path: pod_template.yaml
+
       - name: logs-volume
         persistentVolumeClaim:
-          claimName: airflow-logs-pvc
+          claimName: airflow-logs-pvc  # Persist logs across pod restarts
+
       - name: shared-volume
         persistentVolumeClaim:
-          claimName: airflow-shared-pvc
+          claimName: airflow-shared-pvc  # Shared volume for passing data or config between components

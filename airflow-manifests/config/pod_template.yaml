@@ -1,51 +1,65 @@
+# ---------------------------------------------------------------------
+# Pod Template: Used by Airflow KubernetesExecutor to spawn worker pods
+# ---------------------------------------------------------------------
+# This manifest defines the base configuration for dynamically spawned worker pods in KubernetesExecutor mode
 apiVersion: v1
 kind: Pod
 metadata:
-  name: airflow-worker-pod-template
+  name: airflow-worker-pod-template  # Name of the pod template (referenced in configMap and scheduler)
   labels:
-    app: airflow-worker
+    app: airflow-worker  # Optional label for identifying worker pods
 spec:
-  serviceAccountName: airflow
-  restartPolicy: Never
+  serviceAccountName: airflow  # Grants necessary RBAC permissions to run DAG tasks (pods, jobs, etc.)
+  restartPolicy: Never  # Worker pods terminate after completing their task (batch job behavior)
+
   containers:
-    - name: base
-      image: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-04-2056"
-      imagePullPolicy: IfNotPresent
+    - name: base  # Container name (used internally, no special requirements)
+      image: "ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow:2025-07-04-2056"  # Same custom Airflow image
+      imagePullPolicy: IfNotPresent  # Pull the image only if it's not already cached
+
+
       env:
         - name: AIRFLOW_IS_K8S_EXECUTOR_POD
-          value: "True"
+          value: "True"  # Required to signal this is a KubernetesExecutor worker pod
+
         - name: AIRFLOW__CORE__DAGS_FOLDER
-          value: "/opt/airflow/dags"
+          value: "/opt/airflow/dags"  # DAGS folder inside the container
+
         - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
-          value: "/opt/airflow/logs"
+          value: "/opt/airflow/logs"  # Where logs will be written
+
         - name: AIRFLOW__LOGGING__REMOTE_LOGGING
-          value: "False"
-        
+          value: "False"  # Disable remote logging (e.g., to S3 or GCS)
+
+
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
-              key: sql_alchemy_conn
+              key: sql_alchemy_conn  # PostgreSQL connection string
+
         - name: AIRFLOW__CORE__FERNET_KEY
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: fernetKey
+
         - name: AIRFLOW__WEBSERVER__SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: secretKey
-      
       volumeMounts:
         - name: logs-volume
-          mountPath: /opt/airflow/logs
+          mountPath: /opt/airflow/logs  # Shared volume for logging
         - name: shared-volume
-          mountPath: /opt/airflow/shared
+          mountPath: /opt/airflow/shared  # Optional shared volume for file passing between DAGs/tasks
+
   volumes:
     - name: logs-volume
       persistentVolumeClaim:
-        claimName: airflow-logs-pvc
+        claimName: airflow-logs-pvc  # PVC backing the logs directory
+
     - name: shared-volume
       persistentVolumeClaim:
-        claimName: airflow-shared-pvc
+        claimName: airflow-shared-pvc  # Shared PVC for inter-task/file communication

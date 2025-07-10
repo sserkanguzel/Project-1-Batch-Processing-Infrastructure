@@ -1,32 +1,43 @@
+# ------------------------------------------------------------
+# Kubernetes Job: Initialize Airflow Metadata DB & Admin User
+# ------------------------------------------------------------
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: airflow-init-db
-  namespace: {{ .Values.namespace }}
+  name: airflow-init-db  # Name of the Job
+  namespace: {{ .Values.namespace }}  # Target namespace from Helm values
 spec:
   template:
     spec:
-      ttlSecondsAfterFinished: 60
-      restartPolicy: OnFailure
-      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      ttlSecondsAfterFinished: 60  # Clean up job pod 60 seconds after completion
+      restartPolicy: OnFailure  # Retry the job if it fails (one retry at a time)
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}  # Use Airflow's service account for RBAC access
       containers:
       - name: airflow-init
-        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"  # Custom Airflow image
+
         command: ["/bin/bash", "-c"]
         args:
           - |
+            # Wait for PostgreSQL to become available
             until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres..."; sleep 5;
             done;
+
+            # Initialize Airflow metadata DB (creates tables)
             airflow db init;
+
+            # Create the initial Airflow web UI admin user
             airflow users create \
               --username "$_AIRFLOW_WWW_USER_USERNAME" \
               --password "$_AIRFLOW_WWW_USER_PASSWORD" \
               --firstname "$_AIRFLOW_WWW_USER_FIRSTNAME" \
               --lastname "$_AIRFLOW_WWW_USER_LASTNAME" \
               --role Admin \
-              --email "$_AIRFLOW_WWW_USER_EMAIL" || true
+              --email "$_AIRFLOW_WWW_USER_EMAIL" || true  # Prevent failure if user already exists
+
         env:
+        # Core Airflow configuration
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
@@ -35,7 +46,8 @@ spec:
           value: /opt/airflow/dags
         - name: AIRFLOW__LOGGING__BASE_LOG_FOLDER
           value: /opt/airflow/logs
-          
+
+        # Secrets loaded via ExternalSecret into Kubernetes Secret (airflow-db-secret)
         - name: AIRFLOW__CORE__FERNET_KEY
           valueFrom:
             secretKeyRef:
@@ -51,6 +63,8 @@ spec:
             secretKeyRef:
               name: airflow-db-secret
               key: sql_alchemy_conn
+
+        # Default Airflow admin user credentials (from Vault via ESO)
         - name: _AIRFLOW_WWW_USER_USERNAME
           valueFrom:
             secretKeyRef:
@@ -76,7 +90,3 @@ spec:
             secretKeyRef:
               name: airflow-db-secret
               key: webuserlastname
-
-
-
-

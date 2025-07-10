@@ -1,22 +1,26 @@
+# ------------------------------------------
+# PostgreSQL Deployment for Airflow Metadata DB
+# ------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-postgresql
-  namespace: {{ .Values.namespace }}
+  name: postgres-postgresql  # Name of the Deployment
+  namespace: {{ .Values.namespace }}  # Namespace from Helm values
 spec:
-  replicas: 1
+  replicas: 1  # Single replica (PostgreSQL is stateful, so scaling must be handled carefully)
   selector:
     matchLabels:
-      app: postgres
+      app: postgres  # Selector label for matching pods
   template:
     metadata:
       labels:
-        app: postgres
+        app: postgres  # Label for identifying the pod
     spec:
       containers:
       - name: postgres
-        image: postgres:15-alpine
+        image: postgres:15-alpine  # Lightweight PostgreSQL 15 image
         env:
+        # Set PostgreSQL environment variables from secrets synced via ExternalSecret
         - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
@@ -33,23 +37,30 @@ spec:
               name: airflow-db-secret
               key: password
         ports:
-        - containerPort: 5432
+        - containerPort: 5432  # Default PostgreSQL port exposed inside the pod
+
         volumeMounts:
         - name: postgres-data
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgresql/data  # Mount location for PostgreSQL data directory
+
       volumes:
       - name: postgres-data
-        emptyDir: {}
+        emptyDir: {}  # Use ephemeral storage (data will be lost on pod restart — not suitable for production)
+
 ---
+# ------------------------------------------
+# PostgreSQL Service (Internal Access)
+# ------------------------------------------
 apiVersion: v1
 kind: Service
 metadata:
   name: postgres-postgresql
   namespace: {{ .Values.namespace }}
 spec:
-  type: ClusterIP
+  type: ClusterIP  # Default internal service type
   ports:
-  - port: 5432
-    targetPort: 5432
+  - port: 5432  # Service port
+    targetPort: 5432  # Port on the PostgreSQL container
   selector:
-    app: postgres
+    app: postgres  # Selects the pod created by the Deployment above
+
