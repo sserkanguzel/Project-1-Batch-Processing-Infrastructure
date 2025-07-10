@@ -63,6 +63,10 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 
 ---
 
+## 🧠 Example Data Pipeline Summary
+
+![Data Pipeline](Schema.png)
+
 ## 📦 Components and Responsibilities
 
 | Component       | Description |
@@ -91,13 +95,6 @@ airflow.app.com   → 192.168.1.200
 minio.app.com     → 192.168.1.200
 vault.app.com     → 192.168.1.200
 ```
-
----
-
-## 🧠 Example Data Pipeline Summary
-
-![Data Pipeline](Schema.png)
-
 ---
 
 ## 📌 Planned Features
