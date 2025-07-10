@@ -101,11 +101,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: airflow-webserver
-  namespace: {{ .Values.namespace }}
+  namespace: airflow
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-  - port: 8080
-    targetPort: 8080
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
   selector:
     app: airflow-webserver
+
