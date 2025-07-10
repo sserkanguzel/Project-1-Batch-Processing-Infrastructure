@@ -5,7 +5,10 @@ controller:
     repository: quay.io/metallb/controller
     tag: v0.15.2
   replicas: 1
-  webhookMode: disabled
+  webhook:
+    mode: disabled
+    secretName: metallb-webhook-cert
+    serviceName: metallb-webhook-service
 
 speaker:
   image:
