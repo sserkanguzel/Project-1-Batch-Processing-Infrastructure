@@ -1,0 +1,136 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: bfdprofiles.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: bfdprofiles
+    singular: bfdprofile
+    kind: BFDProfile
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: bgpadvertisements.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: bgpadvertisements
+    singular: bgpadvertisement
+    kind: BGPAdvertisement
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: bgppeers.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+    - name: v1beta2
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: bgppeers
+    singular: bgppeer
+    kind: BGPPeer
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: communities.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: communities
+    singular: community
+    kind: Community
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: ipaddresspools.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: ipaddresspools
+    singular: ipaddresspool
+    kind: IPAddressPool
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: l2advertisements.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: l2advertisements
+    singular: l2advertisement
+    kind: L2Advertisement
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: servicebgpstatuses.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: servicebgpstatuses
+    singular: servicebgpstatus
+    kind: ServiceBGPStatus
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: servicel2statuses.metallb.io
+spec:
+  group: metallb.io
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: servicel2statuses
+    singular: servicel2status
+    kind: ServiceL2Status
