@@ -1,40 +1,42 @@
+# Namespace where all Airflow resources will be deployed
 namespace: airflow
 
 airflow:
   image:
-    repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow
-    tag: '2025-07-04-2056'
+    repository: ghcr.io/sserkanguzel/project-1-1-batch-processing-airflow  # Custom Airflow image hosted on GitHub Container Registry
+    tag: '2025-07-04-2056'  # Specific version/tag of the image. DAG repo bakes dags into a docker image and redeploys it everytime any change has happened in dag repo. It is done via CI workflow.
 
-  executor: KubernetesExecutor
+  executor: KubernetesExecutor  # Use KubernetesExecutor to dynamically run tasks as separate pods
 
   kubernetesExecutor:
     podTemplate:
-      configMapName: airflow-pod-template
-      name: pod_template.yaml
+      configMapName: airflow-pod-template  # Name of the ConfigMap that contains the pod template definition
+      name: pod_template.yaml  # Key within the ConfigMap holding the YAML pod spec for Airflow workers. Pod template specifies what kind of kubernetes pod will be deployed to execute the task. 
 
-  serviceAccountName: airflow
+  serviceAccountName: airflow  # Kubernetes ServiceAccount used by Airflow components for RBAC access
 
   initDbJob:
-    enabled: true
+    enabled: true  # Initialize the Airflow metadata database at startup
 
   config:
     logging:
-      base_log_folder: /opt/airflow/logs
-      remote_logging: "False"
+      base_log_folder: /opt/airflow/logs  # Path inside the container where task logs are stored
+      remote_logging: "False"  # Disable remote logging (e.g., to S3 or GCS)
 
   logs:
     persistence:
-      enabled: true
-      existingClaim: airflow-logs-pvc
+      enabled: true  # Enable persistent storage for Airflow logs
+      existingClaim: airflow-logs-pvc  # Use an existing PVC for log storage
+
   extraVolumes:
-  - name: airflow-shared
+  - name: airflow-shared  # Define a custom volume to be mounted into all Airflow pods
     persistentVolumeClaim:
-      claimName: airflow-shared-pvc
+      claimName: airflow-shared-pvc  # Name of the existing PVC to use for the shared volume
 
   extraVolumeMounts:
     - name: airflow-shared
-      mountPath: /opt/airflow/shared
+      mountPath: /opt/airflow/shared  # Mount the shared volume into this path inside each Airflow pod
 
 triggerer:
-  enabled: true
-  replicas: 1
+  enabled: true  # Enable the Airflow triggerer component (used for deferrable operators)
+  replicas: 1  # Number of triggerer pods to run (1 is fine unless under heavy load)

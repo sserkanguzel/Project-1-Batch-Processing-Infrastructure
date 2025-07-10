@@ -1,12 +1,12 @@
-apiVersion: v1
+apiVersion: v1 # Used when one task writes a file and another reads it, within the same DAG execution
 kind: PersistentVolumeClaim
 metadata:
   name: airflow-shared-pvc
   namespace: airflow
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce  # Only one pod/node can write to it at a time
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: local-path
+      storage: 1Gi  # Allocate 1Gi of storage
+  storageClassName: local-path  # Use the "local-path" provisioner

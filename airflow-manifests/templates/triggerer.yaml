@@ -1,54 +1,66 @@
+# ------------------------------------------
+# Airflow Triggerer Deployment (Kubernetes)
+# ------------------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-triggerer
+  name: airflow-triggerer  # Deployment name
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.triggerer.replicas }}
+  replicas: {{ .Values.triggerer.replicas }}  # Number of triggerer pods to run (configurable via values.yaml)
   selector:
     matchLabels:
-      app: airflow-triggerer
+      app: airflow-triggerer  # Pod selector label
   template:
     metadata:
       labels:
-        app: airflow-triggerer
+        app: airflow-triggerer  # Pod label
     spec:
-      serviceAccountName: {{ .Values.airflow.serviceAccountName }}
+      serviceAccountName: {{ .Values.airflow.serviceAccountName }}  # Use the Airflow service account for RBAC access
       containers:
       - name: triggerer
-        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"
-        command: ["/bin/bash", "-c"]
-        args:
+        image: "{{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}"  # Custom Airflow image
+        command: ["/bin/bash", "-c"]  # Run shell script at startup
+        args: # Deployment waits for two conditions to become available before becoming available. First a PostgreSQL DB which holds the metadata, logs, credentials, users etc. information to become active. Secondly, PostgreSQL DB needs to be initiated via a one time running job so that it can become available all across the app components.
           - |
+            # Wait for PostgreSQL to be ready
             until pg_isready -h postgres-postgresql.airflow.svc.cluster.local -p 5432; do
               echo "Waiting for Postgres to be ready...";
               sleep 10;
             done;
 
-            # Wait until the metadata database is initialized (e.g., ab_user table exists)
+            # Wait until metadata DB is initialized (ab_user table exists)
             until psql -h postgres-postgresql.airflow.svc.cluster.local -c '\dt' | grep -q 'ab_user'; do
               echo "Waiting for Airflow metadata DB to be initialized...";
               sleep 5;
             done;
 
+            # Start the Airflow triggerer
             exec airflow triggerer
 
         env:
+        # Set core executor type (e.g. KubernetesExecutor)
         - name: AIRFLOW__CORE__EXECUTOR
           value: {{ .Values.airflow.executor }}
+
+        # Namespace used by KubernetesExecutor
         - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
           value: {{ .Values.namespace }}
-          
+
+        # Airflow secrets pulled from Vault via ESO and Kubernetes Secret
         - name: AIRFLOW__CORE__FERNET_KEY
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: fernetKey
+
         - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
           valueFrom:
             secretKeyRef:
               name: airflow-db-secret
               key: sql_alchemy_conn
+
+        # PostgreSQL connection credentials (used by psql readiness check)
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
