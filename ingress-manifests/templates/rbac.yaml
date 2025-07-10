@@ -12,7 +12,7 @@ rules:
       - secrets
       - services
       - events  # <-- missing before
-    verbs: ["get", "list", "watch", "create"]
+    verbs: ["get", "list", "watch", "create","patch"]
 
   - apiGroups: ["networking.k8s.io"]
     resources:
