@@ -15,7 +15,7 @@ spec:
       serviceAccountName: metallb-speaker
       containers:
       - name: speaker
-        image: {{ .Values.speaker.image }}
+        image:  "{{ .Values.speaker.image.repository }}:{{ .Values.speaker.image.tag }}"
         args:
           - speaker
         securityContext:
