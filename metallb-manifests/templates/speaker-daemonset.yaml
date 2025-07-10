@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: metallb-speaker
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      component: speaker
+  template:
+    metadata:
+      labels:
+        component: speaker
+    spec:
+      serviceAccountName: metallb-speaker
+      containers:
+      - name: speaker
+        image: {{ .Values.speaker.image }}
+        args:
+          - speaker
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - NET_RAW
