@@ -9,7 +9,7 @@ spec:
       serviceAccountName: metallb-controller
       containers:
       - name: certgen
-        image: quay.io/metallb/certgen:v0.13.9
+        image: "quay.io/metallb/certgen:v0.13.9"
         args:
         - --webhook-cert-dir=/tmp/webhook
         - --webhook-service=metallb-webhook-service
