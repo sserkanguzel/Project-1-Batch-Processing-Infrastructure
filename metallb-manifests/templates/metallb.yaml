@@ -19,7 +19,7 @@ spec:
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
           args:
             - controller
-            - --webhook-mode=enabled
+            - --webhook-mode=disabled
             - --webhook-secret=metallb-webhook-cert
             - --cert-service-name=metallb-webhook-service
             - --namespace={{ .Values.namespace }}
