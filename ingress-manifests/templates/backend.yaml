@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: default-backend
+  labels:
+    app: default-backend
+spec:
+  containers:
+    - name: default-backend
+      image: "{{ .Values.defaultBackend.image.repository }}:{{ .Values.defaultBackend.image.tag }}"
+      ports:
+        - containerPort: 80
