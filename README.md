@@ -114,29 +114,9 @@ vault.app.com     → 192.168.1.200
 
 ---
 
-## 📌 Planned Features & Requirements
-
-### Planned Features
+## 📌 Planned Features
 
 - [ ] **dbt Integration** for modeling raw/staged data into dimensional warehouse tables
 - [ ] **Schema Git Repo** to store and manage column/partition definitions as code
 - [ ] **dbt Git Repo** to version control transformation logic
 - [ ] **Prometheus + Grafana** for observability (metrics, dashboards, alerts)
-
-### Platform Requirements
-
-| Component          | Version |
-|-------------------|---------|
-| Kubernetes         | 1.26+   |
-| Argo CD            | 2.10+   |
-| Helm               | 3.13+   |
-| Vault              | Any recent |
-| PostgreSQL         | 14+     |
-| Local DNS (e.g. Pi-hole) | Recommended for internal name resolution |
-
----
-
-## 📜 License
-
-MIT License
-
