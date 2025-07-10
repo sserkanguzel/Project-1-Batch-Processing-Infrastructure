@@ -3,23 +3,33 @@ kind: DaemonSet
 metadata:
   name: metallb-speaker
   namespace: {{ .Values.namespace }}
+  labels:
+    app: metallb
+    component: speaker
 spec:
   selector:
     matchLabels:
+      app: metallb
       component: speaker
   template:
     metadata:
       labels:
+        app: metallb
         component: speaker
     spec:
       serviceAccountName: metallb-speaker
       containers:
-      - name: speaker
-        image:  "{{ .Values.speaker.image.repository }}:{{ .Values.speaker.image.tag }}"
-        args:
-          - speaker
-        securityContext:
-          capabilities:
-            add:
-              - NET_ADMIN
-              - NET_RAW
+        - name: speaker
+          image: "{{ .Values.speaker.image.repository }}:{{ .Values.speaker.image.tag }}"
+          args:
+            - speaker
+          env:
+            - name: METALLB_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - NET_RAW
