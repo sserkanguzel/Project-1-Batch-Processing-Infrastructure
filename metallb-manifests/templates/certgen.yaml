@@ -13,7 +13,8 @@ spec:
           image: quay.io/metallb/controller:v0.15.2
           command:
             - /controller
-            - certgen
+            - "certgen"
+          args:
             - --cert-service-name=metallb-webhook-service
             - --webhook-secret=metallb-webhook-cert
             - --namespace=metallb-system
