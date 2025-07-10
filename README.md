@@ -96,21 +96,7 @@ vault.app.com     → 192.168.1.200
 
 ## 🧠 Example Data Pipeline Summary
 
-```
-[External Sources] 
-     ↓
-[Airflow Ingestion DAG] → [MinIO (raw data)]
-                               ↓
-               [Airflow Schema Extractor DAG]
-                               ↓
-                  [Schema Git Repository]
-                               ↓
-          [Hive Metastore] ←→ [Trino]
-                               ↓
-             [dbt Models] (via Trino external tables)
-                               ↓
-               [PostgreSQL] (final transformed data)
-```
+![Data Pipeline](Schema.png)
 
 ---
 
