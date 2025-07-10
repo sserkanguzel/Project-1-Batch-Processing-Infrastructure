@@ -1,25 +1,61 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metallb-controller
-  namespace: {{ .Values.namespace }}
+  name: metallb
+  namespace: metallb-system
 spec:
-  replicas: {{ .Values.controller.replicas }}
+  replicas: 1
   selector:
     matchLabels:
-      component: controller
+      app: metallb
   template:
     metadata:
       labels:
-        component: controller
+        app: metallb
     spec:
       serviceAccountName: metallb-controller
       containers:
         - name: controller
-          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          image: quay.io/metallb/controller:v0.15.2
           args:
             - controller
-            - --webhook-mode=disabled
+            - --webhook-mode=enabled
+            - --webhook-secret=metallb-webhook-cert
+            - --cert-service-name=metallb-webhook-service
+            - --namespace=metallb-system
           env:
-          - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
-            value: "true"  
+            - name: METALLB_DISABLE_CRD_WEBHOOK_INJECTION
+              value: "false"
+        - name: webhook
+          image: quay.io/metallb/controller:v0.15.2
+          args:
+            - webhook
+            - --webhook-secret=metallb-webhook-cert
+            - --cert-service-name=metallb-webhook-service
+            - --namespace=metallb-system
+            - --deployment=metallb
+          ports:
+            - name: webhook
+              containerPort: 9443
+          volumeMounts:
+            - name: webhook-cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+      volumes:
+        - name: webhook-cert
+          secret:
+            secretName: metallb-webhook-cert
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metallb-webhook-service
+  namespace: metallb-system
+spec:
+  selector:
+    app: metallb
+  ports:
+    - name: webhook
+      port: 443
+      targetPort: webhook
