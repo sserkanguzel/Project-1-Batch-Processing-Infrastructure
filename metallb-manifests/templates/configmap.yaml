@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config
-  namespace: {{ .Values.namespace }}
+  name: metallb-config
+  namespace: metallb-system
 data:
   config: |
     address-pools:
-    - name: {{ .Values.config.addressPool.name }}
-      protocol: {{ .Values.config.addressPool.protocol }}
+    - name: default
+      protocol: layer2
       addresses:
-      {{- range .Values.config.addressPool.addresses }}
-        - {{ . }}
-      {{- end }}
+      - 192.168.1.200-192.168.1.220
+
