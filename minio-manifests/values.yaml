@@ -12,11 +12,6 @@ minio:
     size: 10Gi
     storageClass: local-path
 
-  service:
-    type: NodePort
-    nodePort: 30090
-    consoleNodePort: 30091
-
   resources:
     requests:
       cpu: 100m
