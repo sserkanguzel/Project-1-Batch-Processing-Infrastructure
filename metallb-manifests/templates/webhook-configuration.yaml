@@ -13,7 +13,7 @@ webhooks:
         resources: ["ipaddresspools"]
     clientConfig:
       service:
-        namespace: metallb-system
+        namespace: {{ .Values.namespace }}
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-ipaddresspool"
         port: 443
@@ -29,7 +29,7 @@ webhooks:
         resources: ["bgppeers"]
     clientConfig:
       service:
-        namespace: metallb-system
+        namespace: {{ .Values.namespace }}
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta2-bgppeer"
         port: 443
@@ -45,7 +45,7 @@ webhooks:
         resources: ["bgpadvertisements"]
     clientConfig:
       service:
-        namespace: metallb-system
+        namespace: {{ .Values.namespace }}
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-bgpadvertisement"
         port: 443
@@ -61,7 +61,7 @@ webhooks:
         resources: ["l2advertisements"]
     clientConfig:
       service:
-        namespace: metallb-system
+        namespace: {{ .Values.namespace }}
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-l2advertisement"
         port: 443
@@ -77,7 +77,7 @@ webhooks:
         resources: ["communities"]
     clientConfig:
       service:
-        namespace: metallb-system
+        namespace: {{ .Values.namespace }}
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-community"
         port: 443
@@ -93,7 +93,7 @@ webhooks:
         resources: ["bfdprofiles"]
     clientConfig:
       service:
-        namespace: metallb-system
+        namespace: {{ .Values.namespace }}
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-bfdprofile"
         port: 443
