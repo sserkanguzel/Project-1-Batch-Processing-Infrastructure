@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -19,7 +20,12 @@ metadata:
 rules:
   # allow writing the webhook cert secret, plus reading services & namespaces
   - apiGroups: [""]
-    resources: ["secrets", "services", "namespaces"]
+    resources:
+      - secrets
+      - services
+      - services/status       # ← allow patch/update of Service.status
+      - namespaces
+      - events                # ← allow creating & patching Events
     verbs:
       - get
       - list
@@ -52,7 +58,7 @@ rules:
       - patch
       - delete
 
-  # <--- added update+patch here so cert-rotator can modify CRDs' conversion.webhook.clientConfig
+  # allow cert-rotator to tweak the CRD webhook clientConfig
   - apiGroups: ["apiextensions.k8s.io"]
     resources: ["customresourcedefinitions"]
     verbs:
