@@ -82,7 +82,7 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 | **External Secrets Operator (ESO)** | Dynamically injects secrets from Vault into Kubernetes |
 | **Ingress-NGINX** | Internal HTTP routing based on domain names |
 | **cert-manager (WIP)** | Issues internal TLS certificates |
-| **MetalLB (WIP)** | Assigns internal static IPs to LoadBalancer services |
+| **MetalLB** | Assigns internal static IPs to LoadBalancer services |
 | **Schema Repository (WIP)**  | Git repo for storing and versioning schema metadata |
 | **dbt Repository (WIP)** | Git repo for dbt models and transformation logic |
 
