@@ -17,7 +17,7 @@ webhooks:
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-ipaddresspool"
         port: 443
-      caBundle: {{ .Values.webhook.caBundle}}
+      caBundle: {{ .Values.webhook.caBundle | quote }}
 
   - name: validation.bgppeer.metallb.io
     sideEffects: None
@@ -33,7 +33,7 @@ webhooks:
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta2-bgppeer"
         port: 443
-      caBundle: {{ .Values.webhook.caBundle}}
+      caBundle: {{ .Values.webhook.caBundle | quote }}
 
   - name: validation.bgpadvertisement.metallb.io
     sideEffects: None
@@ -49,7 +49,7 @@ webhooks:
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-bgpadvertisement"
         port: 443
-      caBundle: {{ .Values.webhook.caBundle}}
+      caBundle: {{ .Values.webhook.caBundle | quote }}
 
   - name: validation.l2advertisement.metallb.io
     sideEffects: None
@@ -65,7 +65,7 @@ webhooks:
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-l2advertisement"
         port: 443
-      caBundle: {{ .Values.webhook.caBundle}}
+      caBundle: {{ .Values.webhook.caBundle | quote }}
 
   - name: validation.community.metallb.io
     sideEffects: None
@@ -81,7 +81,7 @@ webhooks:
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-community"
         port: 443
-      caBundle: {{ .Values.webhook.caBundle}}
+      caBundle: {{ .Values.webhook.caBundle | quote }}
 
   - name: validation.bfdprofile.metallb.io
     sideEffects: None
@@ -97,4 +97,4 @@ webhooks:
         name: metallb-webhook-service
         path: "/validate-metallb-io-v1beta1-bfdprofile"
         port: 443
-      caBundle: {{ .Values.webhook.caBundle}}
+      caBundle: {{ .Values.webhook.caBundle | quote }}
