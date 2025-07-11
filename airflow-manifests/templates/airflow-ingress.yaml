@@ -1,24 +1,19 @@
-# -----------------------------------------------------
-# Ingress: Expose Airflow Webserver via airflow.app.com
-# -----------------------------------------------------
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: airflow-ingress  # Name of the Ingress resource
-  namespace: airflow  # Namespace where Airflow is deployed
+  name: airflow
+  namespace: airflow
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /  # Rewrite the request URI to "/" when forwarded to the backend
+    kubernetes.io/ingress.class: "nginx"
 spec:
-  ingressClassName: nginx  # Target the nginx Ingress controller (must match your installed controller class)
-
   rules:
-    - host: airflow.app.com  # Hostname to route (should resolve to MetalLB IP via internal DNS)
-      http:
-        paths:
-          - path: /  # Route all traffic from root path
-            pathType: Prefix  # Prefix match type (any path starting with "/")
-            backend:
-              service:
-                name: airflow-webserver  # Define the service that will be exposed via ingress
-                port:
-                  number: 8080  # Target port exposed by the webserver container
+  - host: airflow.app.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: airflow-webserver
+            port:
+              number: 8080
