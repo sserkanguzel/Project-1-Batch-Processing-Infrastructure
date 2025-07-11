@@ -26,10 +26,3 @@ speaker:
   image:
     repository: quay.io/metallb/speaker
     tag: v0.15.2
-
-config:
-  addressPool:
-    name: default
-    protocol: layer2
-    addresses:
-      - 192.168.1.200-192.168.1.202
