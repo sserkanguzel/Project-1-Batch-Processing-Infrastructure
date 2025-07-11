@@ -91,9 +91,9 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 ## 🌐 DNS Configuration Example
 
 ```txt
-airflow.app.com   → 192.168.1.200
-minio.app.com     → 192.168.1.200
-vault.app.com     → 192.168.1.200
+airflow.homelab.lan   → 192.168.1.200
+minio.homelab.lan     → 192.168.1.200
+vault.homelab.lan    → 192.168.1.200
 ```
 ---
 
