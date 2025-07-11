@@ -2,11 +2,6 @@ image:
   repository: hashicorp/vault
   tag: 1.15.5
 
-ui:
-  enabled: true
-  serviceType: NodePort
-  nodePort: 30820
-
 persistence:
   enabled: true
   size: 5Gi
