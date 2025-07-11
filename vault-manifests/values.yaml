@@ -2,10 +2,6 @@ image:
   repository: hashicorp/vault
   tag: 1.15.5
 
-service:
-  type: ClusterIP
-  port: 8200
-
 ui:
   enabled: true
   serviceType: NodePort
