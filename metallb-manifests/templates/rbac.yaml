@@ -23,9 +23,10 @@ rules:
     resources:
       - secrets
       - services
-      - services/status       # ← allow patch/update of Service.status
+      - services/status
       - namespaces
-      - events                # ← allow creating & patching Events
+      - endpoints
+      - events
     verbs:
       - get
       - list
