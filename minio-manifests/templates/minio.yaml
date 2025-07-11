@@ -49,7 +49,7 @@ metadata:
   name: minio
   namespace: minio
 spec:
-  type: LoadBalancer
+  type: ClusterIp
   selector:
     app: minio
   ports:
