@@ -9,7 +9,6 @@ metadata:
 spec:
   template:
     spec:
-      ttlSecondsAfterFinished: 60  # Clean up job pod 60 seconds after completion
       restartPolicy: OnFailure  # Retry the job if it fails (one retry at a time)
       serviceAccountName: {{ .Values.airflow.serviceAccountName }}  # Use Airflow's service account for RBAC access
       containers:
