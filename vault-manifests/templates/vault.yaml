@@ -49,19 +49,3 @@ spec:
       protocol: TCP
   selector:
     app: vault
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: vault-ui
-  namespace: vault
-spec:
-  type: ClusterIP
-  ports:
-    - port: 8200
-      targetPort: 8200
-      protocol: TCP
-      name: http
-  selector:
-    app: vault
