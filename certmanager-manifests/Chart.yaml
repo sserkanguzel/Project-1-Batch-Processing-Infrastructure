@@ -1,0 +1,4 @@
+apiVersion: v2
+name: cert-manager
+description: Cert-manager setup for local Kubernetes HTTPS support
+version: 0.1.0
