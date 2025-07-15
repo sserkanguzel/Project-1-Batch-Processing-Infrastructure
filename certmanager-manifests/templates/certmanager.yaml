@@ -51,6 +51,17 @@ spec:
       containers:
         - name: cert-manager-webhook
           image: quay.io/jetstack/cert-manager-webhook:v1.15.0
+          args:
+            - --tls-cert-file=/tls/tls.crt
+            - --tls-private-key-file=/tls/tls.key
+          volumeMounts:
+            - name: webhook-tls
+              mountPath: /tls
+              readOnly: true
+      volumes:
+        - name: webhook-tls
+          secret:
+            secretName: cert-manager-webhook-tls
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -109,3 +120,19 @@ spec:
   ports:
     - port: 443
       name: https
+---
+# ✅ This will issue TLS cert for the webhook service
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-manager-webhook-ca
+  namespace: {{ .Values.namespace }}
+spec:
+  secretName: cert-manager-webhook-tls
+  dnsNames:
+    - cert-manager-webhook
+    - cert-manager-webhook.{{ .Values.namespace }}
+    - cert-manager-webhook.{{ .Values.namespace }}.svc
+  issuerRef:
+    name: mkcert-cluster-issuer
+    kind: ClusterIssuer
