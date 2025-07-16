@@ -50,7 +50,7 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 - **Ingress-NGINX** handles internal domain routing (e.g., `airflow.app.com`, `vault.app.com`).
 - **MetalLB** assigns a static IP (e.g., `192.168.1.200`) to the ingress controller.
 - Internal DNS (e.g., Pi-hole) maps services to that IP.
-- **cert-manager** (WIP) will issue self-signed/internal TLS certificates for HTTPS.
+- **cert-manager** will issue self-signed/internal TLS certificates for HTTPS.
 
 ### ⚙️ CI/CD Automation & GitOps Workflow
 
@@ -81,7 +81,7 @@ The platform is designed to power **end-to-end ELT pipelines** using the followi
 | **Vault**       | Stores sensitive credentials centrally |
 | **External Secrets Operator (ESO)** | Dynamically injects secrets from Vault into Kubernetes |
 | **Ingress-NGINX** | Internal HTTP routing based on domain names |
-| **cert-manager (WIP)** | Issues internal TLS certificates |
+| **cert-manager** | Issues internal TLS certificates |
 | **MetalLB** | Assigns internal static IPs to LoadBalancer services |
 | **Schema Repository (WIP)**  | Git repo for storing and versioning schema metadata |
 | **dbt Repository (WIP)** | Git repo for dbt models and transformation logic |
