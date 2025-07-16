@@ -121,7 +121,6 @@ spec:
     - port: 443
       name: https
 ---
-# ✅ This will issue TLS cert for the webhook service
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
