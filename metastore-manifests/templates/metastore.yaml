@@ -18,6 +18,8 @@ spec:
           image: apache/hive:3.1.3
           ports:
             - containerPort: 9083
+          command: ["/opt/hive/bin/hive"]
+          args: ["--service", "metastore"]
           volumeMounts:
             - name: hive-metastore-site
               mountPath: /opt/hive/conf/metastore-site.xml
