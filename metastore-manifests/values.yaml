@@ -3,7 +3,7 @@ metastore:
     type: postgres
     host: postgresql.postgresql.svc.cluster.local
     port: 5432
-    name: metastore
+    name: hive_metastore
     user: admin
     password: admin
 
