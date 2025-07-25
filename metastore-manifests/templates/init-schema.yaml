@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hive-init-schema
+  namespace: hive-metastore
+spec:
+  template:
+    spec:
+      containers:
+        - name: init
+          image: apache/hive:3.1.3
+          command: ["sh", "-c", "schematool -initSchema -dbType postgres"]
+          env:
+            - name: SERVICE_NAME
+              value: metastore
+          volumeMounts:
+            - name: hive-metastore-site
+              mountPath: /opt/hive/conf/metastore-site.xml
+              subPath: metastore-site.xml
+      restartPolicy: OnFailure
+      volumes:
+        - name: hive-metastore-site
+          configMap:
+            name: hive-metastore-site
