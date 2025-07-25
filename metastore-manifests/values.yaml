@@ -4,8 +4,8 @@ metastore:
     host: hive-postgres-postgresql.hive-metastore.svc.cluster.local
     port: 5432
     name: metastore
-    user: hive
-    password: hivepass
+    user: admin
+    password: admin
 
   warehouseDir: s3a://testbuckettrino/testpathtrino
 

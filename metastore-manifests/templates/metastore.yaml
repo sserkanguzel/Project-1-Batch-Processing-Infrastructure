@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hive-metastore
+  namespace: hive-metastore
 spec:
   replicas: 1
   selector:
@@ -13,45 +14,25 @@ spec:
         app: hive-metastore
     spec:
       containers:
-        - name: hive-metastore
+        - name: metastore
           image: apache/hive:3.1.3
           ports:
             - containerPort: 9083
-          env:
-            - name: SERVICE_NAME
-              value: metastore
-            - name: DB_TYPE
-              value: postgres
-            - name: HIVE_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: hive-config
-                  key: dbName
-            - name: HIVE_DB_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: hive-config
-                  key: dbUser
-            - name: HIVE_DB_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: hive-config
-                  key: dbPassword
-            - name: HIVE_DB_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: hive-config
-                  key: dbHost
-            - name: HIVE_DB_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: hive-config
-                  key: dbPort
+          volumeMounts:
+            - name: hive-metastore-site
+              mountPath: /opt/hive/conf/metastore-site.xml
+              subPath: metastore-site.xml
+      volumes:
+        - name: hive-metastore-site
+          configMap:
+            name: hive-metastore-site
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
+  namespace: hive-metastore
 spec:
   selector:
     app: hive-metastore
@@ -60,3 +41,4 @@ spec:
       port: 9083
       targetPort: 9083
   type: ClusterIP
+
