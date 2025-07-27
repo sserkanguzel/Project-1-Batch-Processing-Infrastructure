@@ -19,6 +19,9 @@ spec:
           args:
             - "--service"
             - "metastore"
+          env:
+            - name: SKIP_SCHEMA_INIT
+              value: "true"
           ports:
             - containerPort: 9083
           volumeMounts:
