@@ -17,9 +17,9 @@ spec:
         - name: trino-config
           configMap:
             name: trino-config
-        - name: trino-lib-extra
+        - name: trino-plugin-dir
           emptyDir: {}
-
+      
       initContainers:
         - name: fetch-hadoop-s3a-jars
           image: curlimages/curl:latest
@@ -35,8 +35,8 @@ spec:
               curl -LO https://repo1.maven.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar
               curl -LO https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar
           volumeMounts:
-            - name: trino-lib-extra
-              mountPath: /jars
+            - name: trino-plugin-dir
+              mountPath: /plugins
 
       containers:
         - name: trino
@@ -60,8 +60,8 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-            - name: trino-lib-extra
-              mountPath: /usr/lib/trino/lib-extra
+            - name: trino-plugin-dir
+              mountPath: /usr/lib/trino/plugin
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
