@@ -33,7 +33,6 @@ data:
     hive.s3.endpoint={{ .Values.hive.s3.endpoint }}
     hive.s3.path-style-access={{ .Values.hive.s3.pathStyleAccess }}
     hive.s3.ssl.enabled={{ .Values.hive.s3.sslEnabled }}
-    hive.plugin.classpath=/opt/hive-aux
     hive.non-managed-table-writes-enabled=true
     hive.allow-drop-table=true
     hive.allow-rename-table=true
