@@ -22,9 +22,9 @@ spec:
             - sh
             - -c
             - >
-              mkdir -p /jars &&
-              wget -q -O /jars/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar &&
-              wget -q -O /jars/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+              mkdir -p /jars/aws &&
+              wget -q -O /jars/aws/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar &&
+              wget -q -O /jars/aws/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
           volumeMounts:
             - name: hive-jars
               mountPath: /jars
@@ -49,7 +49,7 @@ spec:
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
             - name: hive-jars
-              mountPath: /usr/lib/trino/plugin/hive-hadoop2
+              mountPath: /usr/lib/trino/plugin/hive-hadoop2/aws
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
@@ -61,7 +61,6 @@ spec:
           emptyDir: {}
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -75,4 +74,4 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
-      nodePort: 31334 
+      nodePort: 31334
