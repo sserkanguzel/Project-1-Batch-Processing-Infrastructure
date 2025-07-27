@@ -17,7 +17,7 @@ spec:
         - name: trino-config
           configMap:
             name: trino-config
-        - name: hive-plugins
+        - name: hive-extra-jars
           emptyDir: {}
 
       initContainers:
@@ -26,7 +26,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              mkdir -p /hive && cd /hive
+              mkdir -p /hive-extra && cd /hive-extra
+              echo "Downloading Hadoop AWS and SDK jars..."
               curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar
               curl -LO https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
               curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar
@@ -34,8 +35,8 @@ spec:
               curl -LO https://repo1.maven.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar
               curl -LO https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar
           volumeMounts:
-            - name: hive-plugins
-              mountPath: /hive
+            - name: hive-extra-jars
+              mountPath: /hive-extra
 
       containers:
         - name: trino
@@ -43,6 +44,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
+          env:
+            - name: TRINO_EXTRA_CLASSPATH
+              value: /usr/lib/trino/plugin/hive-extra/*
           volumeMounts:
             - name: trino-config
               mountPath: /etc/trino/config.properties
@@ -56,10 +60,26 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-            - name: hive-plugins
-              mountPath: /usr/lib/trino/plugin/hive
+            - name: hive-extra-jars
+              mountPath: /usr/lib/trino/plugin/hive-extra
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trino
+  namespace: trino
+spec:
+  selector:
+    app: trino
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 31334
 
 ---
 apiVersion: v1
