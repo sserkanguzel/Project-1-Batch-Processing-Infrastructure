@@ -19,17 +19,19 @@ spec:
         - name: init-hive-s3-jars
           image: busybox:1.36
           command:
-              - sh
-              - -c
-              - >
-                mkdir -p /lib-extra &&
-                wget -q -O /lib-extra/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar &&
-                wget -q -O /lib-extra/hadoop-common.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar &&
-                wget -q -O /lib-extra/hadoop-auth.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-auth/3.3.6/hadoop-auth-3.3.6.jar &&
-                wget -q -O /lib-extra/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+            - sh
+            - -c
+            - >
+              mkdir -p /plugins/hive-s3 &&
+              wget -q -O /plugins/hive-s3/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar &&
+              wget -q -O /plugins/hive-s3/hadoop-common.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar &&
+              wget -q -O /plugins/hive-s3/hadoop-auth.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-auth/3.3.6/hadoop-auth-3.3.6.jar &&
+              wget -q -O /plugins/hive-s3/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar &&
+              wget -q -O /plugins/hive-s3/guava.jar https://repo1.maven.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar &&
+              wget -q -O /plugins/hive-s3/jsr305.jar https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar
           volumeMounts:
-            - name: trino-lib-extra
-              mountPath: /jars
+            - name: plugin-volume
+              mountPath: /plugins
 
       containers:
         - name: trino
@@ -37,9 +39,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
-          env:
-            - name: TRINO_JVM_EXTRA_OPTS
-              value: /usr/lib/trino/lib-extra/*
           volumeMounts:
             - name: trino-config
               mountPath: /etc/trino/config.properties
@@ -53,8 +52,8 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-            - name: trino-lib-extra
-              mountPath: /usr/lib/trino/lib-extra
+            - name: plugin-volume
+              mountPath: /usr/lib/trino/plugin
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
@@ -62,7 +61,7 @@ spec:
         - name: trino-config
           configMap:
             name: trino-config
-        - name: trino-lib-extra
+        - name: plugin-volume
           emptyDir: {}
 
 ---
