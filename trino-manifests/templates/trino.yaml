@@ -19,12 +19,14 @@ spec:
         - name: init-hive-s3-jars
           image: busybox:1.36
           command:
-            - sh
-            - -c
-            - >
-              mkdir -p /lib-extra &&
-              wget -q -O /lib-extra/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar &&
-              wget -q -O /lib-extra/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+              - sh
+              - -c
+              - >
+                mkdir -p /lib-extra &&
+                wget -q -O /lib-extra/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar &&
+                wget -q -O /lib-extra/hadoop-common.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar &&
+                wget -q -O /lib-extra/hadoop-auth.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-auth/3.3.6/hadoop-auth-3.3.6.jar &&
+                wget -q -O /lib-extra/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
           volumeMounts:
             - name: trino-lib-extra
               mountPath: /lib-extra
