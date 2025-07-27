@@ -36,4 +36,3 @@ data:
     hive.non-managed-table-writes-enabled=true
     hive.allow-drop-table=true
     hive.allow-rename-table=true
-    plugin.hive.s3-file-system-type=HADOOP
