@@ -13,40 +13,12 @@ spec:
       labels:
         app: trino
     spec:
-      volumes:
-        - name: trino-config
-          configMap:
-            name: trino-config
-        - name: trino-lib-extra
-          emptyDir: {}
-
-      initContainers:
-        - name: fetch-hadoop-s3a-jars
-          image: curlimages/curl:latest
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              mkdir -p /lib-extra && cd /lib-extra
-              echo "Downloading Hadoop AWS and SDK jars..."
-              curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar
-              curl -LO https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
-              curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar
-              curl -LO https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-auth/3.3.6/hadoop-auth-3.3.6.jar
-              curl -LO https://repo1.maven.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar
-              curl -LO https://repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar
-          volumeMounts:
-            - name: trino-lib-extra
-              mountPath: /lib-extra
-
       containers:
         - name: trino
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "trinodb/trino:425"
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
-          env:
-            - name: TRINO_EXTRA_CLASSPATH
-              value: /usr/lib/trino/lib-extra/*
           volumeMounts:
             - name: trino-config
               mountPath: /etc/trino/config.properties
@@ -60,12 +32,17 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-            - name: trino-lib-extra
-              mountPath: /usr/lib/trino/lib-extra
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-
-
+            limits:
+              cpu: 1
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 1Gi
+      volumes:
+        - name: trino-config
+          configMap:
+            name: trino-config
 ---
 apiVersion: v1
 kind: Service
