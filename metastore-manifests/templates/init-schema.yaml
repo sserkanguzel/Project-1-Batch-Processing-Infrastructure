@@ -11,7 +11,8 @@ spec:
         - name: init-schema
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           command:
-            - "/opt/hive/bin/schematool"
+            - /opt/hive/bin/schematool
+          args:
             - "-initSchema"
             - "-dbType"
             - "postgres"
