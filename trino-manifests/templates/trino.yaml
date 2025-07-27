@@ -8,35 +8,46 @@ spec:
   selector:
     matchLabels:
       app: trino
+      component: coordinator
   template:
     metadata:
       labels:
         app: trino
+        component: coordinator
     spec:
       containers:
         - name: trino
           image: "trinodb/trino:476"
+          imagePullPolicy: IfNotPresent
           command: ["/usr/lib/trino/bin/launcher"]
           args: ["run"]
           ports:
             - containerPort: 8080
           volumeMounts:
             - name: trino-config
-              mountPath: /etc/trino/config.properties
+              mountPath: /usr/lib/trino/etc/config.properties
               subPath: config.properties
             - name: trino-config
-              mountPath: /etc/trino/jvm.config
+              mountPath: /usr/lib/trino/etc/jvm.config
               subPath: jvm.config
             - name: trino-config
-              mountPath: /etc/trino/node.properties
+              mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
             - name: trino-config
-              mountPath: /etc/trino/catalog/hive.properties
+              mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 1Gi
       volumes:
         - name: trino-config
           configMap:
             name: trino-config
+
 
 ---
 apiVersion: apps/v1
@@ -44,6 +55,9 @@ kind: Deployment
 metadata:
   name: trino-worker
   namespace: trino
+  labels:
+    app: trino
+    component: worker
 spec:
   replicas: 1
   selector:
@@ -58,25 +72,30 @@ spec:
     spec:
       containers:
         - name: trino
-          image: trinodb/trino:476
+          image: "trinodb/trino:476"
+          imagePullPolicy: IfNotPresent
           command: ["/usr/lib/trino/bin/launcher"]
           args: ["run"]
           ports:
             - containerPort: 8080
           volumeMounts:
             - name: trino-config
-              mountPath: /etc/trino/config.properties
+              mountPath: /usr/lib/trino/etc/config.properties
               subPath: config.properties
             - name: trino-config
-              mountPath: /etc/trino/jvm.config
+              mountPath: /usr/lib/trino/etc/jvm.config
               subPath: jvm.config
             - name: trino-config
-              mountPath: /etc/trino/node.properties
+              mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
+            - name: trino-config
+              mountPath: /usr/lib/trino/etc/catalog/hive.properties
+              subPath: hive.properties
       volumes:
         - name: trino-config
           configMap:
             name: trino-config-worker
+
 
 
 ---
