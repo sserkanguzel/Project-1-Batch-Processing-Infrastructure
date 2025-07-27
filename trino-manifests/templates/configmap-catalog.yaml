@@ -1,16 +1,37 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: trino-catalog-ice
+  name: trino-config
+  labels:
+    app: trino
 data:
-  ice.properties: |
+  jvm.config: |
+    -server
+    -Xmx1G
+    -XX:+UseG1GC
+
+  config.properties: |
+    coordinator=true
+    node-scheduler.include-coordinator=true
+    http-server.http.port=8080
+    query.max-memory=512MB
+    query.max-memory-per-node=256MB
+    discovery-server.enabled=true
+    discovery.uri=http://localhost:8080
+
+  node.properties: |
+    node.environment=production
+    node.id={{ .Release.Name }}-{{ randAlphaNum 8 | lower }}
+    node.data-dir=/data/trino
+
+  {{ .Values.hive.catalogName }}.properties: |
     connector.name=hive
-    
-    hive.metastore=file
-    hive.metastore.catalog.dir=s3a://testbuckettrino/testpathtrino/
-    
-    hive.s3.aws-access-key=minioadmin
-    hive.s3.aws-secret-key=minioadmin
-    hive.s3.endpoint=http://minio.minio.svc.cluster.local:9000
-    hive.s3.path-style-access=true
-    hive.s3.ssl.enabled=false
+    hive.metastore.uri={{ .Values.hive.metastoreUri }}
+    hive.s3.aws-access-key={{ .Values.hive.s3.accessKey }}
+    hive.s3.aws-secret-key={{ .Values.hive.s3.secretKey }}
+    hive.s3.endpoint={{ .Values.hive.s3.endpoint }}
+    hive.s3.path-style-access={{ .Values.hive.s3.pathStyleAccess }}
+    hive.s3.ssl.enabled={{ .Values.hive.s3.sslEnabled }}
+    hive.non-managed-table-writes-enabled=true
+    hive.allow-drop-table=true
+    hive.allow-rename-table=true
