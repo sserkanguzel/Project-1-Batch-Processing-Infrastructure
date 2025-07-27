@@ -67,7 +67,8 @@ spec:
       containers:
         - name: trino
           image: trinodb/trino:476
-          args: ["bin/trino"]
+          command: ["bin/launcher"]
+          args: ["run"]
           ports:
             - containerPort: 8080
           volumeMounts:
