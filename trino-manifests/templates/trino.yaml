@@ -16,7 +16,7 @@ spec:
       volumes:
         - name: trino-catalog
           configMap:
-            name: trino-catalog-ice
+            name: trino-config
         - name: trino-lib-extra
           emptyDir: {}
 
