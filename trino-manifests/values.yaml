@@ -1,19 +1,28 @@
-trino:
-  image:
-    repository: trinodb/trino
-    tag: "425"
+image:
+  repository: trinodb/trino
+  tag: 438
+  pullPolicy: IfNotPresent
 
-  service:
-    type: NodePort
-    nodePort: 30100
-
-  iceberg:
-    bucket: testbuckettrino
-    path: testpathtrino
+hive:
+  catalogName: hive
+  metastoreUri: thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
+  s3:
+    endpoint: http://minio.minio.svc.cluster.local:9000
+    bucket: lakehouse
     accessKey: minioadmin
     secretKey: minioadmin
-    endpoint: http://minio.minio.svc.cluster.local:9000
+    sslEnabled: false
+    pathStyleAccess: true
+    warehouseDir: s3a://lakehouse/user/hive/warehouse  # not used but retained
 
-  extraCatalogs:
-    - name: ice
-      configMapName: trino-catalog-ice
+resources:
+  limits:
+    cpu: 1
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+service:
+  type: ClusterIP
+  port: 8080
