@@ -16,18 +16,18 @@ spec:
         app: trino
     spec:
       initContainers:
-        - name: init-hive-jars
+        - name: init-hive-s3-jars
           image: busybox:1.36
           command:
             - sh
             - -c
             - >
-              mkdir -p /aux &&
-              wget -q -O /aux/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar &&
-              wget -q -O /aux/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+              mkdir -p /lib-extra &&
+              wget -q -O /lib-extra/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar &&
+              wget -q -O /lib-extra/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
           volumeMounts:
-            - name: hive-aux
-              mountPath: /aux
+            - name: trino-lib-extra
+              mountPath: /lib-extra
 
       containers:
         - name: trino
@@ -35,6 +35,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
+          env:
+            - name: TRINO_EXTRA_CLASSPATH
+              value: /usr/lib/trino/lib-extra/*
           volumeMounts:
             - name: trino-config
               mountPath: /etc/trino/config.properties
@@ -48,8 +51,8 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-            - name: hive-aux
-              mountPath: /opt/hive-aux
+            - name: trino-lib-extra
+              mountPath: /usr/lib/trino/lib-extra
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
@@ -57,7 +60,7 @@ spec:
         - name: trino-config
           configMap:
             name: trino-config
-        - name: hive-aux
+        - name: trino-lib-extra
           emptyDir: {}
 
 ---
