@@ -6,7 +6,7 @@ metadata:
 data:
   metastore-site.xml: |
     <configuration>
-      <!-- DB -->
+      <!-- PostgreSQL Metastore DB -->
       <property>
         <name>javax.jdo.option.ConnectionURL</name>
         <value>jdbc:postgresql://{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.database }}</value>
@@ -24,35 +24,16 @@ data:
         <value>{{ .Values.postgres.password }}</value>
       </property>
 
-      <!-- S3 -->
-      <property>
-        <name>fs.s3a.access.key</name>
-        <value>{{ .Values.s3.accessKey }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.secret.key</name>
-        <value>{{ .Values.s3.secretKey }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.endpoint</name>
-        <value>{{ .Values.s3.endpoint }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.path.style.access</name>
-        <value>{{ .Values.s3.pathStyleAccess }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.connection.ssl.enabled</name>
-        <value>{{ .Values.s3.sslEnabled }}</value>
-      </property>
-
+      <!-- Dummy warehouse location; not used directly -->
       <property>
         <name>hive.metastore.warehouse.dir</name>
         <value>{{ .Values.warehouseDir }}</value>
       </property>
 
+      <!-- Use MapReduce to avoid Spark dependency -->
       <property>
         <name>hive.execution.engine</name>
         <value>mr</value>
       </property>
     </configuration>
+
