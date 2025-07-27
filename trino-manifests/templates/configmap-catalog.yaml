@@ -22,17 +22,20 @@ data:
 
   node.properties: |
     node.environment=production
-    node.id={{ .Release.Name }}-{{ randAlphaNum 8 | lower }}
+    node.id=trino-{{ randAlphaNum 8 | lower }}
     node.data-dir=/data/trino
 
   hive.properties: |
     connector.name=hive
-    hive.metastore.uri={{ .Values.hive.metastoreUri }}
-    hive.s3.aws-access-key={{ .Values.hive.s3.accessKey }}
-    hive.s3.aws-secret-key={{ .Values.hive.s3.secretKey }}
-    hive.s3.endpoint={{ .Values.hive.s3.endpoint }}
-    hive.s3.path-style-access={{ .Values.hive.s3.pathStyleAccess }}
-    hive.s3.ssl.enabled={{ .Values.hive.s3.sslEnabled }}
+    hive.metastore.uri=thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
+
+    fs.native-s3.enabled=true
+    s3.aws-access-key=minioadmin
+    s3.aws-secret-key=minioadmin
+    s3.endpoint=http://minio.minio.svc.cluster.local:9000
+    s3.path-style-access=true
+    s3.ssl.enabled=false
+
     hive.non-managed-table-writes-enabled=true
     hive.allow-drop-table=true
     hive.allow-rename-table=true
