@@ -22,12 +22,12 @@ spec:
             - sh
             - -c
             - >
-              mkdir -p /jars &&
-              wget -q -O /jars/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar &&
-              wget -q -O /jars/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+              mkdir -p /aux &&
+              wget -q -O /aux/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar &&
+              wget -q -O /aux/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
           volumeMounts:
-            - name: hive-jars
-              mountPath: /jars
+            - name: hive-aux
+              mountPath: /aux
 
       containers:
         - name: trino
@@ -48,8 +48,8 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-            - name: hive-jars
-              mountPath: /usr/lib/trino/plugin/hive-hadoop2
+            - name: hive-aux
+              mountPath: /opt/hive-aux
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
@@ -57,7 +57,7 @@ spec:
         - name: trino-config
           configMap:
             name: trino-config
-        - name: hive-jars
+        - name: hive-aux
           emptyDir: {}
 
 ---
