@@ -21,26 +21,20 @@ spec:
           args:
             - "--service"
             - "metastore"
-            - "-hiveconf"
-            - "javax.jdo.option.ConnectionURL=jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/hive_metastore"
-            - "-hiveconf"
-            - "javax.jdo.option.ConnectionDriverName=org.postgresql.Driver"
-            - "-hiveconf"
-            - "javax.jdo.option.ConnectionUserName=admin"
-            - "-hiveconf"
-            - "javax.jdo.option.ConnectionPassword=admin"
-            - "-hiveconf"
-            - "hive.metastore.warehouse.dir=s3a://testbuckettrino/testpathtrino"
-            - "-hiveconf"
-            - "fs.s3a.endpoint=http://minio.minio.svc.cluster.local:9000"
-            - "-hiveconf"
-            - "fs.s3a.path.style.access=true"
-            - "-hiveconf"
-            - "fs.s3a.connection.ssl.enabled=false"
-            - "-hiveconf"
-            - "fs.s3a.access.key=minioadmin"
-            - "-hiveconf"
-            - "fs.s3a.secret.key=minioadmin"
+          volumeMounts:
+            - name: hive-config
+              mountPath: /opt/hive/conf/metastore-site.xml
+              subPath: metastore-site.xml
+            - name: hive-site
+              mountPath: /opt/hive/conf/hive-site.xml
+              subPath: hive-site.xml
+      volumes:
+        - name: hive-config
+          configMap:
+            name: hive-metastore-site
+        - name: hive-site
+          configMap:
+            name: hive-site
 
 ---
 apiVersion: v1
