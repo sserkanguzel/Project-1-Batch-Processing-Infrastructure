@@ -14,7 +14,7 @@ spec:
         app: trino
     spec:
       volumes:
-        - name: trino-catalog
+        - name: trino-config
           configMap:
             name: trino-config
         - name: trino-lib-extra
@@ -60,13 +60,6 @@ spec:
               mountPath: /usr/lib/trino/lib-extra
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
-      volumes:
-        - name: trino-config
-          configMap:
-            name: trino-config
-        - name: lib-extra
-          emptyDir: {}
 
 ---
 apiVersion: v1
