@@ -32,10 +32,5 @@ data:
 
     s3.endpoint=http://minio.minio.svc.cluster.local:9000
     s3.path-style-access=true
-    s3.aws.access-key=minioadmin
-    s3.aws.secret-key=minioadmin
-    s3.ssl.enabled=false
-
-    hive.non-managed-table-writes-enabled=true
-    hive.drop-table-with-purge=true
-    hive.rename-table-across-databases.enabled=true
+    s3.aws-access-key=minioadmin
+    s3.aws-secret-key=minioadmin
