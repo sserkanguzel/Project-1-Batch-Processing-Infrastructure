@@ -1,6 +1,6 @@
 image:
   repository: trinodb/trino
-  tag: 438
+  tag: 425
   pullPolicy: IfNotPresent
 
 hive:
