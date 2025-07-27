@@ -2,4 +2,4 @@ apiVersion: v2
 name: trino
 description: Custom Trino chart with Hive connector for MinIO
 version: 0.1.0
-appVersion: "476"
+appVersion: "476-amd64"
