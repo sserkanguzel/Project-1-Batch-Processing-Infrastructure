@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hive-metastore
-  namespace: hive-metastore
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -15,30 +15,31 @@ spec:
     spec:
       containers:
         - name: metastore
-          image: apache/hive:3.1.3
-          ports:
-            - containerPort: 9083
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           args:
             - "--service"
             - "metastore"
+          ports:
+            - containerPort: 9083
           volumeMounts:
-            - name: hive-metastore-site
+            - name: hive-conf
               mountPath: /opt/hive/conf/metastore-site.xml
               subPath: metastore-site.xml
-            - name: hive-metastore-site
+            - name: hive-conf
               mountPath: /opt/hive/conf/hive-site.xml
               subPath: metastore-site.xml
       volumes:
-        - name: hive-metastore-site
+        - name: hive-conf
           configMap:
             name: hive-metastore-site
+
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
-  namespace: hive-metastore
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: hive-metastore
@@ -46,4 +47,3 @@ spec:
     - name: thrift
       port: 9083
       targetPort: 9083
-  type: ClusterIP
