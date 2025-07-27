@@ -22,19 +22,16 @@ spec:
             - "--service"
             - "metastore"
           volumeMounts:
-            - name: hive-config
+            - name: hive-metastore-site
               mountPath: /opt/hive/conf/metastore-site.xml
               subPath: metastore-site.xml
-            - name: hive-site
+            - name: hive-metastore-site
               mountPath: /opt/hive/conf/hive-site.xml
-              subPath: hive-site.xml
+              subPath: metastore-site.xml
       volumes:
-        - name: hive-config
+        - name: hive-metastore-site
           configMap:
             name: hive-metastore-site
-        - name: hive-site
-          configMap:
-            name: hive-site
 
 ---
 apiVersion: v1
