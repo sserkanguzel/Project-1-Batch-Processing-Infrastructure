@@ -2,14 +2,14 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: hive-metastore-site
-  namespace: hive-metastore
+  namespace: {{ .Release.Namespace }}
 data:
   metastore-site.xml: |
     <configuration>
-      <!-- JDBC + JDO configuration -->
+      <!-- DB -->
       <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/hive_metastore</value>
+        <value>jdbc:postgresql://{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.database }}</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
@@ -17,46 +17,40 @@ data:
       </property>
       <property>
         <name>javax.jdo.option.ConnectionUserName</name>
-        <value>admin</value>
+        <value>{{ .Values.postgres.user }}</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionPassword</name>
-        <value>admin</value>
+        <value>{{ .Values.postgres.password }}</value>
       </property>
 
-      <!-- Schema & warehouse -->
-      <property>
-        <name>datanucleus.autoCreateSchema</name>
-        <value>false</value>
-      </property>
-      <property>
-        <name>hive.metastore.warehouse.dir</name>
-        <value>s3a://testbuckettrino/testpathtrino</value>
-      </property>
-
-      <!-- S3 support -->
+      <!-- S3 -->
       <property>
         <name>fs.s3a.access.key</name>
-        <value>minioadmin</value>
+        <value>{{ .Values.s3.accessKey }}</value>
       </property>
       <property>
         <name>fs.s3a.secret.key</name>
-        <value>minioadmin</value>
+        <value>{{ .Values.s3.secretKey }}</value>
       </property>
       <property>
         <name>fs.s3a.endpoint</name>
-        <value>http://minio.minio.svc.cluster.local:9000</value>
+        <value>{{ .Values.s3.endpoint }}</value>
       </property>
       <property>
         <name>fs.s3a.path.style.access</name>
-        <value>true</value>
+        <value>{{ .Values.s3.pathStyleAccess }}</value>
       </property>
       <property>
         <name>fs.s3a.connection.ssl.enabled</name>
-        <value>false</value>
+        <value>{{ .Values.s3.sslEnabled }}</value>
       </property>
 
-      <!-- Disable Tez and use MR engine -->
+      <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>{{ .Values.warehouseDir }}</value>
+      </property>
+
       <property>
         <name>hive.execution.engine</name>
         <value>mr</value>
