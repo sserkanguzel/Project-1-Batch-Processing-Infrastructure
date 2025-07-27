@@ -9,11 +9,5 @@ postgres:
   user: admin
   password: admin
 
-warehouseDir: s3a://your-bucket/warehouse
+warehouseDir: /tmp/hive/warehouse
 
-s3:
-  endpoint: http://minio.minio.svc.cluster.local:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
-  pathStyleAccess: "true"
-  sslEnabled: "false"
