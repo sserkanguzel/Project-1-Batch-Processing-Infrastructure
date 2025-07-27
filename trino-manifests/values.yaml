@@ -1,6 +1,6 @@
 image:
   repository: trinodb/trino
-  tag: 476
+  tag: 476-amd64
   pullPolicy: IfNotPresent
 
 hive:
