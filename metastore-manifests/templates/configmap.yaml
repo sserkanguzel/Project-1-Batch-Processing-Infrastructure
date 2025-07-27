@@ -6,6 +6,7 @@ metadata:
 data:
   metastore-site.xml: |
     <configuration>
+      <!-- JDBC + JDO configuration -->
       <property>
         <name>javax.jdo.option.ConnectionURL</name>
         <value>jdbc:postgresql://{{ .Values.metastore.database.host }}:{{ .Values.metastore.database.port }}/{{ .Values.metastore.database.name }}</value>
@@ -22,6 +23,8 @@ data:
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>{{ .Values.metastore.database.password }}</value>
       </property>
+
+      <!-- Schema & warehouse -->
       <property>
         <name>datanucleus.autoCreateSchema</name>
         <value>false</value>
@@ -30,6 +33,8 @@ data:
         <name>hive.metastore.warehouse.dir</name>
         <value>{{ .Values.metastore.warehouseDir }}</value>
       </property>
+
+      <!-- S3 support -->
       <property>
         <name>fs.s3a.access.key</name>
         <value>{{ .Values.metastore.s3.accessKey }}</value>
@@ -49,5 +54,11 @@ data:
       <property>
         <name>fs.s3a.connection.ssl.enabled</name>
         <value>{{ .Values.metastore.s3.sslEnabled }}</value>
+      </property>
+
+      <!-- Disable Tez and use MR engine -->
+      <property>
+        <name>hive.execution.engine</name>
+        <value>mr</value>
       </property>
     </configuration>
