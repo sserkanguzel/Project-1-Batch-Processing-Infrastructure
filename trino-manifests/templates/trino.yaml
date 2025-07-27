@@ -38,7 +38,7 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: TRINO_EXTRA_CLASSPATH
+            - name: TRINO_JVM_EXTRA_OPTS
               value: /usr/lib/trino/lib-extra/*
           volumeMounts:
             - name: trino-config
