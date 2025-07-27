@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: trino
-          image: "trinodb/trino:476-ppc64le"
+          image: "trinodb/trino:458"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
