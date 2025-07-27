@@ -22,6 +22,8 @@ spec:
           env:
             - name: SKIP_SCHEMA_INIT
               value: "true"
+            - name: HIVE_CONF_DIR
+              value: /opt/hive/conf
           ports:
             - containerPort: 9083
           volumeMounts:
