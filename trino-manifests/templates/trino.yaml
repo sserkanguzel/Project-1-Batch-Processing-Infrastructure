@@ -25,16 +25,16 @@ spec:
             - containerPort: 8080
           volumeMounts:
             - name: trino-config
-              mountPath: /etc/trino/config.properties
+              mountPath: /usr/lib/trino/etc/config.properties
               subPath: config.properties
             - name: trino-config
-              mountPath: /etc/trino/jvm.config
+              mountPath: /usr/lib/trino/etc/jvm.config
               subPath: jvm.config
             - name: trino-config
-              mountPath: /etc/trino/node.properties
+              mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
             - name: trino-config
-              mountPath: /etc/trino/catalog/hive.properties
+              mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
       volumes:
         - name: trino-config
