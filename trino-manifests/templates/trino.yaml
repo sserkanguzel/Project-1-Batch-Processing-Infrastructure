@@ -16,7 +16,8 @@ spec:
       containers:
         - name: trino
           image: "trinodb/trino:476"
-          imagePullPolicy: IfNotPresent
+          command: ["/usr/lib/trino/bin/launcher"]
+          args: ["run"]
           ports:
             - containerPort: 8080
           volumeMounts:
@@ -32,26 +33,17 @@ spec:
             - name: trino-config
               mountPath: /etc/trino/catalog/hive.properties
               subPath: hive.properties
-          resources:
-            limits:
-              cpu: 1
-              memory: 2Gi
-            requests:
-              cpu: 500m
-              memory: 1Gi
       volumes:
         - name: trino-config
           configMap:
             name: trino-config
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: trino-worker
   namespace: trino
-  labels:
-    app: trino
-    component: worker
 spec:
   replicas: 1
   selector:
@@ -67,17 +59,25 @@ spec:
       containers:
         - name: trino
           image: trinodb/trino:476
-          command: ["bin/launcher"]
+          command: ["/usr/lib/trino/bin/launcher"]
           args: ["run"]
           ports:
             - containerPort: 8080
           volumeMounts:
             - name: trino-config
-              mountPath: /etc/trino
+              mountPath: /etc/trino/config.properties
+              subPath: config.properties
+            - name: trino-config
+              mountPath: /etc/trino/jvm.config
+              subPath: jvm.config
+            - name: trino-config
+              mountPath: /etc/trino/node.properties
+              subPath: node.properties
       volumes:
         - name: trino-config
           configMap:
             name: trino-config-worker
+
 
 ---
 apiVersion: v1
