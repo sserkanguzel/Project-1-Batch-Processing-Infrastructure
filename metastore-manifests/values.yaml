@@ -19,3 +19,6 @@ metastore:
 service:
   type: ClusterIP
   port: 9083
+image:
+  repository: apache/hive
+  tag: 3.1.3
