@@ -50,7 +50,7 @@ spec:
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
             - name: hadoop-s3a-jars
-              mountPath: /usr/lib/trino/plugin/hive-hadoop3/
+              mountPath: /usr/lib/trino/lib/hadoop-extra/
       volumes:
         - name: trino-config
           configMap:
@@ -117,7 +117,7 @@ spec:
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
             - name: hadoop-s3a-jars
-              mountPath: /usr/lib/trino/plugin/hive-hadoop3/
+              mountPath: /usr/lib/trino/lib/hadoop-extra/
       volumes:
         - name: trino-config
           configMap:
