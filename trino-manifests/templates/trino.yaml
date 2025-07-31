@@ -95,6 +95,7 @@ metadata:
 spec:
   selector:
     app: trino
+    component: coordinator
   type: NodePort
   ports:
     - name: http
