@@ -15,6 +15,19 @@ spec:
         app: trino
         component: coordinator
     spec:
+      initContainers:
+        - name: download-s3-jars
+          image: curlimages/curl:8.6.0
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /jars && \
+              curl -sSL -o /jars/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
+              curl -sSL -o /jars/aws-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+          volumeMounts:
+            - name: hadoop-s3a-jars
+              mountPath: /jars
       containers:
         - name: trino
           image: "trinodb/trino:476"
@@ -36,10 +49,15 @@ spec:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
+            - name: hadoop-s3a-jars
+              mountPath: /usr/lib/trino/plugin/hive-hadoop3/
       volumes:
         - name: trino-config
           configMap:
             name: trino-config
+        - name: hadoop-s3a-jars
+          emptyDir: {}
+
 
 
 
@@ -64,6 +82,19 @@ spec:
         app: trino
         component: worker
     spec:
+      initContainers:
+        - name: download-s3-jars
+          image: curlimages/curl:8.6.0
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /jars && \
+              curl -sSL -o /jars/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
+              curl -sSL -o /jars/aws-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
+          volumeMounts:
+            - name: hadoop-s3a-jars
+              mountPath: /jars
       containers:
         - name: trino
           image: "trinodb/trino:476"
@@ -85,11 +116,14 @@ spec:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
+            - name: hadoop-s3a-jars
+              mountPath: /usr/lib/trino/plugin/hive-hadoop3/
       volumes:
         - name: trino-config
           configMap:
             name: trino-config-worker
-
+        - name: hadoop-s3a-jars
+          emptyDir: {}
 
 
 ---
