@@ -14,17 +14,22 @@ spec:
         app: hive-metastore
     spec:
       initContainers:
-        - name: copy-hadoop-aws
-          image: apache/hadoop:3.3.6
+        - name: fetch-deps
+          image: curlimages/curl:8.2.1
           command:
             - sh
             - -c
             - |
-              cp /opt/hadoop/share/hadoop/tools/lib/hadoop-aws-*.jar /hadoop-aws/ &&
-              cp /opt/hadoop/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar /hadoop-aws/
+              echo "Downloading hive-exec..."
+              curl -L -o /jars/hive-exec-3.1.3.jar https://repo1.maven.org/maven2/org/apache/hive/hive-exec/3.1.3/hive-exec-3.1.3.jar
+              echo "Downloading hadoop-aws..."
+              curl -L -o /jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar
+              echo "Downloading aws-java-sdk-bundle..."
+              curl -L -o /jars/aws-java-sdk-bundle-1.11.1026.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.1026/aws-java-sdk-bundle-1.11.1026.jar
           volumeMounts:
-            - name: hadoop-aws-jars
-              mountPath: /hadoop-aws
+            - name: shared-jars
+              mountPath: /jars
+
       containers:
         - name: metastore
           image: apache/hive:3.1.3
@@ -53,13 +58,13 @@ spec:
             - name: hive-conf
               mountPath: /opt/hive/conf/hive-site.xml
               subPath: metastore-site.xml
-            - name: hadoop-aws-jars
+            - name: shared-jars
               mountPath: /opt/hive/lib
       volumes:
         - name: hive-conf
           configMap:
             name: hive-metastore-site
-        - name: hadoop-aws-jars
+        - name: shared-jars
           emptyDir: {}
 
 ---
@@ -67,7 +72,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
-  namespace: {{ .Release.Namespace }}
+  namespace: hive-metastore
 spec:
   selector:
     app: hive-metastore
