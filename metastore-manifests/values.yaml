@@ -11,3 +11,8 @@ postgres:
 
 warehouseDir: /tmp/hive/warehouse
 
+s3:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  endpoint: http://minio.minio.svc.cluster.local:9000
+  sslEnabled: false
