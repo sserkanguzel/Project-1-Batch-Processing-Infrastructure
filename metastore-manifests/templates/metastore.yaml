@@ -13,6 +13,18 @@ spec:
       labels:
         app: hive-metastore
     spec:
+      initContainers:
+        - name: copy-hadoop-aws
+          image: apache/hadoop:3.3.6
+          command:
+            - sh
+            - -c
+            - |
+              cp /opt/hadoop/share/hadoop/tools/lib/hadoop-aws-*.jar /hadoop-aws/ &&
+              cp /opt/hadoop/share/hadoop/tools/lib/aws-java-sdk-bundle-*.jar /hadoop-aws/
+          volumeMounts:
+            - name: hadoop-aws-jars
+              mountPath: /hadoop-aws
       containers:
         - name: metastore
           image: apache/hive:3.1.3
@@ -20,13 +32,12 @@ spec:
             - /bin/bash
             - -c
             - |
-              set -e
               echo "🔍 Checking if schema is already initialized..."
               if ! /opt/hive/bin/schematool -info -dbType postgres; then
-                echo "📦 Schema not found. Initializing now..."
+                echo "📦 Initializing schema..."
                 /opt/hive/bin/schematool -initSchema -dbType postgres -verbose
               else
-                echo "✅ Schema already exists. Skipping initialization."
+                echo "✅ Schema already exists. Skipping."
               fi
               echo "🚀 Starting Hive Metastore..."
               /opt/hive/bin/hive --service metastore
@@ -42,11 +53,14 @@ spec:
             - name: hive-conf
               mountPath: /opt/hive/conf/hive-site.xml
               subPath: metastore-site.xml
+            - name: hadoop-aws-jars
+              mountPath: /opt/hive/lib
       volumes:
         - name: hive-conf
           configMap:
             name: hive-metastore-site
-
+        - name: hadoop-aws-jars
+          emptyDir: {}
 
 ---
 apiVersion: v1
