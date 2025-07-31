@@ -10,8 +10,6 @@ data:
     -server
     -Xmx1G
     -XX:+UseG1GC
-    --add-opens=java.base/java.lang=ALL-UNNAMED
-    --extra-class-path=/usr/lib/trino/lib/hadoop-extra/*
 
   config.properties: |
     coordinator=true
