@@ -15,16 +15,18 @@ spec:
     spec:
       initContainers:
         - name: schema-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: postgres:15
           command:
             - /bin/bash
             - -c
             - |
+              export PGPASSWORD={{ .Values.postgres.password }}
               echo "Checking if Hive schema exists..."
-              SCHEMA_COUNT=$(PGPASSWORD={{ .Values.postgres.password }} psql -h {{ .Values.postgres.host }} -U {{ .Values.postgres.user }} -d {{ .Values.postgres.db }} -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public';")
+              SCHEMA_COUNT=$(psql -h {{ .Values.postgres.host }} -U {{ .Values.postgres.user }} -d {{ .Values.postgres.db }} -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_name='VERSION';")
               if [ "$SCHEMA_COUNT" = "0" ]; then
                 echo "Initializing Hive Metastore schema..."
-                schematool -initSchema -dbType postgres
+                export HIVE_AUX_JARS_PATH=/opt/hive/aux-jars/*
+                /opt/hive/bin/schematool -initSchema -dbType postgres
               else
                 echo "Hive schema already exists. Skipping initialization."
               fi
