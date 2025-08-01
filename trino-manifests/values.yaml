@@ -15,6 +15,11 @@ hive:
     pathStyleAccess: true
     warehouseDir: s3a://lakehouse/user/hive/warehouse  # not used but retained
 
+minio:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  endpoint: https://minio.homelab.lan
+  
 resources:
   limits:
     cpu: 1
