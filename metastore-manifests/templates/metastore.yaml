@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hive-metastore
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -33,6 +34,20 @@ spec:
           volumeMounts:
             - name: hive-config
               mountPath: /opt/hive/conf
+
+        - name: hadoop-jars-init
+          image: curlimages/curl:8.4.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /jars && \
+              curl -L -o /jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
+              curl -L -o /jars/aws-java-sdk-core-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.12.262/aws-java-sdk-core-1.12.262.jar && \
+              curl -L -o /jars/aws-java-sdk-s3-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.12.262/aws-java-sdk-s3-1.12.262.jar
+          volumeMounts:
+            - name: aux-jars
+              mountPath: /jars
+
       containers:
         - name: metastore
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -42,19 +57,33 @@ spec:
             - metastore
           ports:
             - containerPort: {{ .Values.metastore.port }}
+          env:
+            - name: HADOOP_HOME
+              value: "/opt/hadoop"
+            - name: HIVE_AUX_JARS_PATH
+              value: "/opt/hive/aux-jars/*"
+            - name: AWS_ACCESS_KEY_ID
+              value: "minioadmin"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "minioadmin"
           volumeMounts:
             - name: hive-config
               mountPath: /opt/hive/conf
+            - name: aux-jars
+              mountPath: /opt/hive/aux-jars
+
       volumes:
         - name: hive-config
           configMap:
             name: hive-site
+        - name: aux-jars
+          emptyDir: {}
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: hive-metastore
+  namespace: default
 spec:
   selector:
     app: hive-metastore
