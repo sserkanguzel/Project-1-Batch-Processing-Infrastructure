@@ -7,5 +7,3 @@ data:
   hive.properties: |
     connector.name=hive
     hive.metastore.uri=thrift://hive-metastore.hive-metastore.svc.cluster.local:9083
-
-    hadoop.config.resources=/etc/trino/conf/core-site.xml
