@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,7 +50,7 @@ spec:
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
             - name: hadoop-s3-plugin
-              mountPath: /usr/lib/trino/plugin/hadoop-s3
+              mountPath: /usr/lib/trino/plugin/hive
       volumes:
         - name: trino-config
           configMap:
@@ -59,7 +60,6 @@ spec:
             name: trino-hive-catalog
         - name: hadoop-s3-plugin
           emptyDir: {}
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -112,7 +112,7 @@ spec:
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
             - name: hadoop-s3-plugin
-              mountPath: /usr/lib/trino/plugin/hadoop-s3
+              mountPath: /usr/lib/trino/plugin/hive
       volumes:
         - name: trino-config
           configMap:
@@ -122,7 +122,6 @@ spec:
             name: trino-hive-catalog
         - name: hadoop-s3-plugin
           emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service
