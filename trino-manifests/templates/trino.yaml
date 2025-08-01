@@ -36,6 +36,9 @@ spec:
           args: ["run"]
           ports:
             - containerPort: 8080
+          env:
+            - name: HADOOP_CLASSPATH
+              value: "/usr/lib/trino/etc/hadoop/*"
           volumeMounts:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/config.properties
@@ -50,7 +53,7 @@ spec:
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
             - name: hadoop-s3-plugin
-              mountPath: /usr/lib/trino/plugin/hive
+              mountPath: /usr/lib/trino/etc/hadoop
       volumes:
         - name: trino-config
           configMap:
@@ -98,6 +101,9 @@ spec:
           args: ["run"]
           ports:
             - containerPort: 8080
+          env:
+            - name: HADOOP_CLASSPATH
+              value: "/usr/lib/trino/etc/hadoop/*"
           volumeMounts:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/config.properties
@@ -112,7 +118,7 @@ spec:
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
             - name: hadoop-s3-plugin
-              mountPath: /usr/lib/trino/plugin/hive
+              mountPath: /usr/lib/trino/etc/hadoop
       volumes:
         - name: trino-config
           configMap:
