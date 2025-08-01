@@ -86,3 +86,18 @@ spec:
             name: hive-site
         - name: aux-jars
           emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hive-metastore
+  namespace: hive-metastore
+spec:
+  selector:
+    app: hive-metastore
+  ports:
+    - name: metastore
+      protocol: TCP
+      port: {{ .Values.metastore.port }}
+      targetPort: {{ .Values.metastore.port }}
+  type: ClusterIP
