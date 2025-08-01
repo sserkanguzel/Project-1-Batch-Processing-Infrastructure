@@ -33,16 +33,16 @@ spec:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
-            - name: trino-hive-catalog
-              mountPath: /usr/lib/trino/etc/catalog/hive.properties
-              subPath: hive.properties
+            - name: trino-iceberg-catalog
+              mountPath: /usr/lib/trino/etc/catalog/iceberg.properties
+              subPath: iceberg.properties
       volumes:
         - name: trino-config
           configMap:
             name: trino-config
-        - name: trino-hive-catalog
+        - name: trino-iceberg-catalog
           configMap:
-            name: trino-hive-catalog
+            name: trino-iceberg-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -82,16 +82,16 @@ spec:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
-            - name: trino-hive-catalog
-              mountPath: /usr/lib/trino/etc/catalog/hive.properties
-              subPath: hive.properties
+            - name: trino-iceberg-catalog
+              mountPath: /usr/lib/trino/etc/catalog/iceberg.properties
+              subPath: iceberg.properties
       volumes:
         - name: trino-config
           configMap:
             name: trino-config-worker
-        - name: trino-hive-catalog
+        - name: trino-iceberg-catalog
           configMap:
-            name: trino-hive-catalog
+            name: trino-iceberg-catalog
 ---
 apiVersion: v1
 kind: Service
