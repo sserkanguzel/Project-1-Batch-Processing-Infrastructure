@@ -1,4 +1,6 @@
----
+# -------------------------------
+# COORDINATOR
+# -------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -54,6 +56,9 @@ spec:
               subPath: hive.properties
             - name: hadoop-s3-plugin
               mountPath: /usr/lib/trino/etc/hadoop
+            - name: core-site
+              mountPath: /usr/lib/trino/etc/core-site.xml
+              subPath: core-site.xml
       volumes:
         - name: trino-config
           configMap:
@@ -63,7 +68,14 @@ spec:
             name: trino-hive-catalog
         - name: hadoop-s3-plugin
           emptyDir: {}
+        - name: core-site
+          configMap:
+            name: trino-core-site
+
 ---
+# -------------------------------
+# WORKER
+# -------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -119,6 +131,9 @@ spec:
               subPath: hive.properties
             - name: hadoop-s3-plugin
               mountPath: /usr/lib/trino/etc/hadoop
+            - name: core-site
+              mountPath: /usr/lib/trino/etc/core-site.xml
+              subPath: core-site.xml
       volumes:
         - name: trino-config
           configMap:
@@ -128,7 +143,14 @@ spec:
             name: trino-hive-catalog
         - name: hadoop-s3-plugin
           emptyDir: {}
+        - name: core-site
+          configMap:
+            name: trino-core-site
+
 ---
+# -------------------------------
+# SERVICE
+# -------------------------------
 apiVersion: v1
 kind: Service
 metadata:
