@@ -20,15 +20,14 @@ spec:
             - /bin/bash
             - -c
             - |
+              echo "Checking if Hive schema is initialized..."
+              export HIVE_AUX_JARS_PATH=/opt/hive/aux-jars/*
               export PGPASSWORD={{ .Values.postgres.password }}
-              echo "Checking if Hive schema exists..."
-              SCHEMA_COUNT=$(psql -h {{ .Values.postgres.host }} -U {{ .Values.postgres.user }} -d {{ .Values.postgres.db }} -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_name='VERSION';")
-              if [ "$SCHEMA_COUNT" = "0" ]; then
-                echo "Initializing Hive Metastore schema..."
-                export HIVE_AUX_JARS_PATH=/opt/hive/aux-jars/*
-                /opt/hive/bin/schematool -initSchema -dbType postgres
-              else
+              if /opt/hive/bin/schematool -info -dbType postgres | grep -q 'Metastore schema version:'; then
                 echo "Hive schema already exists. Skipping initialization."
+              else
+                echo "Hive schema not found. Initializing..."
+                /opt/hive/bin/schematool -initSchema -dbType postgres
               fi
           env:
             - name: PGPASSWORD
