@@ -15,7 +15,7 @@ spec:
     spec:
       initContainers:
         - name: schema-init
-          image: postgres:15
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
             - /bin/bash
             - -c
