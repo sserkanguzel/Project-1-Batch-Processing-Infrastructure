@@ -15,6 +15,18 @@ spec:
         app: trino
         component: coordinator
     spec:
+      initContainers:
+        - name: init-hadoop-s3-plugin
+          image: curlimages/curl:8.0.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /hadoop-s3 && \
+              curl -L -o /hadoop-s3/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
+              curl -L -o /hadoop-s3/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar
+          volumeMounts:
+            - name: hadoop-s3-plugin
+              mountPath: /hadoop-s3
       containers:
         - name: trino
           image: "trinodb/trino:476"
@@ -36,6 +48,8 @@ spec:
             - name: trino-hive-catalog
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
+            - name: hadoop-s3-plugin
+              mountPath: /usr/lib/trino/plugin/hadoop-s3
       volumes:
         - name: trino-config
           configMap:
@@ -43,15 +57,15 @@ spec:
         - name: trino-hive-catalog
           configMap:
             name: trino-hive-catalog
+        - name: hadoop-s3-plugin
+          emptyDir: {}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: trino-worker
   namespace: trino
-  labels:
-    app: trino
-    component: worker
 spec:
   replicas: 1
   selector:
@@ -64,6 +78,18 @@ spec:
         app: trino
         component: worker
     spec:
+      initContainers:
+        - name: init-hadoop-s3-plugin
+          image: curlimages/curl:8.0.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /hadoop-s3 && \
+              curl -L -o /hadoop-s3/hadoop-aws.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
+              curl -L -o /hadoop-s3/aws-java-sdk-bundle.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar
+          volumeMounts:
+            - name: hadoop-s3-plugin
+              mountPath: /hadoop-s3
       containers:
         - name: trino
           image: "trinodb/trino:476"
@@ -85,6 +111,8 @@ spec:
             - name: trino-hive-catalog
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
+            - name: hadoop-s3-plugin
+              mountPath: /usr/lib/trino/plugin/hadoop-s3
       volumes:
         - name: trino-config
           configMap:
@@ -92,6 +120,9 @@ spec:
         - name: trino-hive-catalog
           configMap:
             name: trino-hive-catalog
+        - name: hadoop-s3-plugin
+          emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service
