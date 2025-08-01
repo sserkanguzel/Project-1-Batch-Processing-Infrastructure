@@ -33,13 +33,16 @@ spec:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
-            - name: trino-config
+            - name: trino-hive-catalog
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
       volumes:
         - name: trino-config
           configMap:
             name: trino-config
+        - name: trino-hive-catalog
+          configMap:
+            name: trino-hive-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -79,13 +82,16 @@ spec:
             - name: trino-config
               mountPath: /usr/lib/trino/etc/node.properties
               subPath: node.properties
-            - name: trino-config
+            - name: trino-hive-catalog
               mountPath: /usr/lib/trino/etc/catalog/hive.properties
               subPath: hive.properties
       volumes:
         - name: trino-config
           configMap:
             name: trino-config-worker
+        - name: trino-hive-catalog
+          configMap:
+            name: trino-hive-catalog
 ---
 apiVersion: v1
 kind: Service
