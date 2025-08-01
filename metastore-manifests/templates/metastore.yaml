@@ -14,19 +14,29 @@ spec:
         app: hive-metastore
     spec:
       initContainers:
-        - name: schema-init
+        - name: hive-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
             - /bin/bash
             - -c
             - |
-              echo "Checking if Hive schema is initialized..."
+              set -e
+              echo "⏬ Downloading required Hadoop/AWS/Postgres JARs..."
+              mkdir -p /opt/hive/aux-jars && \
+              curl -L -o /opt/hive/aux-jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
+              curl -L -o /opt/hive/aux-jars/hadoop-common-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar && \
+              curl -L -o /opt/hive/aux-jars/hadoop-shaded-guava-1.1.0.jar https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-guava/1.1.0/hadoop-shaded-guava-1.1.0.jar && \
+              curl -L -o /opt/hive/aux-jars/aws-java-sdk-core-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.12.262/aws-java-sdk-core-1.12.262.jar && \
+              curl -L -o /opt/hive/aux-jars/aws-java-sdk-s3-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.12.262/aws-java-sdk-s3-1.12.262.jar && \
+              curl -L -o /opt/hive/aux-jars/postgresql-42.7.3.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.3/postgresql-42.7.3.jar
+
+              echo "🔍 Checking if Hive schema is initialized..."
               export HIVE_AUX_JARS_PATH=/opt/hive/aux-jars/*
               export PGPASSWORD={{ .Values.postgres.password }}
               if /opt/hive/bin/schematool -info -dbType postgres | grep -q 'Metastore schema version:'; then
-                echo "Hive schema already exists. Skipping initialization."
+                echo "✅ Hive schema already exists. Skipping initialization."
               else
-                echo "Hive schema not found. Initializing..."
+                echo "🚀 Hive schema not found. Initializing..."
                 /opt/hive/bin/schematool -initSchema -dbType postgres
               fi
           env:
@@ -35,23 +45,8 @@ spec:
           volumeMounts:
             - name: hive-config
               mountPath: /opt/hive/conf
-
-        - name: hadoop-jars-init
-          image: curlimages/curl:8.4.0
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              mkdir -p /jars && \
-              curl -L -o /jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
-              curl -L -o /jars/hadoop-common-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar && \
-              curl -L -o /jars/hadoop-shaded-guava-1.1.0.jar https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-guava/1.1.0/hadoop-shaded-guava-1.1.0.jar && \
-              curl -L -o /jars/aws-java-sdk-core-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.12.262/aws-java-sdk-core-1.12.262.jar && \
-              curl -L -o /jars/aws-java-sdk-s3-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.12.262/aws-java-sdk-s3-1.12.262.jar && \
-              curl -L -o /jars/postgresql-42.7.3.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.3/postgresql-42.7.3.jar
-
-          volumeMounts:
             - name: aux-jars
-              mountPath: /jars
+              mountPath: /opt/hive/aux-jars
 
       containers:
         - name: metastore
