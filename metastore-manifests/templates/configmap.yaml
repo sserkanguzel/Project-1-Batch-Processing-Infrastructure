@@ -1,15 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: hive-metastore-site
-  namespace: {{ .Release.Namespace }}
+  name: hive-site
 data:
-  metastore-site.xml: |
+  hive-site.xml: |
     <configuration>
-      <!-- PostgreSQL DB Connection -->
       <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:postgresql://{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.database }}</value>
+        <value>jdbc:postgresql://{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.db }}</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
@@ -22,43 +20,5 @@ data:
       <property>
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>{{ .Values.postgres.password }}</value>
-      </property>
-
-      <!-- Warehouse directory (dummy local path unless you run ETL inside Hive) -->
-      <property>
-        <name>hive.metastore.warehouse.dir</name>
-        <value>{{ .Values.warehouseDir }}</value>
-      </property>
-
-      <!-- Execution engine to avoid Spark dependency -->
-      <property>
-        <name>hive.execution.engine</name>
-        <value>mr</value>
-      </property>
-
-      <!-- S3 / MinIO Settings -->
-      <property>
-        <name>fs.s3a.access.key</name>
-        <value>{{ .Values.s3.accessKey }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.secret.key</name>
-        <value>{{ .Values.s3.secretKey }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.endpoint</name>
-        <value>{{ .Values.s3.endpoint }}</value>
-      </property>
-      <property>
-        <name>fs.s3a.path.style.access</name>
-        <value>true</value>
-      </property>
-      <property>
-        <name>fs.s3a.impl</name>
-        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
-      </property>
-      <property>
-        <name>fs.s3a.connection.ssl.enabled</name>
-        <value>{{ .Values.s3.sslEnabled | default "false" }}</value>
       </property>
     </configuration>
