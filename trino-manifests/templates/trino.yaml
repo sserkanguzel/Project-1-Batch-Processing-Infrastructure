@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
         - name: init-hadoop-s3-plugin
-          image: curlimages/curl:8.0.1
+          image: curlimages/curl:8.4.0
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -80,7 +80,7 @@ spec:
     spec:
       initContainers:
         - name: init-hadoop-s3-plugin
-          image: curlimages/curl:8.0.1
+          image: curlimages/curl:8.4.0
           command: ["/bin/sh", "-c"]
           args:
             - |
