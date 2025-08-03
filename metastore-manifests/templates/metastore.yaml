@@ -17,65 +17,51 @@ spec:
       labels: { app: hive-metastore }
     spec:
       initContainers:
-        # 1) Gather needed jars into a shared volume (no writes to /opt)
         - name: fetch-s3a-and-pg-jars
           image: curlimages/curl:8.7.1
           command: ["/bin/sh","-c"]
-          args: |
-            set -eux
-            mkdir -p /jars
-            # Hadoop AWS + AWS SDK bundle compatible with Hadoop 3.3.6
-            curl -fsSL -o /jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar
-            curl -fsSL -o /jars/aws-java-sdk-bundle-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar
-            # PostgreSQL JDBC driver
-            curl -fsSL -o /jars/postgresql-42.6.0.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.6.0/postgresql-42.6.0.jar
-            ls -l /jars
+          args:
+            - |
+              set -eux
+              mkdir -p /jars
+              curl -fsSL -o /jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar
+              curl -fsSL -o /jars/aws-java-sdk-bundle-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar
+              curl -fsSL -o /jars/postgresql-42.6.0.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.6.0/postgresql-42.6.0.jar
+              ls -l /jars
           volumeMounts:
             - name: aux-jars
               mountPath: /jars
-        # 2) Initialize Hive schema using jars via CLASSPATH (idempotent)
         - name: init-hive-schema
           image: apache/hive:3.1.3
           env:
-            - name: HADOOP_CLASSPATH
-              value: /aux-jars/*
-            - name: HIVE_AUX_JARS_PATH
-              value: /aux-jars
-            - name: HADOOP_CONF_DIR
-              value: /opt/hadoop/etc/hadoop
-            - name: HIVE_CONF_DIR
-              value: /opt/hive/conf
+            - { name: HADOOP_CLASSPATH, value: /aux-jars/* }
+            - { name: HIVE_AUX_JARS_PATH, value: /aux-jars }
+            - { name: HADOOP_CONF_DIR, value: /opt/hadoop/etc/hadoop }
+            - { name: HIVE_CONF_DIR, value: /opt/hive/conf }
           command: ["/bin/sh","-c"]
-          args: |
-            set -eux
-            /opt/hive/bin/schematool -dbType postgres -initSchema -verbose || true
+          args:
+            - |
+              set -eux
+              /opt/hive/bin/schematool -dbType postgres -initSchema -verbose || true
           volumeMounts:
-            - name: hive-site
-              mountPath: /opt/hive/conf/hive-site.xml
-              subPath: hive-site.xml
-            - name: hadoop-core-site
-              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
-              subPath: core-site.xml
-            - name: aux-jars
-              mountPath: /aux-jars
+            - { name: hive-site, mountPath: /opt/hive/conf/hive-site.xml, subPath: hive-site.xml }
+            - { name: hadoop-core-site, mountPath: /opt/hadoop/etc/hadoop/core-site.xml, subPath: core-site.xml }
+            - { name: aux-jars, mountPath: /aux-jars }
       containers:
         - name: metastore
           image: apache/hive:3.1.3
           env:
-            - name: HADOOP_CLASSPATH
-              value: /aux-jars/*
-            - name: HIVE_AUX_JARS_PATH
-              value: /aux-jars
-            - name: HADOOP_CONF_DIR
-              value: /opt/hadoop/etc/hadoop
-            - name: HIVE_CONF_DIR
-              value: /opt/hive/conf
+            - { name: HADOOP_CLASSPATH, value: /aux-jars/* }
+            - { name: HIVE_AUX_JARS_PATH, value: /aux-jars }
+            - { name: HADOOP_CONF_DIR, value: /opt/hadoop/etc/hadoop }
+            - { name: HIVE_CONF_DIR, value: /opt/hive/conf }
           ports:
             - { name: thrift, containerPort: 9083 }
           command: ["/bin/sh","-c"]
-          args: |
-            set -eux
-            /opt/hive/bin/hive --service metastore -p 9083
+          args:
+            - |
+              set -eux
+              /opt/hive/bin/hive --service metastore -p 9083
           readinessProbe:
             tcpSocket: { port: 9083 }
             initialDelaySeconds: 10
@@ -85,21 +71,14 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 20
           volumeMounts:
-            - name: hive-site
-              mountPath: /opt/hive/conf/hive-site.xml
-              subPath: hive-site.xml
-            - name: hadoop-core-site
-              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
-              subPath: core-site.xml
-            - name: aux-jars
-              mountPath: /aux-jars
+            - { name: hive-site, mountPath: /opt/hive/conf/hive-site.xml, subPath: hive-site.xml }
+            - { name: hadoop-core-site, mountPath: /opt/hadoop/etc/hadoop/core-site.xml, subPath: core-site.xml }
+            - { name: aux-jars, mountPath: /aux-jars }
       volumes:
-        - name: hive-site
-          configMap: { name: hive-site }
-        - name: hadoop-core-site
-          configMap: { name: hadoop-core-site }
-        - name: aux-jars
-          emptyDir: {}
+        - { name: hive-site, configMap: { name: hive-site } }
+        - { name: hadoop-core-site, configMap: { name: hadoop-core-site } }
+        - { name: aux-jars, emptyDir: {} }
+
 
 ---
 apiVersion: v1
