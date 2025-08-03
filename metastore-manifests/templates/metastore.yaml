@@ -14,77 +14,84 @@ spec:
         app: hive-metastore
     spec:
       initContainers:
-        - name: hadoop-jars-init
-          image: curlimages/curl:8.4.0
-          command: ["/bin/sh", "-c"]
+        # 1) Provide S3A jars from a Hadoop image
+        - name: add-s3a-jars
+          image: apache/hadoop:3.3.6
+          command: ["/bin/sh","-c"]
           args:
             - |
-              echo "Downloading required JARs..."
-              mkdir -p /jars && \
-              curl -L -o /jars/hadoop-aws-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.6/hadoop-aws-3.3.6.jar && \
-              curl -L -o /jars/hadoop-common-3.3.6.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.6/hadoop-common-3.3.6.jar && \
-              curl -L -o /jars/hadoop-shaded-guava-1.1.0.jar https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-guava/1.1.0/hadoop-shaded-guava-1.1.0.jar && \
-              curl -L -o /jars/aws-java-sdk-core-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.12.262/aws-java-sdk-core-1.12.262.jar && \
-              curl -L -o /jars/aws-java-sdk-s3-1.12.262.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.12.262/aws-java-sdk-s3-1.12.262.jar && \
-              curl -L -o /jars/postgresql-42.7.3.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.3/postgresql-42.7.3.jar
-
+              set -eux
+              mkdir -p /tools-lib
+              cp -v /opt/hadoop/share/hadoop/tools/lib/hadoop-aws-*.jar /tools-lib/
+              cp -v /opt/hadoop/share/hadoop/tools/lib/aws-*.jar /tools-lib/ || true
+              cp -v /opt/hadoop/share/hadoop/tools/lib/*aws*sdk*.jar /tools-lib/ || true
           volumeMounts:
-            - name: aux-jars
-              mountPath: /jars
-
-        - name: schema-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          command:
-            - /bin/bash
-            - -c
-            - |
-              echo "🔍 Checking if Hive schema is initialized..."
-              export HIVE_AUX_JARS_PATH=/opt/hive/aux-jars/*
-              export PGPASSWORD={{ .Values.postgres.password }}
-              if /opt/hive/bin/schematool -info -dbType postgres | grep -q 'Metastore schema version:'; then
-                echo "✅ Hive schema already exists. Skipping initialization."
-              else
-                echo "🚀 Hive schema not found. Initializing..."
-                /opt/hive/bin/schematool -initSchema -dbType postgres
-              fi
-          env:
-            - name: PGPASSWORD
-              value: {{ .Values.postgres.password }}
+            - name: hadoop-tools-lib
+              mountPath: /tools-lib
+        # 2) Initialize the Hive schema BEFORE the metastore starts
+        - name: init-hive-schema
+          image: apache/hive:3.1.3
+          command: ["/bin/sh","-c"]
+          args:
+            - >
+              set -eux;
+              # Ensure S3A libs are visible to Hadoop inside this container
+              mkdir -p /opt/hadoop/share/hadoop/tools/lib &&
+              cp -vn /hadoop-tools-lib/* /opt/hadoop/share/hadoop/tools/lib/ || true;
+              # (Optional) warn if PostgreSQL JDBC jar is missing
+              ls -1 /opt/hive/lib/postgresql*.jar || echo "WARN: PostgreSQL JDBC jar not found in image";
+              # Initialize schema (idempotent if already created will fail gracefully)
+              /opt/hive/bin/schematool -dbType postgres -initSchema -verbose || true
           volumeMounts:
-            - name: hive-config
-              mountPath: /opt/hive/conf
-            - name: aux-jars
-              mountPath: /opt/hive/aux-jars
-
+            - name: hive-site
+              mountPath: /opt/hive/conf/hive-site.xml
+              subPath: hive-site.xml
+            - name: hadoop-core-site
+              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              subPath: core-site.xml
+            - name: hadoop-tools-lib
+              mountPath: /hadoop-tools-lib
       containers:
         - name: metastore
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          command:
-            - /opt/hive/bin/hive
-            - --service
-            - metastore
+          image: apache/hive:3.1.3
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.metastore.port }}
-          env:
-            - name: HADOOP_HOME
-              value: "/opt/hadoop"
-            - name: HIVE_AUX_JARS_PATH
-              value: "/opt/hive/aux-jars/*"
-            - name: AWS_ACCESS_KEY_ID
-              value: "minioadmin"
-            - name: AWS_SECRET_ACCESS_KEY
-              value: "minioadmin"
+            - name: thrift
+              containerPort: 9083
+          command: ["/bin/sh","-c"]
+          args:
+            - >
+              set -eux;
+              # Ensure S3A libs available at runtime as well
+              mkdir -p /opt/hadoop/share/hadoop/tools/lib &&
+              cp -vn /hadoop-tools-lib/* /opt/hadoop/share/hadoop/tools/lib/ || true;
+              # Start Metastore
+              /opt/hive/bin/hive --service metastore -p 9083
+          readinessProbe:
+            tcpSocket: { port: 9083 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: 9083 }
+            initialDelaySeconds: 20
+            periodSeconds: 20
           volumeMounts:
-            - name: hive-config
-              mountPath: /opt/hive/conf
-            - name: aux-jars
-              mountPath: /opt/hive/aux-jars
-
+            - name: hive-site
+              mountPath: /opt/hive/conf/hive-site.xml
+              subPath: hive-site.xml
+            - name: hadoop-core-site
+              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              subPath: core-site.xml
+            - name: hadoop-tools-lib
+              mountPath: /hadoop-tools-lib
       volumes:
-        - name: hive-config
+        - name: hive-site
           configMap:
             name: hive-site
-        - name: aux-jars
+        - name: hadoop-core-site
+          configMap:
+            name: hadoop-core-site
+        - name: hadoop-tools-lib
           emptyDir: {}
 ---
 apiVersion: v1
@@ -96,8 +103,7 @@ spec:
   selector:
     app: hive-metastore
   ports:
-    - name: metastore
+    - name: thrift
+      port: 9083
+      targetPort: 9083
       protocol: TCP
-      port: {{ .Values.metastore.port }}
-      targetPort: {{ .Values.metastore.port }}
-  type: ClusterIP
