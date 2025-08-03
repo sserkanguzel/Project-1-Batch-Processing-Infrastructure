@@ -1,13 +1,58 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: hadoop-core-site
+  namespace: hive-metastore
+data:
+  core-site.xml: |
+    <?xml version="1.0"?>
+    <configuration>
+      <!-- Let Hadoop accept s3:// via S3A -->
+      <property>
+        <name>fs.s3.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+      </property>
+      <property>
+        <name>fs.AbstractFileSystem.s3.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3A</value>
+      </property>
+
+      <!-- MinIO S3A settings -->
+      <property>
+        <name>fs.s3a.endpoint</name>
+        <value>http://minio.minio.svc.cluster.local:9000</value>
+      </property>
+      <property>
+        <name>fs.s3a.path.style.access</name>
+        <value>true</value>
+      </property>
+      <property>
+        <name>fs.s3a.connection.ssl.enabled</name>
+        <value>false</value>
+      </property>
+      <property>
+        <name>fs.s3a.access.key</name>
+        <value>minioadmin</value>
+      </property>
+      <property>
+        <name>fs.s3a.secret.key</name>
+        <value>minioadmin</value>
+      </property>
+    </configuration>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: hive-site
+  namespace: hive-metastore
 data:
   hive-site.xml: |
+    <?xml version="1.0"?>
     <configuration>
+      <!-- Metastore DB (PostgreSQL) -->
       <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:postgresql://{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.db }}</value>
+        <value>jdbc:postgresql://postgresql.postgres.svc.cluster.local:5432/hive_metastore</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
@@ -15,10 +60,34 @@ data:
       </property>
       <property>
         <name>javax.jdo.option.ConnectionUserName</name>
-        <value>{{ .Values.postgres.user }}</value>
+        <value>hive</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionPassword</name>
-        <value>{{ .Values.postgres.password }}</value>
+        <value>hivepassword</value>
+      </property>
+
+      <!-- Warehouse root on S3 (works with s3:// thanks to core-site alias) -->
+      <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>s3://data/</value>
+      </property>
+
+      <!-- Sensible defaults -->
+      <property>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>false</value>
+      </property>
+      <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>true</value>
+      </property>
+      <property>
+        <name>hive.metastore.event.db.notification.api.auth</name>
+        <value>false</value>
+      </property>
+      <property>
+        <name>metastore.task.threads.always</name>
+        <value>org.apache.hadoop.hive.metastore.events.EventCleanerTask</value>
       </property>
     </configuration>
